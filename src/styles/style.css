@@ -1,0 +1,261 @@
+nav .brand-logo,
+nav ul a {
+    color: #444
+}
+
+.bottom-sheet {
+    max-height: 90% !important;
+}
+
+#desktopprofile2:focus {
+    outline: 0
+}
+
+::-webkit-scrollbar {
+    width: 5px
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1
+}
+
+::-webkit-scrollbar-thumb {
+    background: #26a69a
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #26a69a
+}
+
+p {
+    line-height: 2rem
+}
+
+.sidenav-trigger {
+    color: #26a69a
+}
+
+.welcome-font {
+    font-family: 'Great Vibes', cursive
+}
+
+.parallax-container {
+    min-height: 380px;
+    line-height: 0;
+    height: auto;
+    color: rgba(255, 255, 255, .9)
+}
+
+.parallax-container .section {
+    width: 100%
+}
+
+@media only screen and (max-width:992px) {
+    .parallax-container .section {
+        position: absolute;
+        top: 40%
+    }
+    #index-banner .section {
+        top: 10%
+    }
+}
+
+@media only screen and (max-width:600px) {
+    #index-banner .section {
+        top: 0
+    }
+}
+
+.icon-block {
+    padding: 0 15px
+}
+
+.icon-block .material-icons {
+    font-size: inherit
+}
+
+footer.page-footer {
+    margin: 0
+}
+
+.postergrad {
+    display: block
+}
+
+.postergrad::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: -moz-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .65) 0);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0, 0, 0, .65)), color-stop(0, rgba(0, 0, 0, 0)));
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .65) 0);
+    background: -o-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .65) 0);
+    background: -ms-linear-gradient(top, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .65) 0);
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .65) 0)
+}
+
+.poster {
+    display: block
+}
+
+input {
+    padding: 5px
+}
+
+.sub-sub-headings {
+    font-family: "EB Garamond", serif
+}
+
+.contactustext {
+    font-family: "Special Elite", cursive
+}
+
+.parallax-pics-text {
+    font-family: "Nanum Myeongjo", serif
+}
+
+.sub-headings {
+    font-family: "Alfa Slab One", cursive
+}
+
+.sub-names {
+    font-family: Girassol, cursive
+}
+
+.sub-modal-texts {
+    font-family: "PT Sans Narrow", sans-serif
+}
+
+.exam-ques {
+    font-family: "Roboto Mono", monospace
+}
+
+.banner-names {
+    font-family: Andada, serif
+}
+
+.img-ques-responsive {
+    max-width: 100%;
+    height: 84px;
+    object-fit: cover
+}
+
+.img-box-responsive {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover
+}
+
+.img-side-responsive {
+    max-width: 50%;
+    height: auto;
+    object-fit: cover
+}
+
+.main-button {
+    background: 0 0;
+    border-color: #26a69a;
+    border-style: solid;
+    border-width: 2px;
+    transition: all .2s linear
+}
+
+.main-button:hover {
+    color: #fff;
+    background: #26a69a;
+    transition: all .2s linear
+}
+
+.quesAns {
+    font-size: 90px
+}
+
+.zoezi-link-clickable {
+    background-color: transparent;
+}
+
+.pace {
+    -webkit-pointer-events: none;
+    pointer-events: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none
+}
+
+.pace-inactive {
+    display: none
+}
+
+.pace .pace-progress {
+    background: #4db6ac;
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    right: 100%;
+    width: 100%;
+    height: 3px
+}
+
+.popup-btn {
+    top: 50vh;
+    position: fixed;
+    right: -60px;
+    z-index: 500;
+    transform: rotate(-90deg);
+    padding: 2px 15px 35px;
+    height: 0;
+    background-color: #26a69a;
+    color: #fff
+}
+
+.popup-btn2 {
+    top: 50vh;
+    position: fixed;
+    right: -60px;
+    z-index: 500;
+    transform: rotate(-90deg);
+    padding: 2px 15px 45px;
+    height: 0;
+    background-color: #26a69a;
+    color: #fff
+}
+
+.descriptions li:before {
+    content: "\2713 \00a0"
+}
+
+.bottom-sheet {
+    max-height: 90% !important;
+}
+
+.zoezi-container {
+    margin: 0 auto;
+    max-width: 1280px; 
+    width: 90%;
+}
+
+.center-image {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#root {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column
+}
+
+main {
+    flex: 1 0 auto
+}

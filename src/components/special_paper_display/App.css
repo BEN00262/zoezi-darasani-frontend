@@ -1,0 +1,13 @@
+.question-comp img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  cursor: -webkit-zoom-in;
+  cursor: zoom-in;
+  position: relative;
+  -webkit-transition: opacity .4s;
+  transition: opacity .4s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
