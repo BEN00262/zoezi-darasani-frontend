@@ -44,7 +44,7 @@ const SubjectAnalysis = () => {
 
     return (
         <main>
-                 <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
+            <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
             <div className="section">
                 <div className="row">
                     {/* place the class icon at the top */}
@@ -59,7 +59,7 @@ const SubjectAnalysis = () => {
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "50%"
                             }} 
-                            src="https://www.zoezi-education.com/special/subjects/kcpe/Past%20Paper/img/kcpe_special/mathematics.png"
+                            src={`https://www.zoezi-education.com/img/kcpe/${subject.name.toLowerCase().split(" ")[0]}.png`}
                         />
 
                         <ul>

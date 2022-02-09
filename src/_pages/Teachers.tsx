@@ -69,13 +69,20 @@ const Teachers = () => {
 
     return (
         <main>
-            <Link to="/teacher/new" style={{
-                    position: "fixed",
-                    bottom: "50px",
-                    right: "20px"
+            <div style={{
+                        position: "fixed",
+                        bottom: "50px",
+                        right: "20px"
+                    }}>
+                <Link to="/teacher/new" style={{
+                    marginRight: "10px"
                 }} className="waves-effect waves-light btn-small">
-                <i className="material-icons right">add_circle_outline</i>Add Teacher
-            </Link>
+                    <i className="material-icons right">cloud_upload</i>Import Teacher(s)
+                </Link>
+                <Link to="/teacher/new" className="waves-effect waves-light btn-small">
+                    <i className="material-icons right">add_circle_outline</i>Add Teacher
+                </Link>
+            </div>
 
             <div className="container">
                 <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>

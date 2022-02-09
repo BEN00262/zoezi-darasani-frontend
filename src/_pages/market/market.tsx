@@ -21,7 +21,11 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
             <div 
                 className="card hoverable z-depth-1" 
                 style={{cursor:"pointer"}}
-                onClick={_ => navigate(`/market/select/${_id}`)}
+                onClick={_ => {
+                    // set the special grade choosing thing here
+                    localStorage.setItem("special_grade", isSpecial ? "special": "");
+                    navigate(`/market/select/${_id}`);
+                }}
             >
 
                 <div className="card-image">
@@ -35,7 +39,7 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
                         paddingRight: "30px"
                     }}>
                         <small>
-                            <b>OPEN</b>
+                            <b>BUY</b>
                         </small>
                     </button>
                 </div>

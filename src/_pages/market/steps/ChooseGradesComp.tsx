@@ -116,7 +116,7 @@ const ChooseGradesComp = () => {
                                     paddingLeft: "20px",
                                     borderRadius: "20px"
                                 }}
-                                to={`/market/checkout/${selectedSubscription?._id}`}>
+                                to={`/market/checkout/${params.gradeId}/${selectedSubscription?._id}`}>
                                 Proceed to checkout
                             </Link>
                         </div>

@@ -1,3 +1,4 @@
+import React from "react";
 import { 
   BrowserRouter as Router,
   Route,
@@ -17,25 +18,28 @@ import GradeDisplayPage from "./_pages/GradeDisplayPage"
 import GradesPage from "./_pages/Grades"
 import HomePage from "./_pages/HomePage"
 import ImportStudent from "./_pages/ImportStudents"
+import LoaderPage from "./_pages/loader";
 import LoginPage from "./_pages/LoginPage"
 import MarketPage from "./_pages/market/market"
 import MarketGrade from "./_pages/market/market-grade"
 import CheckoutComp from "./_pages/market/steps/CheckoutComp";
 import ChooseGradesComp from "./_pages/market/steps/ChooseGradesComp";
 import NewGrade from "./_pages/NewGrade"
-import NewLearner from "./_pages/NewLearner"
 import NewSchool from "./_pages/NewSchool"
 import NewSubject from "./_pages/NewSubject"
 import NewTeacher from "./_pages/NewTeacher"
 import PasswordRecovery from "./_pages/PasswordRecovery";
 import StudentAnalysis from "./_pages/StudentAnalysis"
 import SubjectAnalysis from "./_pages/SubjectAnalysis"
+import SubscriptionsPage from "./_pages/SubscriptionsPage";
+import SubscriptionViewPage from "./_pages/SubscriptionView";
 import TeacherDisplayPage from "./_pages/TeacherDisplayPage"
 import Teachers from "./_pages/Teachers"
 
 const App = () => {
   return (
     <Router>
+      <React.Suspense fallback={<LoaderPage/>}>
       <GlobalContextComp>
         <Navigation/>
         {/* <main> */}
@@ -67,7 +71,11 @@ const App = () => {
               <Route path="/market" element={<MarketPage/>}/>
               <Route path="/market/:gradeName" element={<MarketGrade/>}/>
               <Route path="/market/select/:gradeId" element={<ChooseGradesComp/>}/>
-              <Route path="/market/checkout/:subscriptionId" element={<CheckoutComp/>}/>
+              <Route path="/market/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
+
+              {/* a listing of all the subscriptions */}
+              <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
+              <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
 
               <Route path="/grades" element={<GradesPage/>}/>
               <Route path="/grades/:id" element={<GradeDisplayPage/>}/>
@@ -89,6 +97,7 @@ const App = () => {
         {/* </main> */}
         <Footer/>
       </GlobalContextComp>
+      </React.Suspense>
     </Router>
   )
 }

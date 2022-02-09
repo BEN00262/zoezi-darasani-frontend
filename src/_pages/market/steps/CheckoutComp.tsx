@@ -1,16 +1,24 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { IPricingItem } from "../../../components/PricingItem";
 import { GlobalContext } from "../../../contexts/GlobalContext";
 import { IGrade } from "../../Grades";
+import LoaderPage from "../../loader";
+
+// for toast displays
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CheckoutComp = () => {
     const { authToken } = useContext(GlobalContext);
+    const navigate = useNavigate();
     const params = useParams();
     const [totalCost, setTotalCost] = useState(0);
     const [grades, setGrades] = useState<IGrade[]>([]);
     const [subscriptionPrice, setSubscriptionPrice] = useState(0);
+    const [error, setError] = useState("");
+    const [isPurchasing, setIsPurchasing] = useState(false);
 
     // on loading fetch the grades and the subscription
     useEffect(() => {
@@ -31,14 +39,76 @@ const CheckoutComp = () => {
                     )
                 }
             })
-            // .finally(() => localStorage.setItem("selectedGrades", ""))
     }, []);
 
 
+    // have a function to make the payments now
+    const makePayment = () => {
+        const special_grade = (localStorage.getItem("special_grade") || "").toLowerCase() === "special";
+
+        setIsPurchasing(true);
+        axios.post(`/api/market/purchase/${params.gradeId}/${params.subscriptionId}`,
+        {
+            grades: localStorage.getItem("selectedGrades"),
+            isSpecial: special_grade
+        },
+        {
+            headers: { Authorization: `Bearer ${authToken}`}
+        })
+            .then(({ data }) => {
+                if (data && data.status) {
+
+                    (() => toast.success("Your payment is being processed", {
+                        position: toast.POSITION.TOP_RIGHT,
+                        onClose: () => navigate("/dashboard", { replace: true }) // go back to the grades page after a success :)
+                    }))();
+
+                    return;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                setError(error.message);
+            })
+            .finally(() => {
+                // invert the stuff
+                setIsPurchasing(false);
+                // do some clean ups
+                localStorage.setItem("selectedGrades", "");
+                localStorage.setItem("special_grade", "");
+            })
+    }
+
+    if (!grades.length) {
+        return <LoaderPage/>
+    }
+
     return (
         <main style={{display: "flex",justifyContent: "center",alignItems: "center"}}>
+            <ToastContainer/>
             <div className="container">
                 <div className="section">
+                    {
+                        error ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    {error}
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                 <div className="row">
                     <div className="col s12 m8">
                         <table className="striped sub-modal-texts">
@@ -91,7 +161,7 @@ const CheckoutComp = () => {
                         </div>
                         <div className="row center">
                             <div className="col s12">
-                                <button style={{
+                                <button onClick={makePayment} disabled={isPurchasing} style={{
                                     border: "2px solid teal",
                                     backgroundColor: "teal",
                                     borderRadius: "20px",
@@ -101,7 +171,7 @@ const CheckoutComp = () => {
                                     paddingLeft: "30px",
                                     paddingRight: "30px",
                                 }} className="white-text">
-                                    Make Payment
+                                    {isPurchasing ? "Making Payment..." : "Make Payment"}
                                 </button>
 
                             </div>

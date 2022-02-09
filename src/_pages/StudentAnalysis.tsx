@@ -7,6 +7,7 @@ import {Link, useParams} from "react-router-dom"
 import LibraryViewComp from "../components/LibraryViewComp";
 import StudentReport from "../components/StudentReport"
 import { GlobalContext } from "../contexts/GlobalContext";
+import LoaderPage from './loader';
 
 interface IStudent {
     _id: "",
@@ -40,7 +41,7 @@ const StudentAnalysis = () => {
         M.Tabs.init(document.getElementById("student-analysis-tabs"), {
             
         });
-    }, [])
+    }, []);
 
 
 

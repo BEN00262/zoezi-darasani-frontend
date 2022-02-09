@@ -45,6 +45,7 @@ const Navigation = () => {
                             <li><Link to="/market">Market</Link></li>
                             <li><Link to="/teacher">Teachers</Link></li>
                             <li><Link to="/grades">Grades</Link></li>
+                            <li><Link to="/subscriptions">Subscriptions</Link></li>
                             <li><a className="dropdown-trigger" id="desktopprofile2" href="#!" data-target="dropdown1">My Account<i className="material-icons right">arrow_drop_down</i></a></li>
                         </ul>
                         :
