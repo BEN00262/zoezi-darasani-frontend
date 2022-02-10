@@ -13,13 +13,12 @@ export interface IGlobalContext {
 // check if is still valid
 // we also need to check if this is a school or not ( on log out we wipe the history )
 const verifyToken = (token: string) => {
-
-    if (!token) {
-        // if the token is empty just return an empty stuff :)
-        throw new Error("The token is empty");
-    }
-
     try {
+        if (!token) {
+            // if the token is empty just return an empty stuff :)
+            throw new Error("The token is empty");
+        }
+        
         const { exp, school, _id } = jwt_decode(token) as any;
         return {
             authToken: Date.now() >= exp * 1000 ? null : token, // by default i was checking for this
@@ -27,6 +26,7 @@ const verifyToken = (token: string) => {
             communicationId: _id
         }
     } catch (error) {
+
         return {authToken: null, isTeacher: false, communicationId: null };
     }
 }

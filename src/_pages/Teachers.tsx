@@ -18,7 +18,7 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
             <div 
                 onClick={_ => navigate(`/teacher/${_id}`)}
                 className="hoverable z-depth-1" 
-                style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
+                style={{cursor: "pointer", marginBottom: "10px", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img
                         style={{
@@ -50,6 +50,8 @@ const Teachers = () => {
     // fetch the teachers
     const { authToken } = useContext(GlobalContext);
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
+    const [teachersTemp, setTeachersTemp] = useState<ITeacher[]>([]);
+    // const [searchTerm, setSearchTerm] = useState("");
 
     // fetch on render 
     useEffect(() => {
@@ -58,41 +60,75 @@ const Teachers = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    setTeachers(data.teachers)
+                    setTeachers(data.teachers);
+                    setTeachersTemp(data.teachers);
                 }
             })
     }, []);
 
-    if (!teachers.length) {
+    const handleSearch = (e: any) => {
+        let searchTerm = (e.target.value || "").toLowerCase();
+
+        if (!searchTerm) {
+            setTeachers(teachersTemp);
+            return
+        }
+
+        setTeachers(
+            teachersTemp.filter(
+                x => x.name.toLowerCase().indexOf(searchTerm) > -1 
+                || x.email.toLowerCase().indexOf(searchTerm) > -1
+            )
+        )
+    }
+
+    if (!teachersTemp.length) {
         return <LoaderPage/>
     }
 
     return (
         <main>
-            <div style={{
-                        position: "fixed",
-                        bottom: "50px",
-                        right: "20px"
-                    }}>
-                <Link to="/teacher/import" style={{
-                    marginRight: "10px"
-                }} className="waves-effect waves-light btn-small">
-                    <i className="material-icons right">cloud_upload</i>Import Teacher(s)
-                </Link>
-                <Link to="/teacher/new" className="waves-effect waves-light btn-small">
-                    <i className="material-icons right">add_circle_outline</i>Add Teacher
-                </Link>
-            </div>
-
             <div className="container">
                 <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
                 <h5 className="center sub-sub-headings">Teachers</h5>
                 <div className="divider"></div>
                 <div className="section">
                     <div className="row">
-                        {teachers.map((teacher, index) => {
-                            return <Teacher key={index} {...teacher}/>
-                        })}
+                        <div className="col s12 m6 left-align sub-modal-texts">
+                            <Link to="/teacher/import" style={{
+                                marginRight: "10px",
+                                border: "1px solid #d3d3d3"
+                            }} className="waves-effect waves-light btn-flat">
+                                <b><i className="material-icons right">cloud_upload</i>Import Teacher(s)</b>
+                            </Link>
+                            <Link to="/teacher/new" className="waves-effect waves-light btn-flat" style={{
+                                border: "1px solid #d3d3d3"
+                            }}>
+                                <b><i className="material-icons right">add_circle_outline</i>Add Teacher</b>
+                            </Link>
+                        </div>
+                        <div className="col s12 m6 right-align">
+                            <input type="search" className="browser-default" onChange={handleSearch} style={{
+                                border: "1px solid #d3d3d3",
+                                borderRadius: "20px",
+                                lineHeight: "1px",
+                                padding: "5px 10px"
+                            }} placeholder="search teacher..." />
+                        </div>
+                    </div>
+                    <div className="row">
+                        {
+                            teachers.length ?
+                            <>
+                                {teachers.map((teacher, index) => {
+                                    return <Teacher key={index} {...teacher}/>
+                                })}   
+                            </> : 
+
+                            <p className="center sub-modal-texts">
+                                <b>There arent any teachers</b>
+                            </p>
+                        }
                     </div>
                 </div>
             </div>

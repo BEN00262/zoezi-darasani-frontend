@@ -2,9 +2,7 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { GlobalContext } from "../../contexts/GlobalContext";
-
-import Skeleton from 'react-loading-skeleton'
-import 'react-loading-skeleton/dist/skeleton.css'
+import LoaderPage from "../loader";
 
 export interface IZoeziGrade {
     _id: string
@@ -48,6 +46,7 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
     )
 }
 
+
 const MarketPage = () => {
     const { authToken } = useContext(GlobalContext);
     const [fetchedGrades, setFetchedGrades] = useState<IZoeziGrade[]>([]);
@@ -77,6 +76,10 @@ const MarketPage = () => {
             })
     }, []);
 
+    if (!fetchedGrades.length) {
+        return <LoaderPage/>
+    }
+
     return (
         <main>
              <div className="container">
@@ -88,12 +91,6 @@ const MarketPage = () => {
 
                 <div className="section">
                     <div className="row">
-
-                        {
-                            fetchedGrades.length ? null : <div>
-                                <Skeleton count={5} height={30}/>
-                            </div>
-                        }
 
                         {fetchedGrades.map((grade, index) => {
                             return <MarketItem key={`market_item_${index}`} {...grade}/>

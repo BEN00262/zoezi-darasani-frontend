@@ -62,6 +62,7 @@ const ImportTeachers = () => {
                                 <div className="sub-modal-texts" style={{
                                     borderLeft: "2px solid red",
                                     paddingLeft: "5px",
+                                    paddingRight: "5px",
                                     borderRadius: "3px",
                                     lineHeight: "4em",
                                     backgroundColor: "rgba(255,0,0, 0.1)",
@@ -70,7 +71,7 @@ const ImportTeachers = () => {
                                     alignItems: "center"
                                 }}>
                                     <i className="material-icons left">error_outline</i>
-                                    {error}
+                                    <p>{error}</p>
                                 </div>
                             </div>
                         </div>

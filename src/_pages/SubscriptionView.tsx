@@ -93,7 +93,7 @@ const SubscriptionViewPage = () => {
                         </div>
 
                         <div className="s12 m2 right-align">
-                            <p className="sub-modal-texts">{subscription.updatedAt}</p>
+                            <p className="sub-modal-texts"><b>{(new Date(subscription.updatedAt)).toDateString()}</b></p>
                         </div>
                     </div>
                     {/* <div className="divider"></div>

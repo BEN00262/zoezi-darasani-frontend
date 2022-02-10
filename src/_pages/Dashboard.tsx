@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react"
 import { GlobalContext } from "../contexts/GlobalContext";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 interface IStatic {
     name: string
@@ -61,7 +63,11 @@ const Dashboard = () => {
                     <div className="row center">
                         <h5 style={{
                             letterSpacing: "3px"
-                        }}><b>{schoolName}</b></h5>
+                        }}>
+                            {
+                                schoolName ? <b>{schoolName}</b> : <Skeleton/>
+                            }
+                        </h5>
                     </div>
                     
                     <div className="row center">

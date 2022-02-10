@@ -71,19 +71,20 @@ const GradesPage = () => {
 
     return (
         <main>
-            <Link to="/grades/new">
-                <a style={{
-                    position: "fixed",
-                    bottom: "50px",
-                    right: "20px"
-                }}
-                className="waves-effect waves-light btn-small"><i className="material-icons right">add_circle_outline</i>Add Grade</a>
-            </Link>
             <div className="container">
                 <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
                 <h5 className="center sub-sub-headings">School grades</h5>
                 <div className="divider"></div>
                 <div className="section">
+                    <div className="row">
+                        <div className="col s12">
+                            <Link to="/grades/new" className="waves-effect waves-light sub-modal-texts btn-flat" style={{
+                                border: "1px solid #d3d3d3"
+                            }}>
+                            <b><i className="material-icons right">add_circle_outline</i>Add Grade</b>
+                            </Link>
+                        </div>
+                    </div>
                     <div className="row">
                         {grades.map((grade, index) => {
                             return <Grade key={index} {...grade}/>

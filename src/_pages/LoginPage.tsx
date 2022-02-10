@@ -5,8 +5,6 @@ import { SyntheticEvent, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../contexts/GlobalContext";
 
-import OverlaySpinnerComp from "../components/overlay-spinner";
-
 interface ILoginDetails {
     email: string
     password: string
@@ -17,9 +15,13 @@ interface ILoginPage {
   handleFormSubmission: (e: SyntheticEvent) => void
   loginDetails: ILoginDetails
   handleInputValueChange: (e: any) => void
+  isLoading: boolean
 }
 
-const LoginForm: React.FC<ILoginPage> = ({ handleFormSubmission,  loginDetails, handleInputValueChange}) => {
+const LoginForm: React.FC<ILoginPage> = ({ 
+  handleFormSubmission,  loginDetails, 
+  handleInputValueChange, isLoading 
+}) => {
   return (
     <div className="col s12 m6 push-m3">
       <form className="contactustext" onSubmit={handleFormSubmission} method="POST">
@@ -35,7 +37,9 @@ const LoginForm: React.FC<ILoginPage> = ({ handleFormSubmission,  loginDetails, 
           </div>
         </div>
         <button className="waves-effect waves-light btn sub-names materialize-red" style={{width:"100%"}} type="submit">
-          <i className="material-icons">exit_to_app</i>
+          {
+            isLoading ? "login..." : <i className="material-icons">exit_to_app</i>
+          }
         </button>
       </form>
     </div>
@@ -51,7 +55,7 @@ export default function LoginPage() {
         asTeacher: false, email: "", password: ""
     });
     const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState<string[] | null>();
+    const [errors, setErrors] = useState<string>();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -79,10 +83,16 @@ export default function LoginPage() {
         axios.post(instance.index === 1 ? "/api/teacher/login" : "/api/school/login", { email, password })
             .then(({ data }) => {
                 // we set the data here 
-                if (data && data.status) {
-                    // logged in successfully
-                    setAuthorizationToken(data.token);
-                    return navigate("/dashboard", { replace: true })
+                if (data) {
+
+                    if (data.status) {
+                      // logged in successfully
+                      setAuthorizationToken(data.token);
+                      return navigate("/dashboard", { replace: true })
+                    }
+
+                    setErrors(data.message);
+                    return;
                 }
 
                 throw new Error("Unreachable");
@@ -95,9 +105,6 @@ export default function LoginPage() {
 
     return (
       <main>
-            <OverlaySpinnerComp
-              isLoading={isLoading}
-            />
            <div className="container">
         <div className="section">
     
@@ -108,6 +115,28 @@ export default function LoginPage() {
               <h5 className="sub-names">Sign In</h5>
             </div>
           </div>
+          {
+            errors ?
+            <div className="row">
+                <div className="col s12 m6 push-m3">
+                    <div className="sub-modal-texts" style={{
+                        borderLeft: "2px solid red",
+                        paddingLeft: "5px",
+                        paddingRight: "5px",
+                        borderRadius: "3px",
+                        lineHeight: "4em",
+                        backgroundColor: "rgba(255,0,0, 0.1)",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center"
+                    }}>
+                        <i className="material-icons left">error_outline</i>
+                        <p>{errors}</p>
+                    </div>
+                </div>
+            </div>
+            : null
+          }
           <div className="row">
             <div className="col s12 m6 push-m3">
               <ul className="tabs tabs-fixed-width" id="login_options_tab">
@@ -123,6 +152,7 @@ export default function LoginPage() {
                 handleFormSubmission={handleFormSubmission}
                 handleInputValueChange={handleInputValueChange}
                 loginDetails={loginDetails}
+                isLoading={isLoading}
               />
             </div>
             <div id="teacher">
@@ -130,6 +160,7 @@ export default function LoginPage() {
                 handleFormSubmission={handleFormSubmission}
                 handleInputValueChange={handleInputValueChange}
                 loginDetails={loginDetails}
+                isLoading={isLoading}
               />
             </div>
           </div>

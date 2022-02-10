@@ -64,7 +64,11 @@ const AccountSettings = () => {
             .then(({ data }) => {
                 if (data && data.school) {
                     let _school = data.school as ISchoolDisplay
-                    setSchoolDetails(_school);
+                    setSchoolDetails({
+                        ..._school,
+                        password: "",
+                        confirmPassword: ""
+                    });
                     setThemePicked(_school.theme);
                     return
                 }
@@ -211,7 +215,7 @@ const AccountSettings = () => {
                                         alignItems: "center"
                                     }}>
                                         <i className="material-icons left">error_outline</i>
-                                        {error}
+                                        <p>{error}</p>
                                     </div>
                                 </div>
                             </div>
@@ -262,13 +266,13 @@ const AccountSettings = () => {
                                 </div>
 
                                 <div className="input-field col s12 m6">
-                                    <input  value={schoolDetails.password} id="password" onChange={handleInputTextChange} name="password" type="password" className="validate"/>
+                                    <input autoComplete="new-password" value={schoolDetails.password} id="password" onChange={handleInputTextChange} name="password" type="password" className="validate"/>
                                     <label htmlFor="password">Password</label>
                                     <span className="helper-text left-align" data-error="wrong" data-success="right">Minimum 8 characters</span>
                                 </div>
 
                                 <div className="input-field col s12 m6">
-                                    <input value={schoolDetails.confirmPassword} id="confirmpassword" onChange={handleInputTextChange} name="confirmPassword" type="password" className="validate"/>
+                                    <input autoComplete="new-password" value={schoolDetails.confirmPassword} id="confirmpassword" onChange={handleInputTextChange} name="confirmPassword" type="password" className="validate"/>
                                     <label htmlFor="confirmpassword">Confirm Password</label>
                                 </div>
                             </div>

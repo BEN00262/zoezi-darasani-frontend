@@ -58,8 +58,6 @@ const SubjectsComp = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    console.log(data);
-                    
                     setSubjects(data.subjects as ISubject[])
                 }
             })

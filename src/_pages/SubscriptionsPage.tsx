@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../contexts/GlobalContext"
 import LoaderPage from "./loader";
@@ -16,6 +16,7 @@ interface ISubscription {
     status: string
     isActive: boolean
     remainingTime: string
+    updatedAt: Date
 }
 
 
@@ -26,12 +27,12 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, stat
     const color = isFailed ?  "red" : "green";
 
     return (
-        <div className="col s12 m3" style={{
+        <div className="col s12 m4" style={{
             marginBottom: "10px"
         }}>
             <div className="hoverable" style={{
                 border: "1px solid #d3d3d3",
-                borderTop: `2px solid ${color}`,
+                // borderTop: `2px solid ${color}`,
                 borderRadius: "5px",
                 padding: "5px"
             }}>
@@ -40,20 +41,27 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, stat
                     flexDirection: "row",
                     justifyContent: "space-between"
                 }}>
-                    <span style={{
+                    <span className="sub-modal-texts" style={{
                         // padding: "1px",
-                        paddingRight: "15px",
-                        paddingLeft: "15px",
+                        // paddingRight: "15px",
+                        paddingLeft: "5px",
                         // paddingTop: "1px",
                         // paddingBottom: "1px",
-                        borderRadius: "20px",
-                        border: `1px solid ${color}`,
+                        // borderRadius: "20px",
+                        // border: `1px solid ${color}`,
+                        color
                     }}>
-                        {isFailed ? status === "failed" ? status : "expired" : status === "pending" ? status : "active" }
+                        <b>{isFailed ? status === "failed" ? status : "expired" : status === "pending" ? status : "active" }</b>
                     </span>
                     <small>{remainingTime}</small>
                 </div>
-                <div className="center">
+                <div style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    // justifyContent: "space-between",
+                    alignItems: "center",
+                    margin: "10px 0px"
+                }}>
                     <img
                             style={{
                                 height: "100px",
@@ -64,8 +72,16 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, stat
                             }} 
                             src={`https://www.zoezi-education.com/img/${subscriptionItem.toLowerCase()}.png`}
                         />
-                    <h5 className="center sub-names">{subscriptionType}</h5>
-                    <h6 className="center sub-modal-texts">{grades.length} grade(s)</h6>
+                    <div style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginLeft: "10px"
+                    }}>
+                        <h5 className="sub-names">{subscriptionType}</h5>
+                        <h6 className="sub-modal-texts">{grades.length} grade(s)</h6>
+                    </div>
                 </div>
                 <button onClick={_ => {
                     navigate(`/subscriptions/${_id}`)
@@ -81,16 +97,52 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, stat
     )
 }
 
+// const groupBy = (items: ISubscription[], key: string) => items.reduce(
+//     (result, item) => ({
+//       ...result,
+//       [item[key]]: [
+//         ...(result[item[key]] || []),
+//         item,
+//       ],
+//     }), 
+//     {},
+// );
+
+interface ISubscriptionsGrouping { 
+    updatedAt: Date
+    subscriptions: ISubscription[] 
+}
+
+// we should group and then order :)
+const groupByUpdatedAt = (subscriptions: ISubscription[]) => subscriptions.reduce(
+    (acc, subscription) => {
+        const foundPosition = acc.find(x => x.updatedAt === subscription.updatedAt);
+
+        if (foundPosition) {
+            foundPosition.subscriptions.push(subscription);
+            return acc
+        }
+
+        return [
+            ...acc,
+            { updatedAt: subscription.updatedAt, subscriptions: [ subscription ] }
+        ]
+    },
+    [] as ISubscriptionsGrouping[] // an array of objects
+).sort((a, b) => (new Date(b.updatedAt)).getTime() - (new Date(a.updatedAt)).getTime())
+
 const SubscriptionsPage = () => {
     const { authToken } = useContext(GlobalContext);
-    const [subscriptions, setSubscriptions] = useState<ISubscription[]>([]);
+    const [subscriptions, setSubscriptions] = useState<ISubscriptionsGrouping[]>([]);
 
     useEffect(() => {
         axios.get("/api/subscriptions", {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
             if (data && data.subscriptions) {
-                setSubscriptions(data.subscriptions as ISubscription[]);
+                setSubscriptions(
+                    groupByUpdatedAt(data.subscriptions as ISubscription[])
+                );
                 return;
             }
         })
@@ -104,14 +156,28 @@ const SubscriptionsPage = () => {
     return (
         <main>
             <div className="container">
-                <div className="section">
-                    <div className="row">         
-                        {
-                            subscriptions.map((subscription, index) => {
-                                return <SubscriptionItem {...subscription} key={`subscription_item_${index}`}/>
-                            })
-                        }
-                    </div>
+                <div className="section">      
+                    {
+                        subscriptions.map(({ updatedAt, subscriptions: _subscriptions}, index) => {
+                            return (
+                                <React.Fragment key={`subscriptions_grouping_${index}`}>
+                                    <div className="row">
+                                       <div className="col s12">
+                                        <h6 className="sub-modal-texts"><b>{(new Date(updatedAt)).toDateString()}</b></h6>
+                                        <div className="divider"></div>
+                                       </div>
+                                    </div>
+                                    <div className="row">
+                                    {
+                                        _subscriptions.map((subscription, index) => {
+                                            return <SubscriptionItem {...subscription} key={`subscription_item_${index}`}/>
+                                        })
+                                    }
+                                    </div>
+                                </React.Fragment>
+                            )
+                        })
+                    }
                 </div>
             </div>
         </main>
