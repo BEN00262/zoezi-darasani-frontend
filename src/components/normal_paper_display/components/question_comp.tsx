@@ -10,9 +10,9 @@ const QuestionComp = ({ paper }:{
     paper: ILibPaperQuestions | null
 }) => {
 
-    const isTabletOrMobileDevice = useMediaQuery({
+    const isTabletOrMobileDevice =  false; /*useMediaQuery({
         query:"(min-width: 601px)"
-    });
+    });*/
 
     if (!paper) {
         return (

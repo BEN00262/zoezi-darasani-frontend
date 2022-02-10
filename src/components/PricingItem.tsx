@@ -31,7 +31,7 @@ const PricingItem: React.FC<IPricingCardComp> = ({
             <div className="card-content black-text">
 
                 {pricingItem.defaultPrice ?
-                <p className="orange accent-2" style={{borderRadius: "2px",marginBottom: "4px"}}>
+                <p className="orange accent-2 center" style={{borderRadius: "2px",marginBottom: "4px"}}>
                     MOST POPULAR
                 </p> : null }
 
@@ -39,14 +39,23 @@ const PricingItem: React.FC<IPricingCardComp> = ({
                 <div className="center">
 
                     <h5 className="sub-names"><span className="sub-modal-texts">Ksh.</span><b>{pricingItem.price}</b></h5>
-                <h6 className="sub-names"><u>Features</u></h6>
+                    <h6 className="sub-names"><u>Features</u></h6>
 
 
-                <ul  className="descriptions sub-modal-texts">
-                    {
-                        pricingItem.features.map((feature, featureIndex) => <li key={`feature_${featureIndex}`}>{feature}</li>)
-                    }
-                </ul>
+                    <ul  className="descriptions sub-modal-texts">
+                        {
+                            pricingItem.features.map((feature, featureIndex) => <li key={`feature_${featureIndex}`}>{feature}</li>)
+                        }
+                    </ul>
+                </div>
+                <div className="row">
+                    <div className="col s12">
+                        <button style={{
+                            width: "100%"
+                        }} className="btn z-depth-0">
+                            select
+                        </button>
+                    </div>
                 </div>
             </div>
             </div>

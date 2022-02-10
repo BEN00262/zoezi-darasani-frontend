@@ -14,7 +14,7 @@ export interface IPersonalUploadComp {
 const PersonalUploadComp: React.FC<IPersonalUploadComp> = ({ 
     position, selected, src, alt, setSelected, onFileSelectOrUpload 
 }) => {
-    const isMobilePhone = useMediaQuery({ query: '(max-width: 760px)' });
+    const isMobilePhone = false; // useMediaQuery({ query: '(max-width: 760px)' });
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     useEffect(() => {

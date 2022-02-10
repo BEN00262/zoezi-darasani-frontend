@@ -13,7 +13,7 @@ export interface IProfileSelectorComp {
 
 const ProfileSelectorComp: React.FC<IProfileSelectorComp> = ({ passSelectedFileToParent, configuration }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const isMobilePhone = useMediaQuery({ query: '(max-width: 760px)' });
+    const isMobilePhone = false; //useMediaQuery({ query: '(max-width: 760px)' });
 
     const [itemState, setItemState] = useState<boolean[]>([]);
 

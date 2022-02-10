@@ -3,12 +3,26 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom"
 import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import convertFromJsonToCsvFile from "../utils/jsonTocsv"
 
 interface ITeacher {
     _id: string
     name: string
     email: string
 }
+
+const success_toastify = (message: string) => toast.success(message, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 2000
+})
+
+const failure_toastify = (message: string) => toast.error(message, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 2000
+})
 
 const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
     const navigate = useNavigate();
@@ -94,7 +108,7 @@ const Teachers = () => {
                 <div className="divider"></div>
                 <div className="section">
                     <div className="row">
-                        <div className="col s12 m6 left-align sub-modal-texts">
+                        <div className="col s12 m8 left-align sub-modal-texts">
                             <Link to="/teacher/import" style={{
                                 marginRight: "10px",
                                 border: "1px solid #d3d3d3"
@@ -102,12 +116,32 @@ const Teachers = () => {
                                 <b><i className="material-icons right">cloud_upload</i>Import Teacher(s)</b>
                             </Link>
                             <Link to="/teacher/new" className="waves-effect waves-light btn-flat" style={{
-                                border: "1px solid #d3d3d3"
+                                border: "1px solid #d3d3d3",
+                                marginRight: "10px",
                             }}>
                                 <b><i className="material-icons right">add_circle_outline</i>Add Teacher</b>
                             </Link>
+
+                            <button className="waves-effect waves-light btn-flat sub-modal-texts" onClick={_ => {
+                                axios.get("/api/teacher/export/credentials", {
+                                    headers: { Authorization: `Bearer ${authToken}`}
+                                }).then(async ({ data }) => {
+                                    let status = await convertFromJsonToCsvFile(data,"teachers_credentials.xlsx")
+
+                                        if (status) {
+                                            success_toastify("Exported teachers credentials successfully!")
+                                            return;
+                                        }
+
+                                        failure_toastify("Failed to export learners credentials. Please contact zoezi team");
+                                })
+                            }} style={{
+                                border: "1px solid #d3d3d3",
+                            }}>
+                                <b><i className="material-icons right">cloud_download</i>Export credentials</b>
+                            </button>
                         </div>
-                        <div className="col s12 m6 right-align">
+                        <div className="col s12 m4 right-align">
                             <input type="search" className="browser-default" onChange={handleSearch} style={{
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "20px",

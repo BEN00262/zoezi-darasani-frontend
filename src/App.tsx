@@ -72,10 +72,10 @@ const App = () => {
                 element={<SpecialPaperLibraryPaper/>}/>
 
               {/* market links */}
-              <Route path="/market" element={<MarketPage/>}/>
-              <Route path="/market/:gradeName" element={<MarketGrade/>}/>
-              <Route path="/market/select/:gradeId" element={<ChooseGradesComp/>}/>
-              <Route path="/market/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
+              <Route path="/shop" element={<MarketPage/>}/>
+              <Route path="/shop/:gradeName" element={<MarketGrade/>}/>
+              <Route path="/shop/select/:gradeId" element={<ChooseGradesComp/>}/>
+              <Route path="/shop/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
 
               {/* a listing of all the subscriptions */}
               <Route path="/subscriptions" element={<SubscriptionsPage/>}/>

@@ -18,7 +18,7 @@ const verifyToken = (token: string) => {
             // if the token is empty just return an empty stuff :)
             throw new Error("The token is empty");
         }
-        
+
         const { exp, school, _id } = jwt_decode(token) as any;
         return {
             authToken: Date.now() >= exp * 1000 ? null : token, // by default i was checking for this
@@ -39,7 +39,7 @@ export const initialContext: IGlobalContext = {
 
 export const GlobalContext = createContext(initialContext);
 
-axios.defaults.baseURL = "http://localhost:3500/"; // set the base url here :)
+axios.defaults.baseURL = "/"; // "http://localhost:3500/"; // set the base url here :)
 // axios.interceptors.response.use(response => response, error => {
 //     // we check for a 403 type of an error ( if there is a 403 ---> we can log the guy out )
 

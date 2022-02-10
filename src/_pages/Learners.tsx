@@ -1,7 +1,11 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { GlobalContext } from "../contexts/GlobalContext";
+import convertFromJsonToCsvFile from "../utils/jsonTocsv"
 
 export interface ILearners {
     classRefId: string
@@ -13,6 +17,16 @@ export interface ILearner {
     lastname: string
     gender: 'boy' | 'girl'
 }
+
+const success_toastify = (message: string) => toast.success(message, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 2000
+})
+
+const failure_toastify = (message: string) => toast.error(message, {
+    position: toast.POSITION.TOP_RIGHT,
+    autoClose: 2000
+})
 
 const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender }) => {
     const navigate = useNavigate();
@@ -93,15 +107,17 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                             axios.get(`/api/grade/learners/credentials/${classRefId}`, {
                                 headers: { 'Authorization': `Bearer ${authToken}`}
                             })
-                                .then(({ data, headers }) => {
-                                    const temp = window.URL.createObjectURL(new Blob([data], {
-                                        type: headers['content-type']
-                                    }));
-                                    const link = document.createElement('a');
-                                    link.href = temp;
-                                    link.setAttribute('download', 'credentials.xlsx'); //or any other extension
-                                    document.body.appendChild(link);
-                                    link.click();
+                                .then(async ({ data }) => {
+                                    if (data) {
+                                        let status = await convertFromJsonToCsvFile(data,"credentials.xlsx")
+
+                                        if (status) {
+                                            success_toastify("Exported leaners credentials successfully!")
+                                            return;
+                                        }
+
+                                        failure_toastify("Failed to export learners credentials. Please contact zoezi team");
+                                    }
                                 })
                         }}
                     ><i className="material-icons right">cloud_download</i>Export Credentials</button>

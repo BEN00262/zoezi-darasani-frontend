@@ -207,6 +207,7 @@ const AccountSettings = () => {
                                     <div className="sub-modal-texts" style={{
                                         borderLeft: "2px solid red",
                                         paddingLeft: "5px",
+                                        paddingRight: "5px",
                                         borderRadius: "3px",
                                         lineHeight: "4em",
                                         backgroundColor: "rgba(255,0,0, 0.1)",

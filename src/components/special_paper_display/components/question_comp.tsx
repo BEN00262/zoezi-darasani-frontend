@@ -219,7 +219,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
             }
         },[])()
 
-    const isTabletOrMobileDevice = useMediaQuery({ query:"(min-width: 601px)" });
+    const isTabletOrMobileDevice = false; // useMediaQuery({ query:"(min-width: 601px)" });
 
     const setAttempted = (attempted: number) => {
         setNumberAttempted(

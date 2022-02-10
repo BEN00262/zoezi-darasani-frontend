@@ -68,7 +68,7 @@ export interface IChartDisplayComp {
 
 const ChartDisplayComp:React.FC<IChartDisplayComp> = ({ isChild, subjectView }) => {
     // check if we are in a phone
-    const isMobilePhone = useMediaQuery({ query: '(max-width: 760px)' })
+    const isMobilePhone = false; // useMediaQuery({ query: '(max-width: 760px)' })
 
     const labels = subjectView.map(x => x.subject).filter(x => x);
     const datapoints = subjectView.reduce((acc: { passed: number[], failed: number[] }, x) => ({

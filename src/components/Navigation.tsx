@@ -42,7 +42,7 @@ const Navigation = () => {
 
                     {authToken ?
                         <ul className="right hide-on-med-and-down">
-                            <li><Link to="/market">Market</Link></li>
+                            <li><Link to="/shop">Shop</Link></li>
                             <li><Link to="/teacher">Teachers</Link></li>
                             <li><Link to="/grades">Grades</Link></li>
                             <li><Link to="/subscriptions">Subscriptions</Link></li>

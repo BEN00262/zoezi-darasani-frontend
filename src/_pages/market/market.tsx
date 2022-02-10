@@ -22,7 +22,7 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
                 onClick={_ => {
                     // set the special grade choosing thing here
                     localStorage.setItem("special_grade", isSpecial ? "special": "");
-                    navigate(`/market/select/${_id}`);
+                    navigate(`/shop/select/${_id}`);
                 }}
             >
 
@@ -90,6 +90,25 @@ const MarketPage = () => {
                 <div className="divider"></div>
 
                 <div className="section">
+                    <div className="row">
+                        <div className="col s12">
+                            <div className="sub-modal-texts" style={{
+                                borderLeft: "2px solid blue",
+                                paddingLeft: "5px",
+                                paddingRight: "5px",
+                                borderRadius: "3px",
+                                lineHeight: "4em",
+                                backgroundColor: "rgba(0,0,255, 0.1)",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center"
+                            }}>
+                                <i className="material-icons left">info</i>
+                                <p><b>Please add teachers, grades, learners and subjects before buying GRADE</b></p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div className="row">
 
                         {fetchedGrades.map((grade, index) => {

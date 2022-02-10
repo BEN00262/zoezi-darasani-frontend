@@ -47,7 +47,7 @@ interface IRevisionSummaryComp {
 }
 
 const RevisionSummaryComp: React.FC<IRevisionSummaryComp> = ({ analytics }) => {
-    const isMobilePhone = useMediaQuery({ query: '(max-width: 760px)' });
+    const isMobilePhone = false; // useMediaQuery({ query: '(max-width: 760px)' });
     const [labels, setLabels] = useState<string[]>([]);
     const [data, setData] = useState<number[]>([]);
 
