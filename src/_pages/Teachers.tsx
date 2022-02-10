@@ -74,7 +74,7 @@ const Teachers = () => {
                         bottom: "50px",
                         right: "20px"
                     }}>
-                <Link to="/teacher/new" style={{
+                <Link to="/teacher/import" style={{
                     marginRight: "10px"
                 }} className="waves-effect waves-light btn-small">
                     <i className="material-icons right">cloud_upload</i>Import Teacher(s)

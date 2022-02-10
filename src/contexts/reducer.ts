@@ -12,18 +12,19 @@ export default (state: IGlobalContext, action: IAction) => {
         case WIPE_GLOBAL_CONTEXT: {
             return {
                 authToken: null,
-                isTeacher: true
+                isTeacher: true,
+                communicationId: null
             }
         }
 
         case UPDATE_AUTH_TOKEN: {
             // get the data from the payload and update the everything
             // we can also get the status if its a school account or not :)
-            const { authToken, isTeacher } = action.payload
+            const { authToken, isTeacher, communicationId } = action.payload
 
             return {
                 ...state,
-                authToken, isTeacher
+                authToken, isTeacher, communicationId
             }
         }
     }

@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
 
-const ImportStudent = () => {
+const ImportTeachers = () => {
     const navigate = useNavigate();
     const { authToken } = useContext(GlobalContext);
 
@@ -27,13 +27,9 @@ const ImportStudent = () => {
             const form = new FormData();
             form.set('excelFile', file);
 
-            // get the current stuff and use it
-            const classId = localStorage.getItem("classId") || "";
-            const classRefId = localStorage.getItem("classRefId") || "";
-
             setIsImporting(true);
 
-            axios.post(`/api/learner/import/${classId}/${classRefId}`, form, {
+            axios.post(`/api/teacher/import`, form, {
                 headers: { 
                     "Authorization": `Bearer ${authToken}`,
                     "Content-Type": "multipart/form-data"
@@ -49,7 +45,7 @@ const ImportStudent = () => {
                     throw new Error("Failed to import"); // almost impossible
                 })
                 .catch(error => {
-                    setError(error.message);
+                    setError(error.message)
                 })
                 .finally(() => setIsImporting(false));
         }
@@ -102,7 +98,7 @@ const ImportStudent = () => {
                                 <button disabled={isImporting} className="waves-effect waves-light btn-flat" style={{
                                     border: "1px solid teal",
                                     borderRadius: "20px"
-                                }}><i className="material-icons right">cloud_upload</i>{isImporting ? "Importing..." : "Import Learners"}</button>
+                                }}><i className="material-icons right">cloud_upload</i>{isImporting ? "Importing..." : "Import Teachers"}</button>
                             </div>
                         </form>
                     </div>
@@ -112,4 +108,4 @@ const ImportStudent = () => {
     )
 }
 
-export default ImportStudent
+export default ImportTeachers

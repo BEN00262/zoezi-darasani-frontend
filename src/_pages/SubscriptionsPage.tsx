@@ -13,23 +13,25 @@ interface ISubscription {
         // students: number
     }[]
     subscriptionType: string
+    status: string
     isActive: boolean
     remainingTime: string
 }
 
 
-const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, subscriptionType, grades, isActive, remainingTime }) => {
+const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, status, subscriptionType, grades, isActive, remainingTime }) => {
     const navigate = useNavigate();
-    const color = isActive ? "green" : "red";
 
+    const isFailed = status === "success" ? false : status === "pending" && isActive ? false : true 
+    const color = isFailed ?  "red" : "green";
 
     return (
         <div className="col s12 m3" style={{
-            marginBottom: "5px"
+            marginBottom: "10px"
         }}>
             <div className="hoverable" style={{
                 border: "1px solid #d3d3d3",
-                borderTop: `4px solid ${color}`,
+                borderTop: `2px solid ${color}`,
                 borderRadius: "5px",
                 padding: "5px"
             }}>
@@ -47,7 +49,7 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, subs
                         borderRadius: "20px",
                         border: `1px solid ${color}`,
                     }}>
-                        {isActive ? "active" : "expired"}
+                        {isFailed ? status === "failed" ? status : "expired" : status === "pending" ? status : "active" }
                     </span>
                     <small>{remainingTime}</small>
                 </div>
@@ -69,7 +71,7 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, subs
                     navigate(`/subscriptions/${_id}`)
                 }} className="btn-flat sub-modal-texts" style={{
                     width: "100%",
-                    border: `1px solid ${color}`,
+                    border: `1px solid #d3d3d3`,
                     borderRadius: "20px"
                 }}>
                     <b>view subscription</b>

@@ -24,7 +24,7 @@ const Navigation = () => {
     return (
         <>
             <ul id="dropdown1" className="dropdown-content lighten-2 hide-on-med-and-down">
-                <li><a href="" className="black-text">Settings</a></li>
+                <li><Link to="/account" className="black-text">Settings</Link></li>
                 <li className="divider"></li>
                 {/* just log out the person by wiping the current context */}
                 <li><a onClick={wipeCurrentContext} className="black-text">Sign Out</a></li>

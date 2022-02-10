@@ -5,12 +5,14 @@ import {
   Routes
 } from "react-router-dom";
 import Footer from "./components/Footer"
+import MessagesComp from "./components/Messages";
 import Navigation from "./components/Navigation"
 import NormalPaperDisplay from "./components/normal_paper_display";
 import SpecialPaperLibraryPaper from "./components/special_paper_display";
 import GlobalContextComp from "./contexts/GlobalContext"
 import ProtectedRoute, { ForwardProtectedRoute } from "./protected"
 import ErrorPage from "./_pages/404";
+import AccountSettings from "./_pages/AccountSettings";
 import ApplicationSuccessPage from "./_pages/ApplicationSuccessPage";
 import RegistrationPage from "./_pages/child/pages/RegistrationPage";
 import Dashboard from "./_pages/Dashboard"
@@ -18,6 +20,7 @@ import GradeDisplayPage from "./_pages/GradeDisplayPage"
 import GradesPage from "./_pages/Grades"
 import HomePage from "./_pages/HomePage"
 import ImportStudent from "./_pages/ImportStudents"
+import ImportTeachers from "./_pages/ImportTeachers";
 import LoaderPage from "./_pages/loader";
 import LoginPage from "./_pages/LoginPage"
 import MarketPage from "./_pages/market/market"
@@ -60,6 +63,7 @@ const App = () => {
               <Route path="/teacher/:id" element={<TeacherDisplayPage/>}/>
               <Route path="/teacher/new" element={<NewTeacher/>}/>
               <Route path="/teacher/edit/:id" element={<NewTeacher/>}/>
+              <Route path="/teacher/import" element={<ImportTeachers/>}/>
 
               {/* library display */}
               <Route path="/library-paper/:studentId/:paperId" element={<NormalPaperDisplay/>}/>
@@ -76,6 +80,9 @@ const App = () => {
               {/* a listing of all the subscriptions */}
               <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
               <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
+
+              {/* settings */}
+              <Route path="/account" element={<AccountSettings/>}/>
 
               <Route path="/grades" element={<GradesPage/>}/>
               <Route path="/grades/:id" element={<GradeDisplayPage/>}/>

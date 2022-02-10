@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import {Navigate, Outlet, Route, useLocation } from "react-router-dom";
+import MessagesComp from "../components/Messages";
 import { GlobalContext } from "../contexts/GlobalContext";
 
 const ProtectedRoute = () => {
@@ -11,7 +12,12 @@ const ProtectedRoute = () => {
         return <Navigate to="/login" state={{ from: location }}/>
     }
 
-    return <Outlet/>
+    return (
+        <>
+            <MessagesComp/>
+            <Outlet/>
+        </>
+    )
 }
 
 export const ForwardProtectedRoute = () => {

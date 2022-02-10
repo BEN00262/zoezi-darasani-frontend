@@ -17,6 +17,7 @@ interface ISubscriptionDisplay {
     remainingTime: string
     subscriptionType: string
     updatedAt: Date
+    message: string
 }
 
 
@@ -26,7 +27,7 @@ const SubscriptionViewPage = () => {
 
     const [subscription, setSubscription] = useState<ISubscriptionDisplay>({
         grades: [], price: 0, total: 0, status: "pending", transactionId: "", remainingTime: "",
-        subscriptionType: "", updatedAt: new Date()
+        subscriptionType: "", updatedAt: new Date(), message: ""
     })
 
     // we should fetch this data anyways :)
@@ -35,7 +36,7 @@ const SubscriptionViewPage = () => {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
             console.log(data);
-            
+
             if (data && data.subscription) {
                 setSubscription(data.subscription as ISubscriptionDisplay);
                 return;
@@ -150,23 +151,27 @@ const SubscriptionViewPage = () => {
                     </div>
                 </div>
 
-                <div className="row">
-                <div className="col s12">
-                        <div className="sub-modal-texts" style={{
-                            borderLeft: "2px solid blue",
-                            paddingLeft: "5px",
-                            borderRadius: "3px",
-                            lineHeight: "4em",
-                            backgroundColor: "rgba(0,0,255, 0.1)",
-                            display: "flex",
-                            flexDirection: "row",
-                            alignItems: "center"
-                        }}>
-                            <i className="material-icons left">info_outline</i>
-                            These are the reasons for successful stuff
+                {
+                    subscription.message ? 
+                    <div className="row">
+                        <div className="col s12">
+                            <div className="sub-modal-texts" style={{
+                                borderLeft: "2px solid blue",
+                                paddingLeft: "5px",
+                                borderRadius: "3px",
+                                lineHeight: "4em",
+                                backgroundColor: "rgba(0,0,255, 0.1)",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center"
+                            }}>
+                                <i className="material-icons left">info_outline</i>
+                                {subscription.message}
+                            </div>
                         </div>
                     </div>
-                </div>
+                    : null
+                }
             </div>
         </div>
     </main>

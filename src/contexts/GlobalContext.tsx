@@ -1,12 +1,13 @@
 import { createContext, useReducer } from "react";
 import jwt_decode from "jwt-decode";
-import axios from 'axios'
+import axios from 'axios';
 import reducer from "./reducer";
 import { UPDATE_AUTH_TOKEN, WIPE_GLOBAL_CONTEXT } from "./ActionTypes";
 
 export interface IGlobalContext {
     authToken: string | null
     isTeacher: boolean
+    communicationId: string
 }
 
 // check if is still valid
@@ -15,17 +16,18 @@ const verifyToken = (token: string) => {
 
     if (!token) {
         // if the token is empty just return an empty stuff :)
-        return { authToken: null, isTeacher: false }
+        throw new Error("The token is empty");
     }
 
     try {
-        const { exp, school } = jwt_decode(token) as any;
+        const { exp, school, _id } = jwt_decode(token) as any;
         return {
-            authToken: Date.now() >= exp * 1000 ? null : token, 
-            isTeacher: !(school as boolean)
+            authToken: Date.now() >= exp * 1000 ? null : token, // by default i was checking for this
+            isTeacher: !(school as boolean),
+            communicationId: _id
         }
     } catch (error) {
-        return {authToken: null, isTeacher: false };
+        return {authToken: null, isTeacher: false, communicationId: null };
     }
 }
 
@@ -49,12 +51,12 @@ const GlobalContextComp = ({ children }: { children: any }) => {
     // this one hehehe
     const setAuthorizationToken = (_authToken: string) => {
         // open up the authTokena and we are done
-        const { authToken, isTeacher } = verifyToken(_authToken)
+        const { authToken, isTeacher, communicationId } = verifyToken(_authToken)
         localStorage.setItem("authToken", _authToken)
 
         dispatch({
             type: UPDATE_AUTH_TOKEN,
-            payload: { authToken, isTeacher }
+            payload: { authToken, isTeacher, communicationId }
         })
     }
 
