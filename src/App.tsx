@@ -82,7 +82,7 @@ const App = () => {
                 <Route path="/grades/new" element={<NewGrade/>}/>
 
                 {/*subject  */}
-                <Route path="/subject/new" element={<NewSubject/>}/> 
+                <Route path="/subject/new/:gradeName" element={<NewSubject/>}/> 
               </Route>
 
               {/* library display */}

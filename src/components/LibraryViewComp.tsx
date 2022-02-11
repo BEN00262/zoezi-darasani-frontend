@@ -1,8 +1,11 @@
+// @ts-ignore
+import M from 'materialize-css';
 import axios from "axios";
-import { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../contexts/GlobalContext";
 import SadKid from "../img/sad-kid.png"
+
 
 
 const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
@@ -19,16 +22,24 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
             if (data) {
+                // console.log(data);
                 setLibrary(data.library || []); // we will type this thing later
+
+                // attach the materialize js stuff :)
+                M.Collapsible.init(
+                    document.querySelectorAll('.collapsible')
+                )
+
                 return;
             }
         })
+
     }, []);
 
 
     return (
         <main>
-            <div className="container">
+            <div>
                 <div className="section">
                     {!library.length ?
                         <div className="row center">
@@ -44,32 +55,35 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
 
                                 {library.map(({_id: date, papers, special_papers, howManyDaysAgo }, parentIndex) => {
                                     return (
-                                    <div className="section">
-                                        <div className="row">
-
-
+                                        <React.Fragment key={`parent_${parentIndex}`}>
                                             <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
                                             <h6 className="sub-sub-headings">
                                                 {new Date(date).toDateString()} ( {howManyDaysAgo} )
                                             </h6>
                                             <div className="divider"></div>
 
-
                                             <ul className="collapsible expandable z-depth-0">
                                                 {/* <!-- for the non special papers --> */}
-                                                {papers.map(({grade, papers }: {
+                                                {papers.map(({grade, papers: innerPapers }: {
                                                     grade: any
                                                     papers: any[]
                                                 }, index: number) => {
-                                                    <li>
+                                                        return (
+                                                            <li key={`normal_paper_${index}`}>
                                                         {/* <!-- <div className="row"> --> */}
-                                                        <div className="collapsible-header">
+                                                        <div className="collapsible-header" style={{
+                                                            display: "flex",
+                                                            flexDirection: "row",
+                                                            alignItems: "center"
+                                                        }}>
                                                             <img 
                                                                 className="img-box-responsive" 
-                                                                style={{objectFit: "contain",
-                                                                height:"40px",
-                                                                width:"40px"}}
-                                                                src={`img/${grade.toLowerCase()}.png`}/>
+                                                                style={{
+                                                                    objectFit: "contain",
+                                                                    height:"40px",
+                                                                    width:"40px"
+                                                                }}
+                                                                src={`http://www.zoezi-education.com/img/${grade.toLowerCase()}.png`}/>
                                                             <p className="sub-modal-texts" style={{
                                                                 marginLeft: "5px",
                                                                 fontWeight: "bolder",
@@ -81,7 +95,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                     paddingLeft: "10px",
                                                                     backgroundColor: "rgba(101,31,255, 0.2)",
                                                                     whiteSpace: "nowrap"
-                                                                    }}>
+                                                                }}>
                                                                     {papers.length} paper (s)
                                                                 </span>
                                                             </p>
@@ -91,9 +105,9 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
 
                                                         <div className="collapsible-body" style={{padding: "1px",marginTop: "5px"}}>
                                                             <div className="row">
-                                                                {papers.map(({ grade, subject, score: {passed, total}, _id }) => {
+                                                                {innerPapers.map(({ subject, score: {passed, total}, _id }, index) => {
                                                                     return (
-                                                                        <div className="col s6 m3 l2">
+                                                                        <div className="col s6 m3 l2" key={`inner_${index}`}>
                                                                             <div className="hoverable" 
                                                                                 // we need to fetch the student id btw 
                                                                                 onClick={_ => navigate(`/library-paper/${studentId}/${_id}`)}
@@ -117,7 +131,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                                         padding: "4px",
                                                                                         borderRadius: "2px"
                                                                                     }}>
-                                                                                    <b>{subject.toLowerCase().includes("kiswahili") ? "ALAMA: " : "SCORE: "}{' '}{passed/total}</b>
+                                                                                    <b>{subject.toLowerCase().includes("kiswahili") ? "ALAMA: " : "SCORE: "}{' '}{passed}/{total}</b>
                                                                                 </span>
                                                                                 </div>
                                                                             </div>
@@ -126,7 +140,8 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                 })}
                                                             </div>
                                                         </div>
-                                                        </li>
+                                                    </li>
+                                                        )
                                                     })                
                                                                 
                                                 }
@@ -136,17 +151,20 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                     _id: { gradeName: string, secondTier: string, category: string },
                                                     papers: any[]
                                                 }, index: number) => {
-
                                                     return (        
                                                         <li key={`random_${index}`}>
                                                             {/* <!-- <div className="row"> --> */}
-                                                            <div className="collapsible-header">
+                                                            <div className="collapsible-header" style={{
+                                                                display: "flex",
+                                                                flexDirection: "row",
+                                                                alignItems: "center"
+                                                            }}>
                                                                 <img 
                                                                     className="img-box-responsive" 
                                                                     style={{ 
                                                                         objectFit: "contain", height: "40px", width: "40px"
                                                                     }}
-                                                                    src={`img/${gradeName.toLowerCase()}.png`}
+                                                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase()}.png`}
                                                                 />
                                                                 {/* <!-- trying to style this things --> */}
                                                                 <p className="sub-modal-texts" style={{
@@ -197,7 +215,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                 <div className="row">
                                                                     {spapers.map(({ grade, subject, scores: {passed, total}, _id, paperID, historyID }) => {
                                                                         return (
-                                                                            <div className="col s6 m3 l2">
+                                                                            <div className="col s6 m3 l2" key={`${_id}`}>
                                                                                 <div className="hoverable"
                                                                                     onClick={_ => navigate(`/library-paper/special/${studentId}/${gradeName}/${paperID}/${historyID}`)}
                                                                                     style={{
@@ -220,7 +238,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                                             padding: "4px",
                                                                                             borderRadius: "2px"}}>
                                                                                             <b>
-                                                                                            {subject.toLowerCase().includes("kiswahili") ? "ALAMA: " : "SCORE: "}{' '}{passed/total}
+                                                                                            {subject.toLowerCase().includes("kiswahili") ? "ALAMA: " : "SCORE: "}{' '}{passed}/{total}
                                                                                             </b>
                                                                                         </span>
                                                                                     </div>
@@ -235,8 +253,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                 })}
                                             </ul>
 
-                                        </div>
-                                    </div>
+                                        </React.Fragment>
                                     )
                                 })}
                             </div>

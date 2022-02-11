@@ -27,6 +27,8 @@ const LearnerFormComp = () => {
         const classId = localStorage.getItem("classId") || "";
         const classRefId = localStorage.getItem("classRefId") || "";
 
+        console.log(learnerDetails);
+
         // console.log(learnerDetails);
         axios.post(`/api/learner/${classId}/${classRefId}`, learnerDetails, {
             headers: { Authorization: `Bearer ${authToken}`}

@@ -15,6 +15,7 @@ import axios from 'axios';
 import { GlobalContext } from '../contexts/GlobalContext';
 import { IProgressData } from '../components/StudentReport/interfaces/interfaces';
 import { ILearner } from '../_pages/Learners';
+import { useNavigate } from 'react-router-dom';
 
 ChartJS.register(
     CategoryScale,
@@ -85,6 +86,9 @@ export interface ISubjectAnalysisComp {
 interface IPaperDoneDataPoint {
     _id: string
     subject: string
+    isSpecial: boolean
+    paperID: string
+    grade: string
     score: {
         passed: number
         total: number
@@ -93,6 +97,7 @@ interface IPaperDoneDataPoint {
 
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     const { authToken } = useContext(GlobalContext);
+    const navigate = useNavigate();
     const [learners, setLearners] = useState<{
         label: string // the fullnames of the learner
         value: string // the id of the learner
@@ -153,6 +158,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                         fail: _plottable.map(x => x.score.total - x.score.passed)
                     });
 
+                    setLibraryPapers(_plottable);
                     return;
                 } 
             })
@@ -294,13 +300,16 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                     <div className="divider"></div>
 
                     <div className="section">
-                        {
+                    {
                             libraryPapers.map((libpaper, index) => {
                                 // check if whether the paper is special or not
-
                                 return (
-                                    <div className="col s6 m3 l2" key={index}>
+                                    <div className="col s6 m2 l2" key={index}>
                                         <div className="hoverable" 
+                                            onClick={_ => navigate(
+                                                libpaper.isSpecial ? `/library-paper/special/${selectedLearner}/${libpaper.grade}/${libpaper.paperID}/${libpaper._id}`: `/library-paper/${selectedLearner}/${libpaper._id}`
+                                            )}
+
                                             style={{
                                                     backgroundColor: "#fffde7",
                                                     marginBottom: "5px",

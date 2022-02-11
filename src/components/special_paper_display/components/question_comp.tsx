@@ -447,7 +447,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                                 maxWidth:"100%",
                                 height:"84px",
                                 objectFit:"cover",
-                            }} src="/img/background2.webp"/>
+                            }} src="https://www.zoezi-education.com/img/background2.webp"/>
                         </div>
                         <span className="card-title text-center sub-names truncate text-bold teal">{
                             `${subjectName}`

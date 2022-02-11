@@ -42,6 +42,7 @@ const GradeDisplayPage = () => {
                     // use local storage to store the values
                     localStorage.setItem("classId", _grade._id);
                     localStorage.setItem("classRefId", _grade.classRef || "");
+                    localStorage.setItem("gradeName", _grade.name);
                     
                     setGrade(_grade)
                 }
@@ -72,7 +73,7 @@ const GradeDisplayPage = () => {
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "50%"
                             }} 
-                            src={`https://www.zoezi-education.com/img/${grade.name.toLowerCase()}.png`}
+                            src={`https://www.zoezi-education.com/img/${grade.name.toLowerCase() === "eight" ? "kcpe" : grade.name.toLowerCase()}.png`}
                         />
                         {/* then the class teacher */}
                         <br />

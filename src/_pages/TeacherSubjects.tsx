@@ -22,7 +22,7 @@ const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
         <div className="col s6 m4">
             <div 
                 onClick={_ => navigate(`/subject/${_id}`)}
-                className="hoverable z-depth-1" 
+                className="hoverable z-depth-1 truncate" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img
@@ -38,7 +38,7 @@ const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
 
                     <ul style={{paddingLeft: "20px"}}>
                         <li style={{
-                            letterSpacing: "2px"
+                            // letterSpacing: "2px"
                         }}><b>{name}</b></li>
                         <li className="sub-modal-texts">Stream: {grade.stream}</li>
                         <li className="sub-modal-texts">Year: {grade.year}</li>

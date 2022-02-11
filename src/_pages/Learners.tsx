@@ -114,7 +114,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                     ><i className="material-icons right">person_add</i>Add Learner</button>
 
                     {/* exporting the credentials */}
-                    <button className="waves-effect waves-light btn-flat"
+                    <button disabled={!!!learners.length} className="waves-effect waves-light btn-flat"
                         onClick={_ => {
                             // make an axios request to fetch the file
                             const classRefId = localStorage.getItem("classRefId") || "";

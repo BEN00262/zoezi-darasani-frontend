@@ -21,6 +21,8 @@ export interface IGrade {
 const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, year }) => {
     const navigate = useNavigate();
 
+    let _name = name.toLowerCase() === "eight" ? "kcpe" : name.toLowerCase()
+
     return (
         <div className="col s12 m4">
             <div
@@ -36,7 +38,7 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${name.toLowerCase()}.png`}
+                        src={`https://www.zoezi-education.com/img/${_name}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

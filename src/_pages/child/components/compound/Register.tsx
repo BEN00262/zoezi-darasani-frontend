@@ -45,7 +45,7 @@ const RegisterPage: React.FC<IRegisterPage> = ({
                                     color: "#26a69a"
                                 }} className="sub-modal-texts modal-trigger">
                                 <i className="material-icons left">camera_alt</i>
-                                <span className="white-text"><b>upload picture</b></span>
+                                <span className="white-text"><b>Upload Picture</b></span>
                             </a>
                         </div>
                     </div>

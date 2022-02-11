@@ -58,7 +58,7 @@ const SubjectsComp = () => {
         const classId = localStorage.getItem("classId") || "";
         setIsFetching(true);
 
-        axios.get(`/api/subject/${classId}`, {
+        axios.get(`/api/subject/${classId}?timestamp=${new Date().getTime()}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
@@ -109,14 +109,20 @@ const SubjectsComp = () => {
             <div className="row" hidden={isTeacher}>
                 <div className="col s12">
                     <button 
-                        onClick={_ => navigate("/subject/new", { replace: true })}
+                        onClick={_ => {
+                            let _gradeName = localStorage.getItem("gradeName");
+
+                            if (_gradeName) {
+                                return navigate(`/subject/new/${_gradeName}`)
+                            }
+                        }}
                         className="waves-effect waves-light btn-flat"><i className="material-icons right">add_circle_outline</i>Add Subject</button>
                 </div>
             </div>
             <div className="row">
                 {subjects.map((subject, index) => {
                     return <Subject key={index} {...subject}/>
-                }, { replace: true })}
+                })}
             </div>
         </>
     )

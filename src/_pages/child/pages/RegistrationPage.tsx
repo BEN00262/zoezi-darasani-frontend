@@ -1,7 +1,8 @@
 // @ts-ignore
 import M from 'materialize-css';
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from "react"
+import { SyntheticEvent, useContext, useEffect, useState } from "react";
+import RFormData from "form-data";
 import ProfileSelectorComp from "../components/compound/ProfileSelector"
 import RegisterPage from "../components/compound/Register";
 import { GlobalContext } from '../../../contexts/GlobalContext';
@@ -59,8 +60,6 @@ const RegistrationPage = () => {
         // this is an update operation ( fetch the students profile and populate everything :) )
         if (params.studentId){
 
-            
-
             axios.get(`/api/learner/profile/${params.studentId}`, {
                 headers: { Authorization: `Bearer ${authToken}`}
             })
@@ -102,11 +101,12 @@ const RegistrationPage = () => {
 
         setIsSavingLearner(true);
 
-        const form = new FormData();
-        Object.entries(formData).forEach(([key, value]) => form.set(key, value));
+        const form = new RFormData();
+
+        Object.entries(formData).forEach(([key, value]) => form.append(key, value));
 
         if (profileImage) {
-            form.set("profilePic", profileImage, profileImage.name);
+            form.append("profilePic", profileImage, profileImage.name);
         }
 
         // get the current stuff and use it
@@ -119,8 +119,7 @@ const RegistrationPage = () => {
 
         axios.post(`/api/learner/${classId}/${classRefId}`, form, {
             headers: { 
-                Authorization: `Bearer ${authToken}`,
-                "Content-Type": "multipart/form-data"
+                Authorization: `Bearer ${authToken}`
             }
         })
             .then(({ data }) => {

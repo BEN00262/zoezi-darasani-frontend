@@ -93,7 +93,7 @@ const GradePerfomace = () => {
         // we coded this part right :)
         axios.get(`${BASE_URL}/${classId}/special-paper-analytics/${gradeName}/${paperType}/${paperSubType}`,{
             headers: { Authorization: `Bearer ${authToken}`}
-        }).then(({ data }) => setAnalytics((data.data || []) as IAnalyticSubject[]))
+        }).then(({ data }) => setAnalytics((data || []) as IAnalyticSubject[]))
     }
 
     // on load just fetch the grades and place them
@@ -145,25 +145,10 @@ const GradePerfomace = () => {
                 headers: { Authorization: `Bearer ${authToken}`}
             })
                 .then(({ data }) => {
-                    // @ts-ignore
-                    let adapted_data = data.map(datapoint => ({
-                        subject: datapoint.subjectName,
-                        hits: datapoint.hits,
-                        progress: [
-                            {
-                                subject: datapoint.subjectName,
-                                attemptTree: {
-                                    score: {
-                                        passed: datapoint.ups,
-                                        total: datapoint.totalQuestionsAttempted 
-                                    }
-                                }
-                            }
-                        ]
-                    }));
-
-                    setAnalytics(adapted_data);
-                    // setAttemptGroupingPosition(0); // set to the first data set thats what we need
+                    if (data) {
+                        setAnalytics((data || []) as IAnalyticSubject[]);
+                        return;
+                    }
                 })
     }, [selectedGradeName]);
 

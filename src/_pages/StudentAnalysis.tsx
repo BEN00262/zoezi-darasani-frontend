@@ -8,6 +8,7 @@ import LibraryViewComp from "../components/LibraryViewComp";
 import StudentReport from "../components/StudentReport"
 import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderPage from './loader';
+import LoaderComp from '../components/LoaderComp';
 
 interface IStudent {
     _id: "",
@@ -143,7 +144,9 @@ const StudentAnalysis = () => {
                         <StudentReport studentId={params.id || ""}/>
                     </div>
                     <div id="library">
-                        <LibraryViewComp studentId={student._id}/>
+                        {
+                            student._id ? <LibraryViewComp studentId={student._id}/> : <LoaderComp/>
+                        }
                     </div>
                 </div>
             </div>
