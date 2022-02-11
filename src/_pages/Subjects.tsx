@@ -1,7 +1,9 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
+import LoaderComp from "../components/LoaderComp";
 import { GlobalContext } from "../contexts/GlobalContext";
+import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
 
 interface ISubject {
@@ -28,7 +30,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src="https://www.zoezi-education.com/special/subjects/kcpe/Past%20Paper/img/kcpe_special/mathematics.png"
+                        src={`https://www.zoezi-education.com/img/kcpe/${name ? name.split(" ")[0].toLowerCase() : "mathematics"}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>
@@ -45,27 +47,66 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
 }
 
 const SubjectsComp = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useContext(GlobalContext);
     const navigate = useNavigate();
     const [subjects, setSubjects] = useState<ISubject[]>([]);
+    const [error, setError] = useState("");
+    const [isFetching, setIsFetching] = useState(false);
 
     // fetch the subjects in this grade and then see what it has
     useEffect(() => {
         const classId = localStorage.getItem("classId") || "";
+        setIsFetching(true);
 
         axios.get(`/api/subject/${classId}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data) {
-                    setSubjects(data.subjects as ISubject[])
+                    setSubjects(data.subjects as ISubject[]);
+                    return;
                 }
+
+                throw new Error("Unexpected error!")
+            })
+            .catch(error => {
+                setError(error.message)
+            })
+            .finally(() => {
+                setIsFetching(false);
             })
     }, []);
 
+    if (isFetching) {
+        return <LoaderComp/>
+    }
+
+    // display errors and stuff :)
     return (
         <>
-            <div className="row">
+            {
+                error ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
+            <div className="row" hidden={isTeacher}>
                 <div className="col s12">
                     <button 
                         onClick={_ => navigate("/subject/new", { replace: true })}

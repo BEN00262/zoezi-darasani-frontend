@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { SyntheticEvent, useState } from "react";
 import Counties from "../utils/counties"; 
 import { Link, useNavigate } from "react-router-dom";
+import ApplicationSuccessPage from "./ApplicationSuccessPage";
 
 export interface ISchool {
     name: string
@@ -24,6 +25,7 @@ const NewSchool = () => {
 
     const [errors, setErrors] = useState<string[]>([]);
     const [isRegistering, setIsRegistering] = useState(false);
+    const [applicationSent, setApplicationSent] = useState(false);
 
     const handleInputTextChange = (e:any) => {
         setSchoolDetails(old => ({
@@ -35,25 +37,30 @@ const NewSchool = () => {
     const handleFormSubmission = (e:SyntheticEvent) => {
         e.preventDefault();
         setIsRegistering(true);
-
-        // redirect to the success page 
-        // we just printed what was returned to us ( we need to use it to do other stuff )
+        
         axios.post("/api/school", schoolDetails)
             .then(({ data }) => {
                 if (data) {
                     if (data.status) {
-                        // we have created a school successfully 
-                        // redirect to the success page :)
-                        return navigate("/application/success", { replace: true })
+                        setApplicationSent(true);
+                        return;
                     }
 
-                    // we have errors from the server for the form ---> we can see them
                     setErrors([data.message]);
                 }
+
+                throw new Error("Failed unexpectedly");
+            })
+            .catch(error => {
+                setErrors([error.message])
             })
             .finally(() => {
                 setIsRegistering(false);
             })
+    }
+
+    if (applicationSent) {
+        return <ApplicationSuccessPage/>
     }
 
     return (
@@ -71,9 +78,26 @@ const NewSchool = () => {
                 <div className="col s12 l8 push-l2">
                         {
                             errors.map((error, index) => {
-                                return <p key={`error_${index}`} className="materialize-red-text">
-                                        {error}
-                                    </p>
+                                return (
+                                    <div className="row" key={`error_${index}`}>
+                                        <div className="col s12">
+                                            <div className="sub-modal-texts" style={{
+                                                borderLeft: "2px solid red",
+                                                paddingLeft: "5px",
+                                                paddingRight: "5px",
+                                                borderRadius: "3px",
+                                                lineHeight: "4em",
+                                                backgroundColor: "rgba(255,0,0, 0.1)",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                alignItems: "center"
+                                            }}>
+                                                <i className="material-icons left">error_outline</i>
+                                                <p>{error}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
                             })
                         }
 

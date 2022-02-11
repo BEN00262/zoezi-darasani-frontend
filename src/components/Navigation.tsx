@@ -7,6 +7,8 @@ import { GlobalContext } from "../contexts/GlobalContext"
 const Navigation = () => {
     const { 
         authToken,
+        isTeacher,
+        communicationId,
 
         // @ts-ignore
         wipeCurrentContext
@@ -24,7 +26,13 @@ const Navigation = () => {
     return (
         <>
             <ul id="dropdown1" className="dropdown-content lighten-2 hide-on-med-and-down">
-                <li><Link to="/account" className="black-text">Settings</Link></li>
+                {
+                    isTeacher ? null :
+                    <li>
+                        <Link to="/dashboard" className="black-text">Profile</Link>
+                    </li>
+                }
+                <li><Link to={isTeacher ? `/teacher/edit/${communicationId}` : "/account"} className="black-text">Settings</Link></li>
                 <li className="divider"></li>
                 {/* just log out the person by wiping the current context */}
                 <li><a onClick={wipeCurrentContext} className="black-text">Sign Out</a></li>
@@ -42,14 +50,19 @@ const Navigation = () => {
 
                     {authToken ?
                         <ul className="right hide-on-med-and-down">
-                            <li><Link to="/shop">Shop</Link></li>
-                            <li><Link to="/teacher">Teachers</Link></li>
-                            <li><Link to="/grades">Grades</Link></li>
-                            <li><Link to="/subscriptions">Subscriptions</Link></li>
+                            { isTeacher ? null :
+                                <>
+                                    <li><Link to="/shop">Shop</Link></li>
+                                    <li><Link to="/teacher">Teachers</Link></li>
+                                    <li><Link to="/grades">Grades</Link></li>
+                                    <li><Link to="/subscriptions">Subscriptions</Link></li>
+                                </> 
+                            }
                             <li><a className="dropdown-trigger" id="desktopprofile2" href="#!" data-target="dropdown1">My Account<i className="material-icons right">arrow_drop_down</i></a></li>
                         </ul>
                         :
                         <ul className="right hide-on-med-and-down">
+                            <li><Link to="/pricing">Pricing</Link></li>
                             <li><Link to="/new-school" className="btn-flat" style={{
                                 border: "1px solid teal",
                                 textTransform: "capitalize",

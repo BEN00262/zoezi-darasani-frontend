@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
+import EmptyComp from "../components/Empty";
 
 interface ITeacher {
     _id: string
@@ -65,10 +66,14 @@ const Teachers = () => {
     const { authToken } = useContext(GlobalContext);
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [teachersTemp, setTeachersTemp] = useState<ITeacher[]>([]);
+    const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState("");
     // const [searchTerm, setSearchTerm] = useState("");
 
     // fetch on render 
     useEffect(() => {
+        setIsFetching(true);
+
         axios.get("/api/teacher/all", {
             headers: { "Authorization": `Bearer ${authToken}`}
         })
@@ -76,7 +81,16 @@ const Teachers = () => {
                 if (data) {
                     setTeachers(data.teachers);
                     setTeachersTemp(data.teachers);
+                    return;
                 }
+
+                throw new Error("Unexpected error!")
+            })
+            .catch(error => {
+                setError(error.message);
+            })
+            .finally(() => {
+                setIsFetching(false);
             })
     }, []);
 
@@ -96,7 +110,7 @@ const Teachers = () => {
         )
     }
 
-    if (!teachersTemp.length) {
+    if (isFetching) {
         return <LoaderPage/>
     }
 
@@ -104,9 +118,31 @@ const Teachers = () => {
         <main>
             <div className="container">
                 <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
-                <h5 className="center sub-sub-headings">Teachers</h5>
+                <h5 className="center sub-sub-headings">TEACHERS</h5>
                 <div className="divider"></div>
                 <div className="section">
+                    {
+                        error ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{error}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                     <div className="row">
                         <div className="col s12 m8 left-align sub-modal-texts">
                             <Link to="/teacher/import" style={{
@@ -122,7 +158,7 @@ const Teachers = () => {
                                 <b><i className="material-icons right">add_circle_outline</i>Add Teacher</b>
                             </Link>
 
-                            <button className="waves-effect waves-light btn-flat sub-modal-texts" onClick={_ => {
+                            <button className="waves-effect waves-light btn-flat sub-modal-texts" disabled={!!!teachersTemp.length} onClick={_ => {
                                 axios.get("/api/teacher/export/credentials", {
                                     headers: { Authorization: `Bearer ${authToken}`}
                                 }).then(async ({ data }) => {
@@ -159,9 +195,7 @@ const Teachers = () => {
                                 })}   
                             </> : 
 
-                            <p className="center sub-modal-texts">
-                                <b>There arent any teachers</b>
-                            </p>
+                            <EmptyComp message="There aren't any teachers"/>
                         }
                     </div>
                 </div>

@@ -5,15 +5,13 @@ import {
   Routes
 } from "react-router-dom";
 import Footer from "./components/Footer"
-import MessagesComp from "./components/Messages";
 import Navigation from "./components/Navigation"
 import NormalPaperDisplay from "./components/normal_paper_display";
 import SpecialPaperLibraryPaper from "./components/special_paper_display";
 import GlobalContextComp from "./contexts/GlobalContext"
-import ProtectedRoute, { ForwardProtectedRoute } from "./protected"
+import ProtectedRoute, { AdminScopedRoute, ForwardProtectedRoute } from "./protected"
 import ErrorPage from "./_pages/404";
 import AccountSettings from "./_pages/AccountSettings";
-import ApplicationSuccessPage from "./_pages/ApplicationSuccessPage";
 import RegistrationPage from "./_pages/child/pages/RegistrationPage";
 import Dashboard from "./_pages/Dashboard"
 import GradeDisplayPage from "./_pages/GradeDisplayPage"
@@ -32,6 +30,7 @@ import NewSchool from "./_pages/NewSchool"
 import NewSubject from "./_pages/NewSubject"
 import NewTeacher from "./_pages/NewTeacher"
 import PasswordRecovery from "./_pages/PasswordRecovery";
+import PricingPage from "./_pages/PricingPage";
 import StudentAnalysis from "./_pages/StudentAnalysis"
 import SubjectAnalysis from "./_pages/SubjectAnalysis"
 import SubscriptionsPage from "./_pages/SubscriptionsPage";
@@ -45,25 +44,46 @@ const App = () => {
       <React.Suspense fallback={<LoaderPage/>}>
       <GlobalContextComp>
         <Navigation/>
-        {/* <main> */}
-          {/* start of the routes */}
           <Routes>
             <Route element={<ForwardProtectedRoute/>}>
               <Route path="/" element={<HomePage/>}/>
             </Route>
             <Route path="/login" element={<LoginPage/>}/>
             <Route path="/new-school" element={<NewSchool/>}/>
-            <Route path="/application/success" element={<ApplicationSuccessPage/>}/>
+            <Route path="/pricing" element={<PricingPage/>}/>
 
             <Route path="/recovery" element={<PasswordRecovery/>}/>
             
             <Route element={<ProtectedRoute/>}>
-              <Route path="/dashboard" element={<Dashboard/>}/>
-              <Route path="/teacher" element={<Teachers/>}/>
+              {/* this is not scoped as an admin only page :) */}
               <Route path="/teacher/:id" element={<TeacherDisplayPage/>}/>
-              <Route path="/teacher/new" element={<NewTeacher/>}/>
               <Route path="/teacher/edit/:id" element={<NewTeacher/>}/>
-              <Route path="/teacher/import" element={<ImportTeachers/>}/>
+
+              <Route element={<AdminScopedRoute/>}>
+                <Route path="/dashboard" element={<Dashboard/>}/>
+                <Route path="/teacher" element={<Teachers/>}/>
+                <Route path="/teacher/new" element={<NewTeacher/>}/>
+                <Route path="/teacher/import" element={<ImportTeachers/>}/>
+
+                {/* market links */}
+                <Route path="/shop" element={<MarketPage/>}/>
+                <Route path="/shop/:gradeName" element={<MarketGrade/>}/>
+                <Route path="/shop/select/:gradeId" element={<ChooseGradesComp/>}/>
+                <Route path="/shop/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
+
+                {/* a listing of all the subscriptions */}
+                <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
+                <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
+
+                {/* settings */}
+                <Route path="/account" element={<AccountSettings/>}/>
+
+                <Route path="/grades" element={<GradesPage/>}/>
+                <Route path="/grades/new" element={<NewGrade/>}/>
+
+                {/*subject  */}
+                <Route path="/subject/new" element={<NewSubject/>}/> 
+              </Route>
 
               {/* library display */}
               <Route path="/library-paper/:studentId/:paperId" element={<NormalPaperDisplay/>}/>
@@ -71,22 +91,7 @@ const App = () => {
                 path="/library-paper/special/:studentId/:gradeName/:paperID/:savedStateID" 
                 element={<SpecialPaperLibraryPaper/>}/>
 
-              {/* market links */}
-              <Route path="/shop" element={<MarketPage/>}/>
-              <Route path="/shop/:gradeName" element={<MarketGrade/>}/>
-              <Route path="/shop/select/:gradeId" element={<ChooseGradesComp/>}/>
-              <Route path="/shop/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
-
-              {/* a listing of all the subscriptions */}
-              <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
-              <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
-
-              {/* settings */}
-              <Route path="/account" element={<AccountSettings/>}/>
-
-              <Route path="/grades" element={<GradesPage/>}/>
               <Route path="/grades/:id" element={<GradeDisplayPage/>}/>
-              <Route path="/grades/new" element={<NewGrade/>}/>
 
               {/* learner routes */}
               <Route path="/learner/:id" element={<StudentAnalysis/>}/>
@@ -95,13 +100,10 @@ const App = () => {
               <Route path="/learner/import" element={<ImportStudent/>}/>
 
               {/*subject  */}
-              <Route path="/subject/new" element={<NewSubject/>}/> 
               <Route path="/subject/:id" element={<SubjectAnalysis/>}/>
             </Route>
-            <Route path="*" element={<ErrorPage/>}/>
+            <Route path="*" element={<ErrorPage code={404} message={"Page Not Found"}/>}/>
           </Routes>
-          {/* end of the routes */}
-        {/* </main> */}
         <Footer/>
       </GlobalContextComp>
       </React.Suspense>

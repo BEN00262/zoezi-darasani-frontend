@@ -4,6 +4,7 @@ import axios from "axios";
 import { SyntheticEvent, useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { GlobalContext } from "../contexts/GlobalContext";
+import verifyToken from '../utils/verify';
 
 interface ILoginDetails {
     email: string
@@ -34,6 +35,34 @@ const LoginForm: React.FC<ILoginPage> = ({
           <div className="input-field col s12">
             <input id="password" required value={loginDetails.password} type="password" onChange={handleInputValueChange} name="password" className="validate"/>
             <label htmlFor="password">Password</label>
+          </div>
+        </div>
+        <button className="waves-effect waves-light btn sub-names materialize-red" style={{width:"100%"}} type="submit">
+          {
+            isLoading ? "login..." : <i className="material-icons">exit_to_app</i>
+          }
+        </button>
+      </form>
+    </div>
+  )
+}
+
+const TeacherLoginForm: React.FC<ILoginPage> = ({ 
+  handleFormSubmission,  loginDetails, 
+  handleInputValueChange, isLoading 
+}) => {
+  return (
+    <div className="col s12 m6 push-m3">
+      <form className="contactustext" onSubmit={handleFormSubmission} method="POST">
+        <div className="row">
+          <div className="input-field col s12">
+            <input id="teacher_email" required value={loginDetails.email} type="email" onChange={handleInputValueChange}  className="validate contactustext" name="email"/>
+            <label htmlFor="teacher_email">Email</label>
+          </div>
+
+          <div className="input-field col s12">
+            <input id="teacher_password" required value={loginDetails.password} type="password" onChange={handleInputValueChange} name="password" className="validate"/>
+            <label htmlFor="teacher_password">Password</label>
           </div>
         </div>
         <button className="waves-effect waves-light btn sub-names materialize-red" style={{width:"100%"}} type="submit">
@@ -88,7 +117,9 @@ export default function LoginPage() {
                     if (data.status) {
                       // logged in successfully
                       setAuthorizationToken(data.token);
-                      return navigate("/dashboard", { replace: true })
+
+                      const {communicationId, isTeacher } = verifyToken(data.token); // this is redudant but who gives an f
+                      return navigate(isTeacher ? `/teacher/${communicationId}`: "/shop", { replace: true })
                     }
 
                     setErrors(data.message);
@@ -156,7 +187,7 @@ export default function LoginPage() {
               />
             </div>
             <div id="teacher">
-              <LoginForm
+              <TeacherLoginForm
                 handleFormSubmission={handleFormSubmission}
                 handleInputValueChange={handleInputValueChange}
                 loginDetails={loginDetails}

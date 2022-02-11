@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import PricingItem, { IPricingItem } from '../../../components/PricingItem';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 
-interface ISubscription {
+export interface ISubscription {
     _id: string,
     defaultPrice: boolean,
     pricingType: string,

@@ -164,7 +164,7 @@ const AccountSettings = () => {
                             padding: "3px 15px",
                             borderRadius: "20px"
                         }}>
-                            update logo
+                            Update Logo
                         </label>
                         <input type="file" id="profile-upload" style={{
                             display: "none"
@@ -188,7 +188,7 @@ const AccountSettings = () => {
                         borderRadius: "20px",
                         padding: "2px 10px",
                     }}>
-                        update theme
+                        Update Theme
                     </label>
                     <input id='color-picker' value={themePicked} onChange={e => {
                         setThemePicked(e.target.value)

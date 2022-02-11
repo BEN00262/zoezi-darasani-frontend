@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { ITeacherComp } from "./TeacherDisplayPage";
+import LoaderComp from "../components/LoaderComp";
 
 // dynamic imports
 const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
@@ -23,7 +24,7 @@ interface IGrade {
 }
 
 const GradeDisplayPage = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useContext(GlobalContext);
     const params = useParams();
     const [grade, setGrade] = useState<IGrade>({
         _id: "", classTeacher: {_id: "", email: "", name: ""}, name: "", stream: "", year: (new Date()).getFullYear(), isClosed: true
@@ -93,13 +94,15 @@ const GradeDisplayPage = () => {
                             </span>
                             {/* <li className="sub-modal-texts">{(classRef?.students || []).length} learners</li> */}
                         </ul>
-                        <br />
-                        <Link to="/grades/edit" className="waves-effect waves-light btn-flat" style={{
-                            border: "1px solid teal",
-                            borderRadius: "20px"
-                        }}>
-                            <i className="material-icons right">edit</i>Edit Grade
-                        </Link>
+                        <div hidden={isTeacher}>
+                            <br />
+                            <Link to="/grades/edit" className="waves-effect waves-light btn-flat" style={{
+                                border: "1px solid teal",
+                                borderRadius: "20px"
+                            }}>
+                                <i className="material-icons right">edit</i>Edit Grade
+                            </Link>
+                        </div>
                         </div>
                     </div>
                     
@@ -112,7 +115,7 @@ const GradeDisplayPage = () => {
                             <li className="tab col s3"><a href="#learners">Learners</a></li>
                             <li className="tab col s3"><a className="active" href="#perfomance">Perfomance</a></li>
                             <li className="tab col s3"><a href="#subjects">Subjects</a></li>
-                            <li className="tab col s3"><a href="#subscriptions">Subscriptions</a></li>
+                            {/* <li className="tab col s3"><a href="#subscriptions">Subscriptions</a></li> */}
                         </ul>
                     </div>
                         </div>
@@ -129,24 +132,16 @@ const GradeDisplayPage = () => {
                                 </React.Suspense>: null}
                             </div>
                             <div id="perfomance" className="col s12">
-                                <React.Suspense fallback={
-                                    <>
-                                        Loading...
-                                    </>
-                                }>
+                                <React.Suspense fallback={<LoaderComp/>}>
                                     <GradePerformanceSuspense/>
                                 </React.Suspense>
                             </div>
                             <div id="subjects" className="col s12">
-                                <React.Suspense fallback={
-                                    <>
-                                        Loading...
-                                    </>
-                                }>
+                                <React.Suspense fallback={<LoaderComp/>}>
                                     <SubjectsCompSuspense/>
                                 </React.Suspense>
                             </div>
-                            <div id="subscriptions" className="col s12">
+                            {/* <div id="subscriptions" className="col s12">
                                 <React.Suspense fallback={
                                     <>
                                         Loading...
@@ -154,7 +149,7 @@ const GradeDisplayPage = () => {
                                 }>
                                     <SubscriptionsDisplaySuspense/>
                                 </React.Suspense>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
 

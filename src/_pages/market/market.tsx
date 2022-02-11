@@ -83,11 +83,18 @@ const MarketPage = () => {
     return (
         <main>
              <div className="container">
-
-                {/* grades */}
+                <div className="section">
+                    <div className="row">
+                        <div className="col s12 welcome-font">
+                            <p style={{
+                                fontSize: "30px",
+                            }}><span className="teal-text">Welcome to</span>{' '}<span className="materialize-red-text">Zoezi Darasani</span></p>
+                        </div>
+                    </div>
+                {/* grades
                 <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
-                <h5 className="center sub-sub-headings">Grades</h5>
-                <div className="divider"></div>
+                <h5 className="center sub-sub-headings">GRADES</h5>
+                <div className="divider"></div> */}
 
                 <div className="section">
                     <div className="row">
@@ -104,7 +111,7 @@ const MarketPage = () => {
                                 alignItems: "center"
                             }}>
                                 <i className="material-icons left">info</i>
-                                <p><b>Please add teachers, grades, learners and subjects before buying GRADE</b></p>
+                                <p><b>Please add teachers, grades, learners and subjects before buying the grade(s) of your choice from the list below</b></p>
                             </div>
                         </div>
                     </div>
@@ -117,6 +124,7 @@ const MarketPage = () => {
 
                     </div>
                 </div>
+            </div>
             </div>
         </main>
     )

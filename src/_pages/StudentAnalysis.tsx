@@ -19,7 +19,7 @@ interface IStudent {
 }
 
 const StudentAnalysis = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useContext(GlobalContext);
     const params = useParams();
     const [student, setStudent] = useState<IStudent>({
         firstname: "", lastname: "", password: "", username: "", lastActive: "never", _id: ""
@@ -76,16 +76,23 @@ const StudentAnalysis = () => {
                             <span className="sub-modal-texts">Last active: {student.lastActive}</span>
                             <br />
                             <br />
-                            <Link 
-                                to={`/learner/edit/${params.id as string}`} 
-                                className="waves-effect waves-light btn-flat"
-                                style={{
-                                    border: "1px solid teal",
-                                    borderRadius: "20px"
-                                }}
-                            >
-                                <i className="material-icons right">edit</i>Edit Profile
-                            </Link>
+                            <div style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center"
+                            }}>
+                            <div hidden={isTeacher}>
+                                <Link 
+                                    to={`/learner/edit/${params.id as string}`} 
+                                    className="waves-effect waves-light btn-flat"
+                                    style={{
+                                        border: "1px solid teal",
+                                        borderRadius: "20px"
+                                    }}
+                                >
+                                    <i className="material-icons right">edit</i>Edit Profile
+                                </Link>
+                            </div>
                             
                             <button
                                 className="waves-effect waves-light btn-flat"
@@ -119,6 +126,7 @@ const StudentAnalysis = () => {
                                 <i className="material-icons right">file_download</i>
                                 Credentials
                             </button>
+                            </div>
                     </div>
                 </div>
                 {/* include the entire student library at this point */}

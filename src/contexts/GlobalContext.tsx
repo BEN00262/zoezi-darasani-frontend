@@ -1,34 +1,13 @@
 import { createContext, useReducer } from "react";
-import jwt_decode from "jwt-decode";
 import axios from 'axios';
 import reducer from "./reducer";
 import { UPDATE_AUTH_TOKEN, WIPE_GLOBAL_CONTEXT } from "./ActionTypes";
+import verifyToken from "../utils/verify";
 
 export interface IGlobalContext {
     authToken: string | null
     isTeacher: boolean
     communicationId: string
-}
-
-// check if is still valid
-// we also need to check if this is a school or not ( on log out we wipe the history )
-const verifyToken = (token: string) => {
-    try {
-        if (!token) {
-            // if the token is empty just return an empty stuff :)
-            throw new Error("The token is empty");
-        }
-
-        const { exp, school, _id } = jwt_decode(token) as any;
-        return {
-            authToken: Date.now() >= exp * 1000 ? null : token, // by default i was checking for this
-            isTeacher: !(school as boolean),
-            communicationId: _id
-        }
-    } catch (error) {
-
-        return {authToken: null, isTeacher: false, communicationId: null };
-    }
 }
 
 // @ts-ignore

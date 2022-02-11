@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import LoaderComp from "../components/LoaderComp";
 
 import { GlobalContext } from "../contexts/GlobalContext";
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
@@ -62,9 +63,11 @@ const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender }) => {
 }
 
 const Learners: React.FC<ILearners> = ({ classRefId }) => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useContext(GlobalContext);
     const navigate = useNavigate();
     const [learners, setLearners] = useState<ILearner[]>([]);
+    const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState("");
 
     // mount slowly
     useEffect(() => {
@@ -76,15 +79,26 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                     setLearners(data.learners as ILearner[])
                     return;
                 }
-            })
 
+                setError("Failed to fetch learners");
+            })
+            .catch(error => {
+                setError(error.message);
+            })
+            .finally(()=> {
+                setIsFetching(false);
+            })
     }, []);
+
+    if (isFetching) {
+        return <LoaderComp/>
+    }
 
     return (
         <>
             <div className="row">
                 <div className="col s12">
-                    <button className="waves-effect waves-light btn-flat"
+                    <button disabled={isTeacher} className="waves-effect waves-light btn-flat"
                         style={{
                             marginRight: "5px"
                         }}
@@ -94,6 +108,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                         style={{
                             marginRight: "5px"
                         }}
+                        disabled={isTeacher}
                         className="waves-effect waves-light btn-flat"
                         onClick={_ => navigate("/learner/new")}
                     ><i className="material-icons right">person_add</i>Add Learner</button>
@@ -123,13 +138,31 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                     ><i className="material-icons right">cloud_download</i>Export Credentials</button>
                 </div>
             </div>
-            {/* <div className="container">
-                <div className="section"> */}
+            {
+                error ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
             <div className="row">
                 {learners.map((learner, index) => <Learner key={index} {...learner}/>)}
             </div>
-                {/* </div>
-            </div> */}
         </>
     )
 }

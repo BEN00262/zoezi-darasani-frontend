@@ -11,7 +11,7 @@ const HomePage = () => {
                 <div className="section">
                     <div className="row center">
                     <h6 className="teal-text">KARIBU</h6>
-                    <h5 className="materialize-red-text" style={{letterSpacing: "2px"}}>Empowering The Learning Community</h5>
+                    <h5 className="materialize-red-text" style={{letterSpacing: "2px"}}>Technology in Classrooms</h5>
                     </div>
                 </div>
             </div>

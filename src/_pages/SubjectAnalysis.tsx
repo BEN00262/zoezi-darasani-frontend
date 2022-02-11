@@ -18,7 +18,7 @@ interface ISubjectInformation {
 // show the metrics for the subject in a given grade
 const SubjectAnalysis = () => {
     const params = useParams();
-    const { authToken } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useContext(GlobalContext);
     const [subject, setSubject] = useState<ISubjectInformation>({
         name: "", teacher: { email: "", name: ""}
     }); // resolve this here first :) then we can proceed
@@ -69,15 +69,17 @@ const SubjectAnalysis = () => {
                             <li className="sub-modal-texts">Subject Teacher: {subject.teacher.name}</li>
                             <li className="sub-modal-texts">Email: {subject.teacher.email}</li>
                         </ul>
-                        <Link to="/subject/edit" 
-                            className="waves-effect waves-light btn-flat"
-                            style={{
-                                border: "1px solid teal",
-                                borderRadius: "20px"
-                            }}
-                        >
-                            <i className="material-icons right">edit</i>Edit Subject
-                        </Link>
+                        <div hidden={isTeacher}>
+                            <Link to="/subject/edit" 
+                                className="waves-effect waves-light btn-flat"
+                                style={{
+                                    border: "1px solid teal",
+                                    borderRadius: "20px"
+                                }}
+                            >
+                                <i className="material-icons right">edit</i>Edit Subject
+                            </Link>
+                        </div>
                     </div>
 
                     {/* select the student and other stuff :) */}

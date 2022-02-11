@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
+import EmptyComp from "../components/Empty";
 import { GlobalContext } from "../contexts/GlobalContext"
 import LoaderPage from "./loader";
 
@@ -53,7 +54,7 @@ const SubscriptionItem: React.FC<ISubscription> = ({ _id, subscriptionItem, stat
                     }}>
                         <b>{isFailed ? status === "failed" ? status : "expired" : status === "pending" ? status : "active" }</b>
                     </span>
-                    <small>{remainingTime}</small>
+                    {/* <small>{remainingTime}</small> */}
                 </div>
                 <div style={{
                     display: "flex",
@@ -134,21 +135,34 @@ const groupByUpdatedAt = (subscriptions: ISubscription[]) => subscriptions.reduc
 const SubscriptionsPage = () => {
     const { authToken } = useContext(GlobalContext);
     const [subscriptions, setSubscriptions] = useState<ISubscriptionsGrouping[]>([]);
+    const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        setIsFetching(true);
+
         axios.get("/api/subscriptions", {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
+
             if (data && data.subscriptions) {
                 setSubscriptions(
                     groupByUpdatedAt(data.subscriptions as ISubscription[])
                 );
                 return;
             }
+
+            throw new Error("Unexpected error!")
+        })
+        .catch((error: Error) => {
+            setError(error.message);
+        })
+        .finally(() => {
+            setIsFetching(false);
         })
     }, []);
 
-    if (!subscriptions.length) {
+    if (isFetching) {
         return <LoaderPage/>
     }
 
@@ -156,27 +170,56 @@ const SubscriptionsPage = () => {
     return (
         <main>
             <div className="container">
-                <div className="section">      
+                <div className="section">
                     {
-                        subscriptions.map(({ updatedAt, subscriptions: _subscriptions}, index) => {
-                            return (
-                                <React.Fragment key={`subscriptions_grouping_${index}`}>
-                                    <div className="row">
-                                       <div className="col s12">
-                                        <h6 className="sub-modal-texts"><b>{(new Date(updatedAt)).toDateString()}</b></h6>
-                                        <div className="divider"></div>
-                                       </div>
-                                    </div>
-                                    <div className="row">
-                                    {
-                                        _subscriptions.map((subscription, index) => {
-                                            return <SubscriptionItem {...subscription} key={`subscription_item_${index}`}/>
-                                        })
-                                    }
-                                    </div>
-                                </React.Fragment>
-                            )
-                        })
+                        error ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{error}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }      
+                    {
+                        subscriptions.length ?
+                        <>
+                            {
+                                subscriptions.map(({ updatedAt, subscriptions: _subscriptions}, index) => {
+                                    return (
+                                        <React.Fragment key={`subscriptions_grouping_${index}`}>
+                                            <div className="row">
+                                            <div className="col s12">
+                                                <h6 className="sub-modal-texts"><b>{(new Date(updatedAt)).toDateString()}</b></h6>
+                                                <div className="divider"></div>
+                                            </div>
+                                            </div>
+                                            <div className="row">
+                                            {
+                                                _subscriptions.map((subscription, index) => {
+                                                    return <SubscriptionItem {...subscription} key={`subscription_item_${index}`}/>
+                                                })
+                                            }
+                                            </div>
+                                        </React.Fragment>
+                                    )
+                                })
+                            }
+                        </>
+                        :
+                        <EmptyComp message="The school doesn't have any active or past subscriptions"/>
                     }
                 </div>
             </div>

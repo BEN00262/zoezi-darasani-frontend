@@ -119,7 +119,7 @@ const TeacherSubjectsComp: React.FC<ITeacherSubjectsComp> = ({ subjects }) => {
                                         objectFit: "contain",
                                         borderRadius: "50%"
                                     }} 
-                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase()}.png`}
+                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase() || "kcpe"}.png`}
                                 />
                                 <span style={{
                                     paddingLeft: "5px"

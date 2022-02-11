@@ -12,7 +12,7 @@ const ApplicationSuccessPage = () => {
                     <div className="row center">
                         <img src={ApprovedImage} alt="received for approval" className="img-responsive" />
                         <h3 className="sub-names">Application received successfully!</h3>
-                        <p className="sub-modal-texts">Your application has been received successfully and we should get back at you through your phone number / email soon. Thank you for believing in zoezi darasani.</p>
+                        <p className="sub-modal-texts">Your application is successful. Check your email for confirmation.</p>
                     </div>
                 </div>
             </div>

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { GlobalContext } from "../contexts/GlobalContext"
 import { ITeacherComp } from "../_pages/TeacherDisplayPage";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,11 +25,22 @@ const TeacherFormComp = () => {
         name: "", email: "", password: "", confirmPassword: ""
     })
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isSendingToServer, setIsSendingToServer] = useState(false);
     const [currentTeacherId, setCurrentTeacherId] = useState("");
+    const [error, setError] = useState("");
+    const [autoGeneratePassword,setAutoGeneratePassword] = useState(true); // by default
+    const [updatePasswords, setUpdatePasswords] = useState(false);
 
-    const success_toastify = () => toast.success("Successfully imported learner(s)!", {
+    const success_toastify = () => toast.success("Successfully created/updated teacher!", {
         position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000,
         onClose: () => navigate(-1) // go back to the grades page after a success :)
+    })
+
+    const failure_toastify = (message: string) => toast.error(message, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 2000
+        // onClose: () => navigate(-1) // go back to the grades page after a success :)
     })
 
 
@@ -50,6 +61,9 @@ const TeacherFormComp = () => {
                     }))
                 }
             })
+            .catch(error => {
+                setError(error.message as string);
+            })
         }
     }, []);
 
@@ -63,24 +77,61 @@ const TeacherFormComp = () => {
     const handleFormSubmission = (e: SyntheticEvent) => {
         e.preventDefault();
 
+        setIsSendingToServer(true)
+
         axios({
-            url: isUpdating? `/teacher/${currentTeacherId}`: "/teacher/new",
+            url: isUpdating? `/api/teacher/${currentTeacherId}`: "/api/teacher/new",
             method: isUpdating ?  "put" : "post",
-            data: teacherDetails,
+            data: {
+                ...teacherDetails,
+                autoGeneratePassword,
+                updatePasswords
+            },
             headers: {"Authorization": `Bearer ${authToken}`}
         }).then(({ data }) => {
             if (data) {
                 if (data.status) {
                     return success_toastify();
                 }
+
+                setError(data.message as string)
+                return failure_toastify(data.message);
             }
+
+            throw new Error("Unexpected error!")
         })
+        .catch(error => {
+            setError(error.message as string);
+        })
+        .finally(() => setIsSendingToServer(false));
     }
 
     return (
         <form className="contactustext" onSubmit={handleFormSubmission} method="POST" encType="multipart/form-data">
+            {
+                error ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
+            
             <div className="row">
-                <ToastContainer/>
                 <div className="input-field">
                     <div style={{position: "relative", width: "250px", margin: "auto" }}>
                         <img 
@@ -117,21 +168,53 @@ const TeacherFormComp = () => {
                     <label htmlFor="last_name">Email</label>
                 </div>
 
-                <div className="input-field col s12 m6">
-                    <input value={teacherDetails.password} onChange={handleInputValueChange} id="grade_id" name="password" type="password" className="validate contactustext"/>
-                    <label htmlFor="grade_id">Password</label>
-                    {/* <!-- <span className="helper-text left-align" data-error="wrong" data-success="right">Use a valid Safaricom phone number</span> --> */}
+                <div className="input-field col s12 m12 left-align" hidden={!isUpdating}>
+                    <p className="sub-modal-texts">
+                        <label>
+                            <input type="checkbox" className="filled-in" checked={updatePasswords} onChange={e => {
+                                setUpdatePasswords(e.target.checked)
+                            }} />
+                            <span>Change password</span>
+                        </label>
+                    </p>
                 </div>
 
-                <div className="input-field col s12 m6">
-                    <input value={teacherDetails.confirmPassword} onChange={handleInputValueChange} id="school_id" name="confirmPassword" type="password" className="validate contactustext"/>
-                    <label htmlFor="school_id">Confirm Password</label>
+               <div className="input-field row" hidden={isUpdating && !updatePasswords}>
+                    <div className="col s12" style={{
+                        border: "1px solid #d3d3d3",
+                        borderRadius: "5px"
+                    }}>
+                    <div className="input-field col s12 m12 left-align">
+                    <p className="sub-modal-texts">
+                        <label>
+                            <input type="checkbox" className="filled-in" checked={autoGeneratePassword} onChange={e => {
+                                setAutoGeneratePassword(e.target.checked)
+                            }} />
+                            <span>Auto generate password</span>
+                        </label>
+                    </p>
                 </div>
+
+                { autoGeneratePassword ? null :
+                    <>
+                        <div className="input-field col s12 m6">
+                            <input value={teacherDetails.password} autoComplete="new-password" onChange={handleInputValueChange} id="password" name="password" type="password" className="validate contactustext"/>
+                            <label htmlFor="password">Password</label>
+                        </div>
+
+                        <div className="input-field col s12 m6">
+                            <input value={teacherDetails.confirmPassword} autoComplete="new-password" onChange={handleInputValueChange} id="confirmPassword" name="confirmPassword" type="password" className="validate contactustext"/>
+                            <label htmlFor="confirmPassword">Confirm Password</label>
+                        </div>
+                    </>
+                }
+                    </div>
+                </div> 
 
             </div>
 
             {/* onclick="loaderOverlay();" */}
-            <button className={`waves-effect waves-light btn sub-names ${isUpdating ? 'teal' : 'materialize-red'}`} style={{width:"40%"}} type="submit">{isUpdating ? "UPDATE": "ADD"} TEACHER</button>
+            <button className={`waves-effect waves-light btn sub-names ${isUpdating ? 'teal' : 'materialize-red'}`} style={{width:"40%"}} type="submit">{isUpdating ? isSendingToServer ? "UPDATING..." : "UPDATE": isSendingToServer ? "CREATING..." : "CREATE"} TEACHER</button>
         </form>
     )
 }
