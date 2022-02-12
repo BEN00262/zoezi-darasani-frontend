@@ -2,7 +2,6 @@
 import M from 'materialize-css';
 import axios from 'axios';
 import { SyntheticEvent, useContext, useEffect, useState } from "react";
-import RFormData from "form-data";
 import ProfileSelectorComp from "../components/compound/ProfileSelector"
 import RegisterPage from "../components/compound/Register";
 import { GlobalContext } from '../../../contexts/GlobalContext';
@@ -101,12 +100,12 @@ const RegistrationPage = () => {
 
         setIsSavingLearner(true);
 
-        const form = new RFormData();
+        const form = new FormData();
 
-        Object.entries(formData).forEach(([key, value]) => form.append(key, value));
+        Object.entries(formData).forEach(([key, value]) => form.set(key, value));
 
         if (profileImage) {
-            form.append("profilePic", profileImage, profileImage.name);
+            form.set("profilePic", profileImage, profileImage.name);
         }
 
         // get the current stuff and use it

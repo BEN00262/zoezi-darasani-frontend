@@ -13,7 +13,6 @@
     "chartjs-plugin-datalabels": "^2.0.0",
     "copy-to-clipboard": "^3.3.1",
     "dexie": "^3.2.0",
-    "form-data": "^4.0.0",
     "html2canvas": "^1.4.0",
     "jspdf": "^2.5.0",
     "jwt-decode": "^3.1.2",
