@@ -96,7 +96,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                     backgroundColor: "rgba(101,31,255, 0.2)",
                                                                     whiteSpace: "nowrap"
                                                                 }}>
-                                                                    {papers.length} paper (s)
+                                                                    {innerPapers.length} paper (s)
                                                                 </span>
                                                             </p>
                                                         </div>

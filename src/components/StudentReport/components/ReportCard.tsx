@@ -17,9 +17,8 @@ interface IReportCardComp {
     is_special: boolean
 }
 
-const firstname = "LEARNER'S";
-
 const ReportCardComp: React.FC<IReportCardComp> = ({ subjectView, is_special }) => {
+    const firstname = (localStorage.getItem("_student_name_") || "LEARNER").toUpperCase() + "'S";
     const [gradeAttained, setGradeAttained] = useState<string>("");
     const [subjects, setSubjects] = useState<string[]>([]);
     const [marks, setMarks] = useState<string[]>([]);

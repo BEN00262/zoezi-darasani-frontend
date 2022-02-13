@@ -7,7 +7,6 @@ import {Link, useParams} from "react-router-dom"
 import LibraryViewComp from "../components/LibraryViewComp";
 import StudentReport from "../components/StudentReport"
 import { GlobalContext } from "../contexts/GlobalContext";
-import LoaderPage from './loader';
 import LoaderComp from '../components/LoaderComp';
 
 interface IStudent {
@@ -33,7 +32,9 @@ const StudentAnalysis = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    setStudent(data.student as IStudent);
+                    let _student = data.student as IStudent
+                    setStudent(_student);
+                    localStorage.setItem("_student_name_", _student.firstname);
                     return;
                 }
             })
