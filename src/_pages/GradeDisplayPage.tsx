@@ -25,6 +25,7 @@ interface IGrade {
 
 const GradeDisplayPage = () => {
     const { authToken, isTeacher } = useContext(GlobalContext);
+    const [classMeanScore, setClassMeanScore] = useState(0);
     const params = useParams();
     const [grade, setGrade] = useState<IGrade>({
         _id: "", classTeacher: {_id: "", email: "", name: ""}, name: "", stream: "", year: (new Date()).getFullYear(), isClosed: true
@@ -108,6 +109,11 @@ const GradeDisplayPage = () => {
                     </div>
                     
                     <div className="col s12 m10">
+                            <div className="row center">
+                                <h4 className="sub-names teal-text">{classMeanScore.toFixed(2)}</h4>
+                                <span className="sub-modal-texts"><b>Class Mean Score</b></span>
+                            </div>
+
                         <div className="row">
                     <div className="col s12">
                         <ul className="tabs tabs-fixed-width" style={{
@@ -134,7 +140,7 @@ const GradeDisplayPage = () => {
                             </div>
                             <div id="perfomance" className="col s12">
                                 <React.Suspense fallback={<LoaderComp/>}>
-                                    <GradePerformanceSuspense/>
+                                    <GradePerformanceSuspense setClassMeanScore={setClassMeanScore}/>
                                 </React.Suspense>
                             </div>
                             <div id="subjects" className="col s12">

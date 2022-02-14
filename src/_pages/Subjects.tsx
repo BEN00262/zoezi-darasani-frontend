@@ -20,7 +20,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
             <div 
                 onClick={_ => navigate(`/subject/${_id}`)}
                 className="hoverable z-depth-1" 
-                style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
+                style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px", marginBottom: "10px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img
                         style={{

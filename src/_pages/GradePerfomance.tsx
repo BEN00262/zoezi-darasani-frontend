@@ -33,6 +33,7 @@ export const options = (titleText: string, isMobile: boolean) =>({
     plugins: {
         legend: {
             position: 'top' as const,
+            display: false
         },
         title: {
             display: true,
@@ -71,7 +72,7 @@ interface IAnalyticSubject {
 
 
 
-const GradePerfomace = () => {
+const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = ({ setClassMeanScore }) => {
     const isMobilePhone = false;
     const { authToken } = useContext(GlobalContext);
     const [gradeNames, setGradeNames] = useState<IGradeData[]>([]);
@@ -113,6 +114,14 @@ const GradePerfomace = () => {
             });
 
     }, []);
+
+    useEffect(() => {
+        if (analytics.length) {
+            setClassMeanScore(
+                analytics.reduce((acc, x) => acc + x.performance,0) / analytics.length
+            )
+        }
+    }, [analytics]);
 
     useEffect(() => {
         // we default the selectedIndex kwanza
@@ -184,7 +193,7 @@ const GradePerfomace = () => {
                         <div className="row">
 
                             <div className="col s12 m12">
-                                <label>Select Subscription</label>
+                                <label>Select Subscribed Grade</label>
                                 <Select
                                     onChange={item => {
                                         setSelectedPaperType({} as IPaperType);
@@ -242,15 +251,16 @@ const GradePerfomace = () => {
 
                                 <Bar
                                     // @ts-ignore
-                                    options={options('Performance Analysis', isMobilePhone)}
+                                    options={options('Subject Mean Score', isMobilePhone)}
                                     style={{ ...(isMobilePhone ? { height:  "400px" } : { height: "300px" })}}
                                     data={{
                                         labels: analytics.map(x => x.subject),
                                         datasets: [
                                             {
-                                                label: 'Mean',
+                                                label: 'Subject Mean Score',
                                                 data: analytics.map(x => x.performance),
-                                                backgroundColor: '#00c853',
+                                                backgroundColor: ["#ff1744", "#2196f3", "#81d4fa", "#00897b", "#64ffda", "#d4e157", "#ff9800", "#bcaaa4"],
+                                                hoverBackgroundColor: ["#ff1744", "#2196f3", "#81d4fa", "#00897b", "#64ffda", "#d4e157", "#ff9800", "#bcaaa4"],
                                             }
                                         ],
                                     }}

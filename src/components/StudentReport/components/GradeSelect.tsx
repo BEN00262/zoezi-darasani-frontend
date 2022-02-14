@@ -210,7 +210,7 @@ const GradeSelectComp: React.FC<IGradeSelectComp> = ({ studentId }) => {
                         <div className="row">
 
                             <div className="col s12 m12">
-                                <label>Select Grade</label>
+                                <label>Select Subscribed Grade</label>
                                 <Select
                                     // // @ts-ignore
                                     // styles={(provided: any, state: any) => {

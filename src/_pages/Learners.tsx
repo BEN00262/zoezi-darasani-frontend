@@ -66,6 +66,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
     const { authToken, isTeacher } = useContext(GlobalContext);
     const navigate = useNavigate();
     const [learners, setLearners] = useState<ILearner[]>([]);
+    const [learnersTemp, setLearnersTemp] = useState<ILearner[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState("");
 
@@ -76,7 +77,10 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
         })
             .then(({ data }) => {
                 if (data) {
-                    setLearners(data.learners as ILearner[])
+                    let _learners = data.learners as ILearner[];
+
+                    setLearners(_learners);
+                    setLearnersTemp(_learners);
                     return;
                 }
 
@@ -94,10 +98,26 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
         return <LoaderComp/>
     }
 
+    const handleSearch = (e: any) => {
+        let searchTerm = (e.target.value || "").toLowerCase();
+
+        if (!searchTerm) {
+            setLearners(learnersTemp);
+            return
+        }
+
+        setLearners(
+            learnersTemp.filter(
+                x => x.firstname.toLowerCase().indexOf(searchTerm) > -1 
+                || x.lastname.toLowerCase().indexOf(searchTerm) > -1
+            )
+        )
+    }
+
     return (
         <>
             <div className="row">
-                <div className="col s12">
+                <div className="col s12 m8 left-align">
                     <button disabled={isTeacher} className="waves-effect waves-light btn-flat"
                         style={{
                             marginRight: "5px"
@@ -136,6 +156,14 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                                 })
                         }}
                     ><i className="material-icons right">cloud_download</i>Export Credentials</button>
+                </div>
+                <div className="col s12 m4 right-align">
+                    <input type="search" className="browser-default" onChange={handleSearch} style={{
+                        border: "1px solid #d3d3d3",
+                        borderRadius: "20px",
+                        lineHeight: "1px",
+                        padding: "5px 10px"
+                    }} placeholder="search learner..." />
                 </div>
             </div>
             {

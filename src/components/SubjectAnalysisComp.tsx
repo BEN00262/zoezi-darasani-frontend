@@ -177,7 +177,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                     setCurrentLearner(data.student as IAnalysisStudent);
 
                     setPapersDone((data.papersDone as IDonePaper[]).map(y => ({
-                        label: y.subject,
+                        label: `${subject} ( ${y.subject} )`,
                         value: y.paperID,
                         isSpecial: y.isSpecial
                     })))
