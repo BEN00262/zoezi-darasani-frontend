@@ -1,6 +1,4 @@
-// @ts-ignore
-import M from 'materialize-css';
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import {Link} from "react-router-dom"
 import { GlobalContext } from "../contexts/GlobalContext"
 
@@ -13,15 +11,6 @@ const Navigation = () => {
         // @ts-ignore
         wipeCurrentContext
     } = useContext(GlobalContext);
-
-    useEffect(() => {
-        M.Dropdown.init(document.querySelectorAll('#desktopprofile2'), {
-            hover: false,
-            coverTrigger: false
-        });
-
-        return () => M.Dropdown.getInstance(document.getElementById("desktopprofile2")).destroy()
-    }, []);
 
     return (
         <>

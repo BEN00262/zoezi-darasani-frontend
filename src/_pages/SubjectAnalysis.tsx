@@ -4,10 +4,12 @@ import {Link, useParams} from "react-router-dom"
 import React, { useContext, useEffect, useState } from "react"
 import { GlobalContext } from "../contexts/GlobalContext";
 import axios from "axios";
+import EditSubject from "./EditSubject";
 
 const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"))
 
 interface ISubjectInformation {
+    _id: string
     name: string
     teacher: {
         name: string
@@ -20,7 +22,7 @@ const SubjectAnalysis = () => {
     const params = useParams();
     const { authToken, isTeacher } = useContext(GlobalContext);
     const [subject, setSubject] = useState<ISubjectInformation>({
-        name: "", teacher: { email: "", name: ""}
+        name: "", teacher: { email: "", name: ""}, _id:""
     }); // resolve this here first :) then we can proceed
 
     useEffect(() => {
@@ -40,10 +42,14 @@ const SubjectAnalysis = () => {
             }
         })
 
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {
+            edge: "right"
+        });
     }, [])
 
     return (
         <main>
+            <EditSubject subjectId={subject._id}/>
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
             <div className="section">
                 <div className="row">
@@ -70,15 +76,19 @@ const SubjectAnalysis = () => {
                             <li className="sub-modal-texts">Email: {subject.teacher.email}</li>
                         </ul>
                         <div hidden={isTeacher}>
-                            <Link to="/subject/edit" 
-                                className="waves-effect waves-light btn-flat"
-                                style={{
-                                    border: "1px solid teal",
-                                    borderRadius: "20px"
-                                }}
-                            >
+                            <a href="#" data-target="edit-subject" className="waves-effect waves-light btn-flat sidenav-trigger" style={{
+                                border: "1px solid teal",
+                                borderRadius: "20px"
+                            }}>
                                 <i className="material-icons right">edit</i>Edit Subject
-                            </Link>
+                            </a>
+                            <button className="btn-flat red-text" style={{
+                                border: "1px solid red",
+                                marginTop: "5px",
+                                borderRadius: "20px"
+                            }}>
+                                <i className="material-icons right">delete</i>Delete Subject
+                            </button>
                         </div>
                     </div>
 

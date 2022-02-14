@@ -1,3 +1,5 @@
+// @ts-ignore
+import M from 'materialize-css'
 import { io } from "socket.io-client";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -60,9 +62,16 @@ const MessagesComp = () => {
             }
         });
 
+          // mount the drop down on launch
+        M.Dropdown.init(document.querySelectorAll('#desktopprofile2'), {
+            hover: true,
+            coverTrigger: false
+        });
+
         return () => {
             // notification turned off
             socket.off('notification')
+            M.Dropdown.getInstance(document.getElementById("desktopprofile2")).destroy()
         }
     }, [])
 

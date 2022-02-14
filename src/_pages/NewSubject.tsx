@@ -41,8 +41,10 @@ const NewSubject = () => {
 
 
     useEffect(() => {
+        const classId = localStorage.getItem("classId") || "";
+        
         Promise.all([
-            axios.get(`/api/misc/subjects/${params.gradeName}`, { headers: { 'Authorization': `Bearer ${authToken}`}}),
+            axios.get(`/api/misc/subjects/${params.gradeName}/${classId}`, { headers: { 'Authorization': `Bearer ${authToken}`}}),
             axios.get("/api/teacher/all", { headers: { 'Authorization': `Bearer ${authToken}`}})
         ])
             .then(([{ data: _subjects }, { data }]) => {

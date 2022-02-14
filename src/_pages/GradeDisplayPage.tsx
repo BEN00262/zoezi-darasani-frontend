@@ -6,6 +6,7 @@ import axios from "axios";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { ITeacherComp } from "./TeacherDisplayPage";
 import LoaderComp from "../components/LoaderComp";
+import EditGrade from "./EditGrade";
 
 // dynamic imports
 const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
@@ -52,10 +53,15 @@ const GradeDisplayPage = () => {
         M.Tabs.init(document.querySelector(".tabs"), {
             swipeable: true
         })
+
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {
+            edge: "right"
+        });
     }, []);
 
     return (
         <main>
+            <EditGrade/>
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
             <div className="section">
                 {/* should we use the  */}
@@ -98,12 +104,19 @@ const GradeDisplayPage = () => {
                         </ul>
                         <div hidden={isTeacher}>
                             <br />
-                            <Link to="/grades/edit" className="waves-effect waves-light btn-flat" style={{
+                            <a href="#" data-target="edit-grade" className="waves-effect waves-light btn-flat sidenav-trigger" style={{
                                 border: "1px solid teal",
                                 borderRadius: "20px"
                             }}>
                                 <i className="material-icons right">edit</i>Edit Grade
-                            </Link>
+                            </a>
+                            <button className="btn-flat red-text" style={{
+                                border: "1px solid red",
+                                marginTop: "5px",
+                                borderRadius: "20px"
+                            }}>
+                                <i className="material-icons right">delete</i>Delete Grade
+                            </button>
                         </div>
                         </div>
                     </div>

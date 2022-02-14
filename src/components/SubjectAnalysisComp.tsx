@@ -212,6 +212,19 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                             <span className="sub-modal-texts" style={{
                                 letterSpacing: "1px"
                             }}><b>{currentLearner.firstname} {currentLearner.lastname}</b></span>
+                            {
+                                papersDone.length ? null :
+                                <>
+                                    {' '}
+                                    <span className='sub-modal-texts' style={{
+                                        border: "1px solid red",
+                                        padding: "1px 10px",
+                                        borderRadius: "20px"
+                                    }}>
+                                    <b>has not attempted any paper(s)</b>
+                                    </span>
+                                </>
+                            }
                         </div>
                 </div> : null }
                 <div className="col s12 m12 l4">
