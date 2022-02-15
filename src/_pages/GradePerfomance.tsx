@@ -84,7 +84,6 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
     const [selectedPaperType, setSelectedPaperType] = useState<IPaperType>({} as IPaperType);
     const [selectedPaperSubType, setSelectedPaperSubType] = useState<string>("");
 
-    const classId = localStorage.getItem("classId") || "";
     const BASE_URL = `/api/analytics` // we dont care for the second grade
 
     const [analytics, setAnalytics] = useState<IAnalyticSubject[]>([]);
@@ -92,6 +91,8 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
     const fetch_analytics_data = ( gradeName: string, paperType: string, paperSubType: string ) => {
         // we have the data we can then use it
         // we coded this part right :)
+        const classId = localStorage.getItem("classId") || "";
+
         axios.get(`${BASE_URL}/${classId}/special-paper-analytics/${gradeName}/${paperType}/${paperSubType}`,{
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => setAnalytics((data || []) as IAnalyticSubject[]))
@@ -101,6 +102,7 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
     useEffect(() => {
         // on mount
         // fetch the top level grade names
+        const classId = localStorage.getItem("classId") || "";
 
         axios.get(`${BASE_URL}/grade/${classId}/special_paper_stats`, {
             headers: { Authorization: `Bearer ${authToken}`}
@@ -124,6 +126,7 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
     }, [analytics]);
 
     useEffect(() => {
+        const classId = localStorage.getItem("classId") || "";
         // we default the selectedIndex kwanza
         // we check if its a special paper or not and do the stuff 
         if (Object.keys(selectedGradeName).length < 1) {
@@ -163,6 +166,8 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
 
     useEffect(() => {
         if (Object.keys(selectedPaperType).length > 0) {
+            const classId = localStorage.getItem("classId") || "";
+            
             setPaperSubType([] as IPaperType[]);
             axios.get(`${BASE_URL}/${classId}/special_paper_stats/${selectedGradeName._id || selectedGradeName.value}/${selectedPaperType._id}`, {
                 headers: { Authorization: `Bearer ${authToken}`}

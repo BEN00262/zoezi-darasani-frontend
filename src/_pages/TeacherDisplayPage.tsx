@@ -68,71 +68,69 @@ const TeacherDisplayPage = () => {
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
                 <div className="section">
                     <div className="row">
-                        <div className="col s12 m2">
-                            <div className="row center" style={{
-                                borderRight: "1px solid #d3d3d3",
-                            }}>
-                                {/* place the class icon at the top */}
-                                <img
-                                    style={{
-                                        height: "100px",
-                                        width: "100px",
-                                        objectFit: "contain",
-                                        border: "1px solid #d3d3d3",
-                                        borderRadius: "50%"
-                                    }} 
-                                    src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
-                                />
-                                {/* then the class teacher */}
-                                <br />
-                                <span className="sub-modal-texts" style={{
-                                    letterSpacing: "1px"
-                                }}><b>{teacherDisplay.teacher.name}</b></span>
-                                <br />
-                                <span className="sub-modal-texts" style={{
-                                    letterSpacing: "1px"
-                                }}>{teacherDisplay.teacher.email}</span>
-                                <br/><br/>
-                                <Link 
-                                    to={`/teacher/edit/${teacherDisplay.teacher._id}`} 
-                                    className="waves-effect waves-light btn-flat sub-names"
-                                    style={{
-                                        border: "1px solid #d3d3d3",
-                                        borderRadius: "20px",
-                                        textTransform: "capitalize"
-                                    }}
-                                >
-                                    <i className="material-icons right">edit</i>Edit Profile
-                                </Link>
-                                <button className="waves-effect waves-light btn-flat sub-names" style={{
-                                        border: "1px solid #d3d3d3",
-                                        borderRadius: "20px",
-                                        marginTop: "5px",
-                                        textTransform: "capitalize"
-                                }} onClick={_ => {
-                                    axios.get(`/api/teacher/credential/${params.id}`, {
-                                        headers: { Authorization: `Bearer ${authToken}`}
-                                    }).then(({ data }) => {
-                                        if (data) {
-                                            if (data.status) {
-                                                copyText(data.decrypted_password);
-                                                success_toast("Copied password!")
-                                                return;
-                                            }
-
-                                            error_toast("Failed to copy password!");
+                        <div className="col s12 m2 center sticky-side" style={{
+                            borderRight: "1px solid #d3d3d3",
+                        }}>
+                            {/* place the class icon at the top */}
+                            <img
+                                style={{
+                                    height: "100px",
+                                    width: "100px",
+                                    objectFit: "contain",
+                                    border: "1px solid #d3d3d3",
+                                    borderRadius: "50%"
+                                }} 
+                                src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
+                            />
+                            {/* then the class teacher */}
+                            <br />
+                            <span className="sub-modal-texts" style={{
+                                letterSpacing: "1px"
+                            }}><b>{teacherDisplay.teacher.name}</b></span>
+                            <br />
+                            <span className="sub-modal-texts" style={{
+                                letterSpacing: "1px"
+                            }}>{teacherDisplay.teacher.email}</span>
+                            <br/><br/>
+                            <Link 
+                                to={`/teacher/edit/${teacherDisplay.teacher._id}`} 
+                                className="waves-effect waves-light btn-flat sub-names"
+                                style={{
+                                    border: "1px solid #d3d3d3",
+                                    borderRadius: "20px",
+                                    textTransform: "capitalize"
+                                }}
+                            >
+                                <i className="material-icons right">edit</i>Edit Profile
+                            </Link>
+                            <button className="waves-effect waves-light btn-flat sub-names" style={{
+                                    border: "1px solid #d3d3d3",
+                                    borderRadius: "20px",
+                                    marginTop: "5px",
+                                    textTransform: "capitalize"
+                            }} onClick={_ => {
+                                axios.get(`/api/teacher/credential/${params.id}`, {
+                                    headers: { Authorization: `Bearer ${authToken}`}
+                                }).then(({ data }) => {
+                                    if (data) {
+                                        if (data.status) {
+                                            copyText(data.decrypted_password);
+                                            success_toast("Copied password!")
                                             return;
                                         }
 
-                                        throw new Error("Unexpected error!");
-                                    })
-                                    .catch(error => {
-                                        error_toast(error.message);
-                                    })
-                                }}>
-                                    <i className="material-icons right">content_copy</i>Copy Password
-                                </button>
-                            </div>
+                                        error_toast("Failed to copy password!");
+                                        return;
+                                    }
+
+                                    throw new Error("Unexpected error!");
+                                })
+                                .catch(error => {
+                                    error_toast(error.message);
+                                })
+                            }}>
+                                <i className="material-icons right">content_copy</i>Copy Password
+                            </button>
                         </div>
 
                         <div className="col s12 m10">

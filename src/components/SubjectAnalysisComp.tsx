@@ -1,3 +1,6 @@
+// @ts-ignore
+import M from 'materialize-css';
+
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -10,10 +13,8 @@ import {
 import Select from 'react-select';
 import { Bar } from "react-chartjs-2"
 import { useContext, useEffect, useState } from 'react';
-import { IGradeData, IPaperType } from '../components/StudentReport/components/GradeSelect';
 import axios from 'axios';
 import { GlobalContext } from '../contexts/GlobalContext';
-import { IProgressData } from '../components/StudentReport/interfaces/interfaces';
 import { ILearner } from '../_pages/Learners';
 import { useNavigate } from 'react-router-dom';
 
@@ -116,7 +117,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
         label: string // the fullnames of the learner
         value: string // the id of the learner
         isSpecial: boolean
-    }>({ isSpecial: false, label: "", value: "" });
+    } | null>({ isSpecial: false, label: "", value: "" });
 
     const [libraryPapers, setLibraryPapers] = useState<IPaperDoneDataPoint[]>([]); // they are just data points with an _id
     const [plottableData, setPlottableData] = useState<{
@@ -142,10 +143,14 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
             }
         })
 
+        M.Tabs.init(document.querySelector(".sub-tabs"), {
+            swipeable: true
+        })
     }, []);
 
     useEffect(() => {
-        if (selectedPaperDone.value) {
+        // wipe out the papersDone and the graph
+        if (selectedPaperDone && selectedPaperDone.value) {
             axios.get(`/api/analytics/learner/${selectedLearner}/${selectedPaperDone.value}${selectedPaperDone.isSpecial ? "/special": ""}`,
             {
                 headers: { Authorization: `Bearer ${authToken}`}
@@ -167,9 +172,18 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
 
     useEffect(() => {
         if (selectedLearner) {
+
+            // reset the core data structures
+            setPapersDone([]);
+            setSelectedPaperDone(null);
+            setPlottableData({fail: [], pass: []});
+            setLibraryPapers([]);
+            // end of resetting the core data structures
+
             // fetch the data for the student now
             const classId = localStorage.getItem("classId") || "";
 
+            // if we fail we need to show the error(s)
             axios.get(`/api/analytics/subject/${classId}/${selectedLearner}/${subject}`, {
                 headers: { Authorization: `Bearer ${authToken}`}
             }).then(({ data }) => {
@@ -227,135 +241,150 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                             }
                         </div>
                 </div> : null }
-                <div className="col s12 m12 l4">
-                    <div className="card z-depth-0" style={{border:"1px solid #dcdee2"}}>
-                    <div className="card-content">
-                        {/* <span className="card-title center"><b><small>PERFORMANCE ANALYSIS</small></b></span> */}
-                        <div className="row">
-
-                            <div className="col s12 m12">
-                                <label>Learner</label>
-                                <Select
-                                    onChange={item => {
-                                        setSelectedLearner(item?.value || "");
-                                    }}
-                                    options={learners} 
-                                    placeholder="select learner..."/>
-                                
-                            </div>
-
-                            {/* fetch all the papers that the student has done ( both special and the normal ones ) */}
-                            <div className="col s12 m12">
-                                <label>Paper</label>
-                                <Select
-                                    options={papersDone} 
-                                    onChange={item => {
-                                        // se the paper
-                                        setSelectedPaperDone((item || {}) as { 
-                                            label: string, value: string, isSpecial: boolean 
-                                        });
-                                    }}
-                                    placeholder="select paper..."/>
-                            </div>
-
-                        </div>
-
-                        {/* // <!-- create a report generator button --> */}
-                        <div className="row" id="performanceReportButton" hidden>
-
-                            <div className="col s12 m12">
-                                <button onClick={() => {
-                                    // "activatePerfomanceReport();"
-                                }} data-position="bottom" data-tooltip="Scroll down to view or download the report" className="btn-small sub-modal-texts tooltipped white black-text waves-effect waves-black z-depth-1" style={{width:"100%", fontWeight:"bold"}}>PERFORMANCE REPORT<i className="material-icons right">assessment</i></button>
-                            </div>
-
-                        </div>
-
-                    </div>
-                    </div>
+                {/* the choosing header */}
+                <div className="col s12">
+                    <ul className="sub-tabs tabs tabs-fixed-width" style={{
+                        overflowX: "hidden"
+                    }}>
+                        <li className="tab col s6"><a href="#analytics" className='active'>Analytics</a></li>
+                        <li className={`tab col s6 ${libraryPapers.length ? '' : 'disabled'}`}><a href="#lastDonePapers">Last ({libraryPapers.length}) Paper(s)</a></li>
+                    </ul>
                 </div>
 
-                <div className="col s12 m12 l8">
-                    <div className="card z-depth-0" style={{border:"1px solid #dcdee2"}}>
+                <div id="analytics">
+                    <div className="col s12 m12 l4">
+                        <div className="card z-depth-0" style={{border:"1px solid #dcdee2"}}>
                         <div className="card-content">
-                            <div className="row" id="insertChart">
+                            {/* <span className="card-title center"><b><small>PERFORMANCE ANALYSIS</small></b></span> */}
+                            
+                            <div className="row">
 
-                                <Bar
-                                    // @ts-ignore
-                                    options={options('Performance Analysis', isMobilePhone)}
-                                    style={{ ...(isMobilePhone ? { height:  "400px" } : { height: "300px" })}}
-                                    data={{
-                                        labels: plottableData.pass.map((_, index) => `Attempt ${index + 1}`),
-                                        datasets: [
-                                            {
-                                                label: 'Pass',
-                                                data: plottableData.pass,
-                                                backgroundColor: '#00c853',
-                                            },
-                                            {
-                                                label: 'Fail',
-                                                data: plottableData.fail,
-                                                backgroundColor: '#f44336',
-                                            }
-                                        ],
-                                    }}
-                                />
+                                <div className="col s12 m12">
+                                    <label>Learner</label>
+                                    <Select
+                                        hideSelectedOptions={true}
+                                        onChange={item => {
+                                            setSelectedLearner(item?.value || "");
+                                        }}
+                                        options={learners} 
+                                        placeholder="select learner..."/>
+                                    
+                                </div>
 
+                                {/* fetch all the papers that the student has done ( both special and the normal ones ) */}
+                                <div className="col s12 m12">
+                                    <label>Paper</label>
+                                    <Select
+                                        hideSelectedOptions={true}
+                                        isDisabled={!!!selectedLearner || !!!papersDone.length}
+                                        options={papersDone} 
+                                        value={selectedPaperDone}
+                                        onChange={item => {
+                                            // se the paper
+                                            setSelectedPaperDone((item || {}) as { 
+                                                label: string, value: string, isSpecial: boolean 
+                                            });
+                                        }}
+                                        placeholder="select paper..."/>
+                                </div>
+
+                            </div>
+
+                            {/* // <!-- create a report generator button --> */}
+                            <div className="row" id="performanceReportButton" hidden>
+
+                                <div className="col s12 m12">
+                                    <button onClick={() => {
+                                        // "activatePerfomanceReport();"
+                                    }} data-position="bottom" data-tooltip="Scroll down to view or download the report" className="btn-small sub-modal-texts tooltipped white black-text waves-effect waves-black z-depth-1" style={{width:"100%", fontWeight:"bold"}}>PERFORMANCE REPORT<i className="material-icons right">assessment</i></button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        </div>
+                    </div>
+
+                    <div className="col s12 m12 l8">
+                        <div className="card z-depth-0" style={{border:"1px solid #dcdee2"}}>
+                            <div className="card-content">
+                                <div className="row" id="insertChart">
+
+                                    <Bar
+                                        // @ts-ignore
+                                        options={options('Performance Analysis', isMobilePhone)}
+                                        style={{ ...(isMobilePhone ? { height:  "400px" } : { height: "300px" })}}
+                                        data={{
+                                            labels: plottableData.pass.map((_, index) => `Attempt ${index + 1}`),
+                                            datasets: [
+                                                {
+                                                    label: 'Pass',
+                                                    data: plottableData.pass,
+                                                    backgroundColor: '#00c853',
+                                                },
+                                                {
+                                                    label: 'Fail',
+                                                    data: plottableData.fail,
+                                                    backgroundColor: '#f44336',
+                                                }
+                                            ],
+                                        }}
+                                    />
+
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                { libraryPapers.length ? 
-                <div className="col s12 m12">
-                    <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
-                    <h5 className="center sub-sub-headings">Last ({libraryPapers.length}) paper(s)</h5>
-                    <div className="divider"></div>
+                <div id="lastDonePapers">
+                    { libraryPapers.length ? 
+                    <div className="col s12 m12">
+                        <div className="section">
+                            {
+                                libraryPapers.map((libpaper, index) => {
+                                    // check if whether the paper is special or not
+                                    return (
+                                        <div className="col s6 m2 l2" key={index}>
+                                            <div className="hoverable" 
+                                                onClick={_ => navigate(
+                                                    libpaper.isSpecial ? `/library-paper/special/${selectedLearner}/${libpaper.grade}/${libpaper.paperID}/${libpaper._id}`: `/library-paper/${selectedLearner}/${libpaper._id}`
+                                                )}
 
-                    <div className="section">
-                    {
-                            libraryPapers.map((libpaper, index) => {
-                                // check if whether the paper is special or not
-                                return (
-                                    <div className="col s6 m2 l2" key={index}>
-                                        <div className="hoverable" 
-                                            onClick={_ => navigate(
-                                                libpaper.isSpecial ? `/library-paper/special/${selectedLearner}/${libpaper.grade}/${libpaper.paperID}/${libpaper._id}`: `/library-paper/${selectedLearner}/${libpaper._id}`
-                                            )}
+                                                style={{
+                                                        backgroundColor: "#fffde7",
+                                                        marginBottom: "5px",
+                                                        cursor: "pointer",
+                                                        border: "1px solid #d3d3d3",
+                                                        borderRadius: "2px",
+                                                        padding: "4px"
+                                                    }}
+                                                >
 
-                                            style={{
-                                                    backgroundColor: "#fffde7",
-                                                    marginBottom: "5px",
-                                                    cursor: "pointer",
-                                                    border: "1px solid #d3d3d3",
-                                                    borderRadius: "2px",
-                                                    padding: "4px"
-                                                }}
-                                            >
+                                                <div className="center">
 
-                                            <div className="center">
-
-                                                <span className="sub-names truncate"><b>{libpaper.subject}</b></span>
-                                                <br/>
-                                                <span className="sub-modal-texts teal-text truncate" style={{
-                                                    backgroundColor: "#fff",
-                                                    border: "1px solid #d3d3d3",
-                                                    padding: "4px",
-                                                    borderRadius: "2px"
-                                                }}>
-                                                    <b>{libpaper.subject.split(" ")[0].toLocaleLowerCase().includes("kiwahili") ? "ALAMA": "SCORE"}
-                                                        ({libpaper.score.passed }/{libpaper.score.total})
-                                                    </b>
-                                                </span>
+                                                    <span className="sub-names truncate"><b>{libpaper.subject}</b></span>
+                                                    <br/>
+                                                    <span className="sub-modal-texts teal-text truncate" style={{
+                                                        backgroundColor: "#fff",
+                                                        border: "1px solid #d3d3d3",
+                                                        padding: "4px",
+                                                        borderRadius: "2px"
+                                                    }}>
+                                                        <b>{libpaper.subject.split(" ")[0].toLocaleLowerCase().includes("kiwahili") ? "ALAMA": "SCORE"}
+                                                            ({libpaper.score.passed }/{libpaper.score.total})
+                                                        </b>
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )
-                            })
-                        }
+                                    )
+                                })
+                            }
+                        </div>
                     </div>
+                    : null }
                 </div>
-                : null }
             </div>
     )
 }

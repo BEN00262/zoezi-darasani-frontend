@@ -8,7 +8,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 
 const success_toastify = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 1000
 })
 
 const failure_toastify = (message: string) => toast.error(message, {

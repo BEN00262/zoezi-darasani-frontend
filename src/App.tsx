@@ -4,6 +4,7 @@ import {
   Route,
   Routes
 } from "react-router-dom";
+import "./App.css";
 import Footer from "./components/Footer"
 import Navigation from "./components/Navigation"
 import NormalPaperDisplay from "./components/normal_paper_display";

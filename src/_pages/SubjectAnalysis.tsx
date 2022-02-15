@@ -54,7 +54,7 @@ const SubjectAnalysis = () => {
             <div className="section">
                 <div className="row">
                     {/* place the class icon at the top */}
-                    <div className="col s12 m2 center" style={{
+                    <div className="col s12 m2 center sticky-side" style={{
                         borderRight: "1px solid #d3d3d3",
                     }}>
                         <img

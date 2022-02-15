@@ -21,7 +21,13 @@ const TeacherGrade: React.FC<Grade> = ({ _id, name, year, stream, classRef }) =>
     return (
         <div className="col s12 m4">
             <div 
-                onClick={_ => navigate(`/grades/${_id}`)}
+                onClick={_ => {
+                    localStorage.setItem("classId", _id);
+                    // localStorage.setItem("classRefId", classRef || "");
+                    localStorage.setItem("gradeName", name);
+
+                    navigate(`/grades/${_id}`)
+                }}
                 className="hoverable z-depth-1" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",marginBottom: "10px",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>

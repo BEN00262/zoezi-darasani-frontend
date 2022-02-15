@@ -22,6 +22,7 @@ interface ISchoolDisplay {
     mpesaNumber: string
     name: string
     theme: string
+    logo: string
     registrationNumber: string
     password: string
     confirmPassword: string
@@ -31,11 +32,14 @@ const AccountSettings = () => {
     const { authToken } = useContext(GlobalContext);
     const [themePicked, setThemePicked] = useState("#b2dfdb");
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isChangingLogo, setIsChangingLogo] = useState(false);
+
     const [schoolDetails, setSchoolDetails] = useState<ISchoolDisplay>({
         email: "", location: "", mpesaNumber: "", name: "", theme: "#b2dfdb", registrationNumber: "",
-        password: "", confirmPassword: ""
+        password: "", confirmPassword: "", logo: ""
     })
     const [error, setErrors] = useState("");
+    const [logoPicked, setLogoPicked] = useState<File | null>();
 
     const themePickedUpdateFunction = useMemo(() => debounce(() => {
         axios.put('/api/school/theme', { theme: themePicked }, {
@@ -56,6 +60,40 @@ const AccountSettings = () => {
     // useEffect(() => {
     //     themePickedUpdateFunction();
     // }, [themePicked])
+
+    useEffect(() => {
+        if (logoPicked) {
+            // update it in the server :)
+            setIsChangingLogo(true);
+            let form = new FormData();
+            form.set('logoPic', logoPicked, logoPicked.name);
+            axios.put("/api/school/logo", form, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                    "Content-Type": "multipart/form-data"
+                }
+            })
+            .then(({ data }) => {
+                if (data) {
+                    if (data.status) {
+                        success_toast("Logo changed successfully!")
+                        return;
+                    }
+
+                    error_toast("Failed to change logo");
+                    return;
+                }
+
+                throw new Error("Unexpected error!");
+            })
+            .catch(error => {
+                error_toast(error.message);
+            })
+            .finally(() => {
+                setIsChangingLogo(false);
+            })
+        }
+    }, [logoPicked])
 
     useEffect(() => {
         axios.get("/api/school/profile", {
@@ -124,11 +162,11 @@ const AccountSettings = () => {
             overflowX: "hidden"
         }}>
                 <div style={{
-                background: themePicked,
-                height: "160px",
-                position: "relative",
-                borderBottom: "1px solid #d3d3d3"
-            }}>
+                    background: themePicked,
+                    height: "160px",
+                    position: "relative",
+                    borderBottom: "1px solid #d3d3d3"
+                }}>
                 <div className="center">
                     <span style={{
                         fontSize: "60px",
@@ -150,28 +188,34 @@ const AccountSettings = () => {
                             objectFit: "contain",
                             border: `1px solid ${themePicked}`,
                             borderRadius: "50%",
-                            backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url('https://illustoon.com/photo/2871.png')"
+                            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(${ logoPicked ? window.URL.createObjectURL(logoPicked) : schoolDetails.logo ? schoolDetails.logo : 'https://illustoon.com/photo/2871.png'})`,
+                            backgroundSize: 'cover'
                         }}
                     ></div>
 
-                    <div style={{
+                    <div hidden={isChangingLogo} style={{
                         position: "absolute",
-                        left: "25px",
+                        left: "20px",
                         top: "65px"
                     }}>
                         <label htmlFor="profile-upload" className='black-text' style={{
                             border: `3px solid ${themePicked}`,
                             padding: "3px 15px",
-                            borderRadius: "20px"
+                            borderRadius: "20px",
                         }}>
-                            Update Logo
+                            <span style={{
+                                color: themePicked
+                            }}> <b>Update Logo</b> </span>
                         </label>
                         <input type="file" id="profile-upload" style={{
                             display: "none"
+                        }} onChange={e => {
+                            let file = e.target.files;
+                            setLogoPicked(file ? file[0] : null);
                         }} />
                     </div>
                 </div>
-                <div className='right-align' style={{
+                {/* <div className='right-align' style={{
                     // paddingRight: "5px",
                     position: "absolute",
                     top: "130px",
@@ -195,7 +239,7 @@ const AccountSettings = () => {
                     }} style={{
                         display: 'none'
                     }} type="color" />
-                </div>
+                </div> */}
             </div>
             <div className="container">
                     <div className="row">

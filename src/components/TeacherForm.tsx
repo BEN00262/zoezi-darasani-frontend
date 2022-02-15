@@ -17,13 +17,15 @@ export interface ITeacher {
 
 // get the current id of the system first then do the stuff
 const TeacherFormComp = () => {
-    const navigate = useNavigate();
     const { authToken } = useContext(GlobalContext);
+
+    const navigate = useNavigate();
     const params = useParams();
 
     const [teacherDetails, setTeacherDetails] = useState<ITeacher>({
         name: "", email: "", password: "", confirmPassword: ""
-    })
+    });
+    
     const [isUpdating, setIsUpdating] = useState(false);
     const [isSendingToServer, setIsSendingToServer] = useState(false);
     const [currentTeacherId, setCurrentTeacherId] = useState("");
@@ -33,14 +35,13 @@ const TeacherFormComp = () => {
 
     const success_toastify = () => toast.success("Successfully created/updated teacher!", {
         position: toast.POSITION.TOP_RIGHT,
-        autoClose: 2000,
-        onClose: () => navigate(-1) // go back to the grades page after a success :)
+        autoClose: 1000,
+        onClose: () => navigate(-1)
     })
 
     const failure_toastify = (message: string) => toast.error(message, {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 2000
-        // onClose: () => navigate(-1) // go back to the grades page after a success :)
     })
 
 
@@ -158,15 +159,18 @@ const TeacherFormComp = () => {
                 </div>
 
                 {/* <!-- end of profile pic upload place --> */}
-                <div className="input-field col s6">
+
+                <div className="input-field col s12 m6">
                     <input value={teacherDetails.name} onChange={handleInputValueChange} id="first_name" name="name" type="text" className="validate contactustext"/>
                     <label htmlFor="first_name">Full name</label>
                 </div>
 
-                <div className="input-field col s6">
+                <div className="input-field col s12 m6">
                     <input value={teacherDetails.email} onChange={handleInputValueChange} id="last_name" name="email" type="email" className="validate contactustext"/>
                     <label htmlFor="last_name">Email</label>
                 </div>
+
+                {/* end of the input */}
 
                 <div className="input-field col s12 m12 left-align" hidden={!isUpdating}>
                     <p className="sub-modal-texts">

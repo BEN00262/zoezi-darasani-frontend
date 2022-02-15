@@ -26,7 +26,12 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
     return (
         <div className="col s12 m4">
             <div
-                onClick={_ => navigate(`/grades/${_id}`)}
+                onClick={_ => {
+                    localStorage.setItem("classId", _id);
+                    // localStorage.setItem("classRefId", classRef || "");
+                    localStorage.setItem("gradeName", name);
+                    navigate(`/grades/${_id}`)
+                }}
                 className="hoverable z-depth-1" 
                 style={{cursor: "pointer", marginBottom: "10px", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>

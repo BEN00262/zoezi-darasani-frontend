@@ -42,6 +42,7 @@ const GradeDisplayPage = () => {
                     let _grade = data.grade as IGrade
 
                     // use local storage to store the values
+                    // find a way to set this in a better way :)
                     localStorage.setItem("classId", _grade._id);
                     localStorage.setItem("classRefId", _grade.classRef || "");
                     localStorage.setItem("gradeName", _grade.name);
@@ -67,7 +68,7 @@ const GradeDisplayPage = () => {
                 {/* should we use the  */}
                 {/* the first row should show the na */}
                 <div className="row">
-                    <div className="col s12 m2 center" style={{
+                    <div className="col s12 m2 center sticky-side" style={{
                             borderRight: "1px solid #d3d3d3",
                         }}>
                         <div>
