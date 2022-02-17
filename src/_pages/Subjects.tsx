@@ -9,11 +9,18 @@ import { ITeacherComp } from "./TeacherDisplayPage";
 interface ISubject {
     _id: string
     name: string
-    teacher: ITeacherComp
+    teacher: ITeacherComp,
+    gradeName: string
 }
 
-const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
+// get the grade name and use it ( unless its kcpe ofcourse )
+const Subject: React.FC<ISubject> = ({ _id, name, teacher, gradeName }) => {
     const navigate = useNavigate();
+    let _gradeName = gradeName.toLowerCase();
+    let _name = name.toLowerCase();
+
+    const imageUrl = _gradeName === "eight" ? "kcpe" : _gradeName;
+    const subjectImageUrl = _name === "sst&cre" ? "social" : _name.split(" ")[0];
 
     return (
         <div className="col s12 m4">
@@ -30,7 +37,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/kcpe/${name ? name.split(" ")[0].toLowerCase() : "mathematics"}.png`}
+                        src={`https://www.zoezi-education.com/img/${imageUrl}/${subjectImageUrl}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>
@@ -46,7 +53,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher }) => {
     )
 }
 
-const SubjectsComp = () => {
+const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
     const { authToken, isTeacher } = useContext(GlobalContext);
     const navigate = useNavigate();
     const [subjects, setSubjects] = useState<ISubject[]>([]);
@@ -58,10 +65,12 @@ const SubjectsComp = () => {
         const classId = localStorage.getItem("classId") || "";
         setIsFetching(true);
 
-        axios.get(`/api/subject/${classId}?timestamp=${new Date().getTime()}`, {
+        axios.get(`/api/subject/${classId}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
+                // get the grade name for obvious reasons
+
                 if (data) {
                     setSubjects(data.subjects as ISubject[]);
                     return;
@@ -116,12 +125,12 @@ const SubjectsComp = () => {
                                 return navigate(`/subject/new/${_gradeName}`)
                             }
                         }}
-                        className="waves-effect waves-light btn-flat"><i className="material-icons right">add_circle_outline</i>Add Subject</button>
+                        className="waves-effect waves-light btn-flat"><i className="material-icons right">add_circle_outline</i>Add Subject(s)</button>
                 </div>
             </div>
             <div className="row">
                 {subjects.map((subject, index) => {
-                    return <Subject key={index} {...subject}/>
+                    return <Subject key={index} {...subject} gradeName={gradeName}/>
                 })}
             </div>
         </>

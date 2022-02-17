@@ -1,3 +1,6 @@
+// @ts-ignore
+import M from 'materialize-css'
+
 import axios from 'axios';
 import { SyntheticEvent, useContext, useEffect, useState } from 'react'
 import Select from 'react-select'
@@ -14,6 +17,90 @@ interface ISubjectData {
     _id: string
 }
 
+interface INewSubjectSideNav {
+    subjects: ISubjectData[]
+    teachers: ISelectableData[]
+    isCreactingSubject: boolean
+    pushToList: (subject: ISubjectDetail) => void
+}
+
+const NewSubjectSideNav: React.FC<INewSubjectSideNav> = ({ 
+    subjects, teachers, isCreactingSubject, pushToList
+}) => {
+    const [subjectDetails, setSubjectDetails] = useState<ISubjectDetail>({ 
+        teacherId: "", teacherName: "", subject: "", subjectName: ""
+    });
+
+    const handleFormSubmission = (e: SyntheticEvent) => {
+        e.preventDefault();
+
+        // close the side nav here :)
+        if (subjectDetails.teacherId || subjectDetails.subject || subjectDetails.subjectName) {
+            pushToList(subjectDetails);
+            M.Sidenav.getInstance(document.getElementById("new-subject")).close();
+            // setSubjectDetails({} as ISubjectDetail);
+            return;
+        }
+    }
+    return (
+        <div className='sidenav' id="new-subject">
+            <div className="section">
+               <div className="row">
+               <form method='post' onSubmit={handleFormSubmission} className="col s12">
+                            <div className="col s12 m12">
+                                {/* if a subject has already been created we cant recreate it ( we have to check this ) */}
+                                <label>Select Subject</label>
+                                <Select
+                                    onChange={item => {
+                                        setSubjectDetails((old: any) => ({
+                                            ...old,
+                                            subject: item?.value || "",
+                                            subjectName: item?.label || ""
+                                        }))
+                                    }}
+                                    options={subjects} 
+                                    placeholder="choose subject..."/>
+                                
+                            </div>
+        
+                            {/* attaching to a teacher */}
+                            <div className="col s12 m12">
+                                {/* if a subject has already been created we cant recreate it ( we have to check this ) */}
+                                <label>Assign Teacher</label>
+                                <Select
+                                    onChange={item => {
+                                        setSubjectDetails((old: any) => ({
+                                            ...old,
+                                            teacherId: item?.value || "",
+                                            teacherName: item?.label || ""
+                                        }))
+                                    }}
+                                    options={teachers} 
+                                    placeholder="choose teacher..."/>
+                                
+                            </div>
+        
+                            <div className="col s12 m12" style={{
+                                marginTop: "10px"
+                            }}>
+                                <button className="btn-small" style={{
+                                    width: "100%"
+                                }}>Create Subject</button>
+                            </div>
+                    </form>
+               </div>
+            </div>
+        </div>
+    )
+}
+
+interface ISubjectDetail {
+    teacherId: string
+    teacherName: string
+    subject: string
+    subjectName: string
+}
+
 const NewSubject = () => {
     const navigate = useNavigate();
     const params = useParams();
@@ -23,10 +110,9 @@ const NewSubject = () => {
     const [isCreactingSubject, setIsCreatingSubject] = useState(false);
 
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
-    const [subjectDetails, setSubjectDetails] = useState<{
-        teacherId: string
-        subject: string
-    }>({ teacherId: "", subject: "" });
+
+    // this should be an array of this :)
+    const [subjectDetails, setSubjectDetails] = useState<ISubjectDetail[]>([]);
 
     const success_toastify = () => toast.success("Successfully created subject!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -42,6 +128,10 @@ const NewSubject = () => {
 
     useEffect(() => {
         const classId = localStorage.getItem("classId") || "";
+
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), {
+            edge: "right"
+        });
         
         Promise.all([
             axios.get(`/api/misc/subjects/${params.gradeName}/${classId}`, { headers: { 'Authorization': `Bearer ${authToken}`}}),
@@ -84,15 +174,18 @@ const NewSubject = () => {
             })
     }, []);
 
-    const handleFormSubmission = (e: SyntheticEvent) => {
-        e.preventDefault();
-
+    const handleSubjectsCreation = () => {
         // get the current stuff and use it
         const classId = localStorage.getItem("classId") || "";
         setIsCreatingSubject(true);
 
         // console.log(learnerDetails);
-        axios.post(`/api/subject/${classId}`, subjectDetails, {
+        axios.post(`/api/subject/${classId}`, {
+            subjects: subjectDetails.map(x => ({
+                subject: x.subject,
+                teacherId: x.teacherId
+            }))
+        }, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
@@ -115,8 +208,21 @@ const NewSubject = () => {
             })
     }
 
+    
     return (
-        <main style={{display: "flex",justifyContent: "center",alignItems: "center"}}>
+        // style={{display: "flex",justifyContent: "center",alignItems: "center"}}
+        <main>
+            <NewSubjectSideNav 
+                pushToList={(subject: ISubjectDetail) => {
+                    setSubjectDetails(old => [
+                        ...old,
+                        subject
+                    ])
+                }}
+                isCreactingSubject={isCreactingSubject}
+                subjects={subjects.filter(x => !subjectDetails.find(y => y.subject === x.value))}
+                teachers={teachers}
+            />
                 <div className='container'>
             <div className="section">
                 {
@@ -142,46 +248,54 @@ const NewSubject = () => {
                     : null
                 }
                 <div className="row">
-                    <ToastContainer/>
-                    <form method='post' onSubmit={handleFormSubmission} className="col s12 m6 push-m3">
-                            
-                    <div className="col s12 m12">
-                        {/* if a subject has already been created we cant recreate it ( we have to check this ) */}
-                        <label>Select Subject</label>
-                        <Select
-                            onChange={item => {
-                                setSubjectDetails(old => ({
-                                    ...old,
-                                    subject: item?.value || ""
-                                }))
-                            }}
-                            options={subjects} 
-                            placeholder="choose subject..."/>
-                        
-                    </div>
+                    {/* @ts-ignore */}
+                   <a disabled={isCreactingSubject} href="#" data-target="new-subject" className='btn-flat sub-modal-texts sidenav-trigger' style={{
+                       border: "1px solid #d3d3d3"
+                   }}>
+                    <b>New <i className="material-icons right">add</i></b>
+                   </a>
+                   <button disabled={isCreactingSubject} onClick={_ => handleSubjectsCreation()} className='btn-flat sub-modal-texts' style={{
+                       border: "1px solid #d3d3d3",
+                       marginLeft: "5px"
+                   }}>
+                    <b>Save <i className="material-icons right">save</i></b>
+                   </button>
+                </div>
+                <div className="divider"></div>
+                <div className="row">
+                <table className='striped sub-modal-texts highlight'>
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Teacher</th>
+                        <th>Subject</th>
+                    </tr>
+                    </thead>
 
-                    {/* attaching to a teacher */}
-                    <div className="col s12 m12">
-                        {/* if a subject has already been created we cant recreate it ( we have to check this ) */}
-                        <label>Assign Teacher</label>
-                        <Select
-                            onChange={item => {
-                                setSubjectDetails(old => ({
-                                    ...old,
-                                    teacherId: item?.value || ""
-                                }))
-                            }}
-                            options={teachers} 
-                            placeholder="choose teacher..."/>
-                        
-                    </div>
-
-                    <div className="col s12 m12" style={{
-                        marginTop: "10px"
-                    }}>
-                        <button className="btn-small">{isCreactingSubject ? "Creating subject..." : "Create Subject"}</button>
-                    </div>
-                    </form>
+                        <tbody>
+                        {
+                            subjectDetails.map((subjectDetail, index) => {
+                                return (
+                                    <tr key={`item_${index}`}>
+                                        <td>{index + 1}</td>
+                                        <td>{subjectDetail.teacherName}</td>
+                                        <td>{subjectDetail.subjectName}</td>
+                                        <td>
+                                            <button className='btn-flat red-text' onClick={_ => {
+                                                // remove the item from the subject details
+                                                let localCopy = [...subjectDetails];
+                                                localCopy.splice(index, 1);
+                                                setSubjectDetails(localCopy);
+                                            }}>
+                                                <b>remove</b>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                )
+                            })
+                        }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

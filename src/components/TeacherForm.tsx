@@ -46,8 +46,7 @@ const TeacherFormComp = () => {
 
 
     useEffect(() => {
-        if (params.id) {
-            // operation is updating
+        if (!!params.id) {
             setIsUpdating(true);
             axios.get(`/api/teacher/${params.id}`, {
                 headers: { 'Authorization': `Bearer ${authToken}`}
@@ -60,11 +59,18 @@ const TeacherFormComp = () => {
                         ...old,
                         name, email
                     }))
+
+                    return;
                 }
+
+                throw new Error("Unexpected error!")
             })
             .catch(error => {
                 setError(error.message as string);
             })
+            // .finally(() => {
+            //     setIsUpdating(false);
+            // })
         }
     }, []);
 
@@ -158,16 +164,22 @@ const TeacherFormComp = () => {
                     </div>
                 </div>
 
-                {/* <!-- end of profile pic upload place --> */}
-
                 <div className="input-field col s12 m6">
-                    <input value={teacherDetails.name} onChange={handleInputValueChange} id="first_name" name="name" type="text" className="validate contactustext"/>
-                    <label htmlFor="first_name">Full name</label>
+                    <input 
+                        value={teacherDetails.name} 
+                        onChange={handleInputValueChange} 
+                        id="fullname" name="name" type="text" 
+                        className="validate contactustext"/>
+                    <label htmlFor="fullname">Full name</label>
                 </div>
 
                 <div className="input-field col s12 m6">
-                    <input value={teacherDetails.email} onChange={handleInputValueChange} id="last_name" name="email" type="email" className="validate contactustext"/>
-                    <label htmlFor="last_name">Email</label>
+                    <input
+                        value={teacherDetails.email} 
+                        onChange={handleInputValueChange} 
+                        id="email" name="email" type="email" 
+                        className="validate contactustext"/>
+                    <label htmlFor="email">Email</label>
                 </div>
 
                 {/* end of the input */}

@@ -9,10 +9,13 @@ export interface IRegisterPage {
     profile: File | null
     isSavingLearner: boolean
     configuration: IConfiguration
+    isUpdating: boolean
+    handleChangePassword: (status: boolean) => void
 }
 
 const RegisterPage: React.FC<IRegisterPage> = ({ 
-    handleFormSubmission, handleTextInputChange, formData, profile, isSavingLearner, configuration
+    handleFormSubmission, handleTextInputChange, formData, profile, isSavingLearner, configuration,
+    isUpdating, handleChangePassword
 }) => {
     return (
         // enctype="multipart/form-data"
@@ -77,9 +80,22 @@ const RegisterPage: React.FC<IRegisterPage> = ({
                     </p>
                 </div>
 
+                <div className="input-field col s12 m12" hidden={!isUpdating}>
+                    <span className="sub-modal-texts">
+                        <label>
+                            <input type="checkbox" name="regeneratePassword" className="filled-in" /*checked={updatePasswords}*/ onChange={e => {
+                                handleChangePassword(e.target.checked)
+                            }} />
+                            <span>Update Password</span>
+                        </label>
+                    </span>
+                </div>
+
             </div>
 
-            <button className="waves-effect waves-light btn sub-names materialize-red" style={{width:"40%"}}>{isSavingLearner ? "SAVING..." : "ADD LEARNER"}</button>
+            <button disabled={isSavingLearner} className={`waves-effect waves-light btn sub-names ${isUpdating ? "teal" : "materialize-red"}`} style={{width:"40%"}}>
+                {isSavingLearner ? isUpdating ? "UPDATING..." : "SAVING..." : isUpdating ? "UPDATE LEARNER": "ADD LEARNER"}
+            </button>
         </form>
         </div>
     )

@@ -158,7 +158,7 @@ const GradeDisplayPage = () => {
 
                             <div id="subjects" className="col s12">
                                 <React.Suspense fallback={<LoaderComp/>}>
-                                    <SubjectsCompSuspense/>
+                                    <SubjectsCompSuspense gradeName={grade.name}/>
                                 </React.Suspense>
                             </div>
                             {/* <div id="subscriptions" className="col s12">

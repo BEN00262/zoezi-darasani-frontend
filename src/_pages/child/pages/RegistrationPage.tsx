@@ -7,7 +7,7 @@ import RegisterPage from "../components/compound/Register";
 import { GlobalContext } from '../../../contexts/GlobalContext';
 
 // for toast displays
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -15,6 +15,7 @@ export interface IFormData {
     firstname: string
     lastname: string
     gender: string
+    regeneratePassword: boolean
 }
 
 export interface IConfiguration {
@@ -36,15 +37,22 @@ const RegistrationPage = () => {
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
     const [isSavingLearner, setIsSavingLearner] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
 
     const [configurations, setConfigurations] = useState<IConfiguration>({ 
         default_avatar: { alt: "", src: ""}, preloaded_avatars: [] 
     })
 
-
     const [formData, setFormData] = useState<IFormData>({
-        firstname: "", gender: "boy", lastname: ""
+        firstname: "", gender: "boy", lastname: "", regeneratePassword: false
     });
+
+    const handleChangePassword = (status: boolean) => {
+        setFormData(old => ({
+            ...old,
+            regeneratePassword: status
+        }))
+    }
 
     useEffect(() => {
         M.Modal.init(document.querySelectorAll('.modal'), {
@@ -53,12 +61,11 @@ const RegistrationPage = () => {
 
         // for testing remove afterwards
         setConfigurations(
-            {"default_avatar":{"src":"https://www.zoezi-education.com/img/profiles/default.png","alt":"default profile"},"preloaded_avatars":[{"src":"https://www.zoezi-education.com/img/profiles/profile1.png","alt":"avatar 1"},{"src":"https://www.zoezi-education.com/img/profiles/profile2.png","alt":"avatar 2"},{"src":"https://www.zoezi-education.com/img/profiles/profile3.png","alt":"avatar 3"},{"src":"https://www.zoezi-education.com/img/profiles/profile4.png","alt":"avatar 4"},{"src":"https://www.zoezi-education.com/img/profiles/profile5.png","alt":"avatar 5"}]}
+            {"default_avatar":{"src":"/img/profiles/default.png","alt":"default profile"},"preloaded_avatars":[{"src":"/img/profiles/profile1.png","alt":"avatar 1"},{"src":"/img/profiles/profile2.png","alt":"avatar 2"},{"src":"/img/profiles/profile3.png","alt":"avatar 3"},{"src":"/img/profiles/profile4.png","alt":"avatar 4"},{"src":"/img/profiles/profile5.png","alt":"avatar 5"}]}
         )
 
         // this is an update operation ( fetch the students profile and populate everything :) )
         if (params.studentId){
-
             axios.get(`/api/learner/profile/${params.studentId}`, {
                 headers: { Authorization: `Bearer ${authToken}`}
             })
@@ -76,14 +83,22 @@ const RegistrationPage = () => {
                             firstname: _student.firstname,
                             lastname: _student.lastname,
                             gender: _student.gender
-                        }))
+                        }));
+
+                        setIsUpdating(true);
+                        return;
                     }
+
+                    throw new Error("Unexpected error!");
+                })
+                .catch(error => {
+                    setErrors([error.message]);
                 })
         }
 
         
         // download the image configuration and use it
-        // axios.get("https://www.zoezi-education.com/fetch-profile-configurations")
+        // axios.get("/fetch-profile-configurations")
         //     .then(({ data }) => {
         //         if (data) { setConfigurations(data) }
         //     })
@@ -112,23 +127,27 @@ const RegistrationPage = () => {
         const classId = localStorage.getItem("classId") || "";
         const classRefId = localStorage.getItem("classRefId") || "";
 
-        if (params.studentId) {
-            return; // we wont save stuff for now
-        }
-
-        axios.post(`/api/learner/${classId}/${classRefId}`, form, {
-            headers: { 
-                Authorization: `Bearer ${authToken}`
-            }
+        axios({
+            url: isUpdating ? `/api/learner/${classId}/${classRefId}/${params.studentId}` : `/api/learner/${classId}/${classRefId}`,
+            method: isUpdating ? "put" : "post",
+            data: form,
+            headers: { Authorization: `Bearer ${authToken}` }
         })
             .then(({ data }) => {
-                    if (data) {
-                        if (data.status) {
-                            return success_toastify();
-                        }
-                        setErrors(data.errors)
+                if (data) {
+                    if (data.status) {
+                        return success_toastify();
                     }
-            }).finally(() => setIsSavingLearner(false))
+                    setErrors(data.errors)
+                    return;
+                }
+
+                throw new Error("Unexpected error!");
+            })
+            .catch(error => {
+                setErrors([error.message]);
+            })
+            .finally(() => setIsSavingLearner(false))
     }
 
     const handleProfileImageSet = (file: File) => {
@@ -148,10 +167,28 @@ const RegistrationPage = () => {
             <div className="container">
                 <div className="section">
                     <div className="row center">
-                        <ToastContainer/>
                         {
                             errors.map((error, index) => {
-                                return <p className="materialize-red-text" key={`error_${index}`}>{error}</p>
+                                return (
+                                    <div className="row" key={`error_${index}`}>
+                                        <div className="col s12">
+                                            <div className="sub-modal-texts" style={{
+                                                borderLeft: "2px solid red",
+                                                paddingLeft: "5px",
+                                                paddingRight: "5px",
+                                                borderRadius: "3px",
+                                                lineHeight: "4em",
+                                                backgroundColor: "rgba(255,0,0, 0.1)",
+                                                display: "flex",
+                                                flexDirection: "row",
+                                                alignItems: "center"
+                                            }}>
+                                                <i className="material-icons left">error_outline</i>
+                                                <p>{error}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
                             } )
                         }
                         <ProfileSelectorComp 
@@ -159,6 +196,8 @@ const RegistrationPage = () => {
                             configuration={configurations}
                         /> 
                         <RegisterPage
+                                isUpdating={isUpdating}
+                                handleChangePassword={handleChangePassword}
                                 configuration={configurations}
                                 isSavingLearner={isSavingLearner}
                                 formData={formData}
