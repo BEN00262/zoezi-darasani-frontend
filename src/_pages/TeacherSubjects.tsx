@@ -22,7 +22,7 @@ const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
         <div className="col s6 m4">
             <div 
                 onClick={_ => navigate(`/subject/${_id}`)}
-                className="hoverable z-depth-1 truncate" 
+                className="hoverable z-depth-0 truncate" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px", marginBottom: "10px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img
@@ -33,7 +33,7 @@ const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/kcpe/${name.toLowerCase().split(" ")[0]}.png`}
+                        src={`https://www.zoezi-education.com/img/${grade.name.toLowerCase() === "eight" ? "kcpe" : grade.name.toLowerCase()}/${name.toLowerCase() === "sst&cre" ? "social" : name.toLowerCase().split(" ")[0]}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>
@@ -119,7 +119,7 @@ const TeacherSubjectsComp: React.FC<ITeacherSubjectsComp> = ({ subjects }) => {
                                         objectFit: "contain",
                                         borderRadius: "50%"
                                     }} 
-                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase() || "kcpe"}.png`}
+                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase() === "eight" ? "kcpe" : gradeName.toLowerCase()}.png`}
                                 />
                                 <span style={{
                                     paddingLeft: "5px"

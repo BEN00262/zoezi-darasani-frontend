@@ -32,7 +32,7 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
                     localStorage.setItem("gradeName", name);
                     navigate(`/grades/${_id}`)
                 }}
-                className="hoverable z-depth-1" 
+                className="hoverable z-depth-0" 
                 style={{cursor: "pointer", marginBottom: "10px", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img

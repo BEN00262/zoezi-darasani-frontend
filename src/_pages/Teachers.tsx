@@ -32,7 +32,7 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
         <div className="col s12 m4">
             <div 
                 onClick={_ => navigate(`/teacher/${_id}`)}
-                className="hoverable z-depth-1" 
+                className="hoverable z-depth-0" 
                 style={{cursor: "pointer", marginBottom: "10px", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img
@@ -46,14 +46,39 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
                         src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
                     />
 
-                    <ul style={{paddingLeft: "20px"}}>
+                    {/* 
+                    
+                        .truncate {
+                            display: block;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                        }
+                    
+                    
+                    */}
+                    
+                    <div className="sub-modal-texts truncate" style={{
+                        marginLeft: "20px"
+                    }}>
+                            <div style={{
+                            letterSpacing: "1px"
+                        }}><b>{name}</b></div>
+                        <div>
+                            {email}
+                        </div>
+                    </div>
+
+                    {/* <ul style={{paddingLeft: "20px"}}>
                         <li style={{
                             letterSpacing: "1px"
                         }}><b>{name}</b></li>
                         <li className="sub-modal-texts" style={{
-                            letterSpacing: "1px"
-                        }}>{email}</li>
-                    </ul>
+                            border: "1px solid red"
+                        }}>
+                            {email}
+                        </li>
+                    </ul> */}
                     
                 </div>
             </div>

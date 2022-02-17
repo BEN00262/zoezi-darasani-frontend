@@ -7,6 +7,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import { ITeacherComp } from "./TeacherDisplayPage";
 import LoaderComp from "../components/LoaderComp";
 import EditGrade from "./EditGrade";
+import Skeleton from "react-loading-skeleton";
 
 // dynamic imports
 const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
@@ -52,7 +53,7 @@ const GradeDisplayPage = () => {
             })
 
         M.Tabs.init(document.querySelector(".tabs"), {
-            swipeable: true
+            // swipeable: true
         })
 
         M.Sidenav.init(document.querySelectorAll('.sidenav'), {
@@ -89,9 +90,9 @@ const GradeDisplayPage = () => {
                         
                         <ul>
                             {/* <li>Grade {name}</li> */}
-                            <li className="sub-modal-texts">Class Teacher: {grade.classTeacher.name}</li>
-                            <li className="sub-modal-texts">Stream: {grade.stream}</li>
-                            <li className="sub-modal-texts">Year: {grade.year}</li>
+                            <li className="sub-modal-texts">Class Teacher: {grade.classTeacher.name ? grade.classTeacher.name : <Skeleton/>}</li>
+                            <li className="sub-modal-texts">Stream: {grade.stream ? grade.stream : <Skeleton/>}</li>
+                            <li className="sub-modal-texts">Year: {grade.year ? grade.year : <Skeleton/>}</li>
                             <span style={{
                                 border: `1px solid ${grade.isClosed ? "red" : "green"}`,
                                 paddingRight: "20px",
@@ -144,19 +145,17 @@ const GradeDisplayPage = () => {
                             <div id="learners" className="col s12">
                                 {/* shows all the current learners in the system for the given grade */}
                                 {/* <Learners classRefId={grade.classRef}/> */}
-                                {grade.classRef ? <React.Suspense fallback={
-                                    <>
-                                        Loading...
-                                    </>
-                                }>
+                                {grade.classRef ? <React.Suspense fallback={<LoaderComp/>}>
                                     <LearnersSuspense classRefId={grade.classRef}/>
                                 </React.Suspense>: null}
                             </div>
+
                             <div id="perfomance" className="col s12">
                                 <React.Suspense fallback={<LoaderComp/>}>
                                     <GradePerformanceSuspense setClassMeanScore={setClassMeanScore}/>
                                 </React.Suspense>
                             </div>
+
                             <div id="subjects" className="col s12">
                                 <React.Suspense fallback={<LoaderComp/>}>
                                     <SubjectsCompSuspense/>

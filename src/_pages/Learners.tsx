@@ -36,7 +36,7 @@ const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender }) => {
         <div className="col s6 m4">
             <div 
                 onClick={_ => navigate(`/learner/${_id}`)}
-                className="hoverable z-depth-1" 
+                className="hoverable z-depth-0 hoverable sub-modal-texts" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px", marginBottom: "5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
                     <img

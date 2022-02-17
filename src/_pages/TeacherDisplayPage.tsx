@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderComp from "../components/LoaderComp";
 import EmptyComp from "../components/Empty";
+import Skeleton from "react-loading-skeleton";
 
 const TeacherGradesSuspense = React.lazy(() => import("./TeacherGrades"))
 
@@ -86,11 +87,11 @@ const TeacherDisplayPage = () => {
                             <br />
                             <span className="sub-modal-texts" style={{
                                 letterSpacing: "1px"
-                            }}><b>{teacherDisplay.teacher.name}</b></span>
+                            }}><b>{teacherDisplay.teacher.name ? teacherDisplay.teacher.name : <Skeleton/>}</b></span>
                             <br />
                             <span className="sub-modal-texts" style={{
                                 letterSpacing: "1px"
-                            }}>{teacherDisplay.teacher.email}</span>
+                            }}>{teacherDisplay.teacher.email ? teacherDisplay.teacher.email : <Skeleton/>}</span>
                             <br/><br/>
                             <Link 
                                 to={`/teacher/edit/${teacherDisplay.teacher._id}`} 

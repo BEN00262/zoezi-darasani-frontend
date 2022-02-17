@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useState } from "react"
 import { GlobalContext } from "../contexts/GlobalContext";
 import axios from "axios";
 import EditSubject from "./EditSubject";
+import Skeleton from "react-loading-skeleton";
 
 const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"))
 
@@ -72,8 +73,8 @@ const SubjectAnalysis = () => {
                             <li className="sub-modal-texts" style={{
                                 letterSpacing: "1px"
                             }}><b>{subject.name}</b></li>
-                            <li className="sub-modal-texts">Subject Teacher: {subject.teacher.name}</li>
-                            <li className="sub-modal-texts">Email: {subject.teacher.email}</li>
+                            <li className="sub-modal-texts">Subject Teacher: {subject.teacher.name ? subject.teacher.name : <Skeleton/>}</li>
+                            <li className="sub-modal-texts">Email: {subject.teacher.email ? subject.teacher.email : <Skeleton/>}</li>
                         </ul>
                         <div hidden={isTeacher}>
                             <a href="#" data-target="edit-subject" className="waves-effect waves-light btn-flat sidenav-trigger" style={{
