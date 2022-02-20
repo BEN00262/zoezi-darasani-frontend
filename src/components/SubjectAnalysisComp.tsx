@@ -17,6 +17,7 @@ import axios from 'axios';
 import { GlobalContext } from '../contexts/GlobalContext';
 import { ILearner } from '../_pages/Learners';
 import { useNavigate } from 'react-router-dom';
+import { get_learner_avatar } from '../utils/avatar_chooser';
 
 ChartJS.register(
     CategoryScale,
@@ -78,6 +79,7 @@ interface IAnalysisStudent {
     firstname: string
     lastname: string
     profilePic: string
+    gender: "boy" | "girl" | null
 }
 
 export interface ISubjectAnalysisComp {
@@ -111,7 +113,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     }[]>([]);
     const [selectedLearner, setSelectedLearner] = useState(""); // we get the selected learner and display the data :)
     const [currentLearner, setCurrentLearner] = useState<IAnalysisStudent>({
-        firstname: "", lastname: "", profilePic: ""
+        firstname: "", lastname: "", profilePic: "", gender: null
     });
     const [selectedPaperDone, setSelectedPaperDone] = useState<{
         label: string // the fullnames of the learner
@@ -219,7 +221,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                     borderRadius: "50%"
                                 }} 
                                 // the currentLearner profile pic will be a base64 encoded image ( which will make the process easier )
-                                src={currentLearner.profilePic ? currentLearner.profilePic : "https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"}
+                                src={currentLearner.profilePic ? currentLearner.profilePic : get_learner_avatar(currentLearner.gender)}
                             />
                             {/* then the class teacher */}
                             <br />

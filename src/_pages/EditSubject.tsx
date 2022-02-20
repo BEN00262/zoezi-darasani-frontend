@@ -27,13 +27,15 @@ const EditSubject: React.FC<{ subjectId: string }> = ({ subjectId }) => {
 
     const success_toastify = () => toast.success("Successfully created grade!", {
         position: toast.POSITION.TOP_LEFT,
+        className: "sub-modal-texts",
         onClose: () => navigate(0) // go back to the grades page after a success :)
     })
 
     const error_toastify = (message: string) => toast.error(message, {
         position: toast.POSITION.TOP_LEFT,
         progress: 0,
-        autoClose: false
+        autoClose: false,
+        className: "sub-modal-texts"
     })
 
 

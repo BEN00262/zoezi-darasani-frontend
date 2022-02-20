@@ -5,6 +5,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DefaultMaleTeacher from "../img/male_teacher.png"
 
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
 import EmptyComp from "../components/Empty";
@@ -13,19 +14,22 @@ interface ITeacher {
     _id: string
     name: string
     email: string
+    profilePic: string
 }
 
 const success_toastify = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 const failure_toastify = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
-const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
+const Teacher: React.FC<ITeacher> = ({ name, email, _id, profilePic }) => {
     const navigate = useNavigate();
 
     return (
@@ -43,21 +47,9 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
+                        src={profilePic ? profilePic : DefaultMaleTeacher}
                     />
 
-                    {/* 
-                    
-                        .truncate {
-                            display: block;
-                            white-space: nowrap;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                        }
-                    
-                    
-                    */}
-                    
                     <div className="sub-modal-texts truncate" style={{
                         marginLeft: "20px"
                     }}>
@@ -68,17 +60,6 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id }) => {
                             {email}
                         </div>
                     </div>
-
-                    {/* <ul style={{paddingLeft: "20px"}}>
-                        <li style={{
-                            letterSpacing: "1px"
-                        }}><b>{name}</b></li>
-                        <li className="sub-modal-texts" style={{
-                            border: "1px solid red"
-                        }}>
-                            {email}
-                        </li>
-                    </ul> */}
                     
                 </div>
             </div>

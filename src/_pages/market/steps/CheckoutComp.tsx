@@ -60,6 +60,7 @@ const CheckoutComp = () => {
 
                     (() => toast.success("Your payment is being processed", {
                         position: toast.POSITION.TOP_RIGHT,
+                        className: "sub-modal-texts",
                         onClose: () => navigate("/dashboard", { replace: true }) // go back to the grades page after a success :)
                     }))();
 

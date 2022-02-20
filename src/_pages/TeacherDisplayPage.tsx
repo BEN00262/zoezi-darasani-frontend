@@ -15,6 +15,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderComp from "../components/LoaderComp";
 import EmptyComp from "../components/Empty";
 import Skeleton from "react-loading-skeleton";
+import DefaultMaleTeacher from "../img/male_teacher.png"
 
 const TeacherGradesSuspense = React.lazy(() => import("./TeacherGrades"))
 
@@ -22,6 +23,7 @@ export interface ITeacherComp {
     _id: string
     name: string
     email: string
+    profilePic: string
 }
 
 interface ITeacherDisplay {
@@ -32,12 +34,14 @@ interface ITeacherDisplay {
 
 const success_toast = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 const error_toast = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 const TeacherDisplayPage = () => {
@@ -45,7 +49,7 @@ const TeacherDisplayPage = () => {
     const params = useParams();
 
     const [teacherDisplay, setTeacherDisplay] = useState<ITeacherDisplay>({
-        grades: [], subjects: [], teacher: { _id: "", email: "", name: ""}
+        grades: [], subjects: [], teacher: { _id: "", email: "", name: "", profilePic: ""}
     })
 
 
@@ -81,7 +85,7 @@ const TeacherDisplayPage = () => {
                                     border: "1px solid #d3d3d3",
                                     borderRadius: "50%"
                                 }} 
-                                src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
+                                src={teacherDisplay.teacher.profilePic ? teacherDisplay.teacher.profilePic : DefaultMaleTeacher}
                             />
                             {/* then the class teacher */}
                             <br />

@@ -8,12 +8,16 @@ import LibraryViewComp from "../components/LibraryViewComp";
 import StudentReport from "../components/StudentReport"
 import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderComp from '../components/LoaderComp';
+import DefaultLearnerAvatar from "../img/default_learner_avatar.png"
+import { get_learner_avatar } from '../utils/avatar_chooser';
 
 interface IStudent {
     _id: "",
     firstname: string
     lastname: string
     username: string
+    gender: "boy" | "girl" | null
+    profilePic: string
     lastActive: string
     password: string
 }
@@ -22,7 +26,8 @@ const StudentAnalysis = () => {
     const { authToken, isTeacher } = useContext(GlobalContext);
     const params = useParams();
     const [student, setStudent] = useState<IStudent>({
-        firstname: "", lastname: "", password: "", username: "", lastActive: "never", _id: ""
+        firstname: "", lastname: "", password: "", username: "", lastActive: "never", _id: "", profilePic: "",
+        gender: null
     })
 
     // launch on startup ---> fetch the raw data about the student
@@ -64,7 +69,7 @@ const StudentAnalysis = () => {
                                     border: "1px solid #d3d3d3",
                                     borderRadius: "50%"
                                 }} 
-                                src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
+                                src={student.profilePic ? student.profilePic : get_learner_avatar(student.gender)}
                             />
                             {/* then the class teacher */}
                             <br />

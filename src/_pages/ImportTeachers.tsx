@@ -16,6 +16,7 @@ const ImportTeachers = () => {
 
     const success_toastify = () => toast.success("Successfully imported learner(s)!", {
         position: toast.POSITION.TOP_RIGHT,
+        className: "sub-modal-texts",
         onClose: () => navigate(-1) // go back to the grades page after a success :)
     })
     

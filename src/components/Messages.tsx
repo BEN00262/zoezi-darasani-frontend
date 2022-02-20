@@ -8,15 +8,17 @@ import { GlobalContext } from "../contexts/GlobalContext";
 
 const success_toastify = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
+    className: "sub-modal-texts",
     autoClose: 1000
 })
 
 const failure_toastify = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
+    className: "sub-modal-texts",
     autoClose: 2000
 })
 
-const socket = io("http://localhost:3500/");
+const socket = io(); //io("http://localhost:3500/");
 
 interface IMessage {
     type: "payments"

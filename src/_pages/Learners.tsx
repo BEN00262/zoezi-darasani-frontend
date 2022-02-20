@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import LoaderComp from "../components/LoaderComp";
+import {get_learner_avatar} from "../utils/avatar_chooser"
 
 import { GlobalContext } from "../contexts/GlobalContext";
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
@@ -16,20 +17,23 @@ export interface ILearner {
     _id: string
     firstname: string
     lastname: string
+    profilePic: string
     gender: 'boy' | 'girl'
 }
 
 const success_toastify = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 const failure_toastify = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
-const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender }) => {
+const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender, profilePic }) => {
     const navigate = useNavigate();
 
     return (
@@ -47,7 +51,7 @@ const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src="https://cdn2.iconfinder.com/data/icons/child-people-face-avatar-3/500/child_152-512.png"
+                        src={profilePic ? profilePic : get_learner_avatar(gender)}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

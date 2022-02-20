@@ -293,7 +293,7 @@ const GradeSelectComp: React.FC<IGradeSelectComp> = ({ studentId }) => {
 
                 {/* this are linked to the type of graph on display */}
                 {/* these depend on the grouping if selected */}
-                {attemptGroupingPosition > -1 ? 
+                {attemptGroupingPosition > -1 && attemptGrouping.length ? 
                    <ReportCardComp subjectView={attemptGrouping[attemptGroupingPosition] || []} is_special={true}/>
                 : null}
                 { analytics.length ? <RevisionSummaryComp analytics={analytics}/> : null }

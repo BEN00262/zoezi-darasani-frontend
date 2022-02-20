@@ -139,15 +139,18 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
         if (selectedGradeName.is_special) {
             // fetch subsequent data ( if not just fetch the othe data )
             // place the subTypes here ( we )
-            axios.get(`${BASE_URL}/${classId}/special_paper_stats/${selectedGradeName._id || selectedGradeName.value}`, {
+            // const BASE_URL = `/api/analytics`
+            axios.get(`${BASE_URL}/student-but-we-dont-care/${classId}/special_paper_stats/${selectedGradeName._id || selectedGradeName.value}`, {
                 headers: { Authorization: `Bearer ${authToken}`}
             })
                 .then(({ data }) => {
-                    setPaperType(
-                        data.map(({ subType, _id }: { subType: string, _id: string }) => ({
-                            value: subType, _id, label: `${subType}s`
-                        }))
-                    )
+                    if (data) {
+                        setPaperType(
+                            data.map(({ subType, _id }: { subType: string, _id: string }) => ({
+                                value: subType, _id, label: `${subType}s`
+                            }))
+                        )
+                    }
                 });
             return;
         }
@@ -169,15 +172,17 @@ const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = 
             const classId = localStorage.getItem("classId") || "";
             
             setPaperSubType([] as IPaperType[]);
-            axios.get(`${BASE_URL}/${classId}/special_paper_stats/${selectedGradeName._id || selectedGradeName.value}/${selectedPaperType._id}`, {
+            axios.get(`${BASE_URL}/student-we-dont-care-about/${classId}/special_paper_stats/${selectedGradeName._id || selectedGradeName.value}/${selectedPaperType._id}`, {
                 headers: { Authorization: `Bearer ${authToken}`}
             })
                 .then(({ data }) => {
-                    setPaperSubType(
-                        data.map(({ subsubType, _id }: { subsubType: string, _id: string }) => ({
-                            value: subsubType, label: subsubType, _id
-                        }))
-                    )
+                    if (data) {
+                        setPaperSubType(
+                            data.map(({ subsubType, _id }: { subsubType: string, _id: string }) => ({
+                                value: subsubType, label: subsubType, _id
+                            }))
+                        )
+                    }
             });
         }
     }, [selectedPaperType]);

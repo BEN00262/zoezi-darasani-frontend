@@ -30,7 +30,7 @@ const GradeDisplayPage = () => {
     const [classMeanScore, setClassMeanScore] = useState(0);
     const params = useParams();
     const [grade, setGrade] = useState<IGrade>({
-        _id: "", classTeacher: {_id: "", email: "", name: ""}, name: "", stream: "", year: (new Date()).getFullYear(), isClosed: true
+        _id: "", classTeacher: {_id: "", email: "", name: "", profilePic: ""}, name: "", stream: "", year: (new Date()).getFullYear(), isClosed: true
     })
 
     useEffect(() => {

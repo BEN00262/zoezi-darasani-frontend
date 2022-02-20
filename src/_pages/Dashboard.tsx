@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react"
 import { GlobalContext } from "../contexts/GlobalContext";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import DefaultSchoolLogo from "../img/school.png"
 
 interface IStatic {
     name: string
@@ -29,7 +30,9 @@ const Dashboard = () => {
         { name: "Learners", label: "learners", numeric: "0"},
         { name: "Teachers", label: "teachers", numeric: "0"},
     ]);
-    const [schoolName, setSchoolName] = useState("");
+    const [schoolName, setSchoolName] = useState<{ name: string, logo: string }>({
+        name: "", logo:""
+    });
 
     useEffect(() => {
         axios.get("/api/school", {
@@ -65,20 +68,23 @@ const Dashboard = () => {
                             letterSpacing: "3px"
                         }}>
                             {
-                                schoolName ? <b>{schoolName}</b> : <Skeleton/>
+                                schoolName.name ? <b>{schoolName.name}</b> : <Skeleton/>
                             }
                         </h5>
                     </div>
-                    
+
                     <div className="row center">
-                        <div className="col s12">
-                            <span className="sub-names teal-text" style={{
-                                fontSize: "150px"
-                            }}>0 <span style={{
-                                fontSize: "80px"
-                            }}>.00</span> </span>
-                            <span className="sub-modal-texts">mean</span>
-                        </div>
+                         <img 
+                            id="profile-pic-preview"
+                            style={{
+                                border: "1px solid #efefef",
+                                padding: "2px",
+                                height: "200px",
+                                width: "200px",
+                                objectFit: "contain",
+                                borderRadius: "50%"
+                            }}
+                            src={schoolName.logo ? schoolName.logo : DefaultSchoolLogo}/>
                     </div>
 
                     <div className="row center">

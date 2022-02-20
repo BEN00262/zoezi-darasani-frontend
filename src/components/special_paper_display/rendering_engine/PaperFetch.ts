@@ -25,7 +25,7 @@ class PaperFetch {
     getPaper(authToken: string) {
         // get the last element from the backend // append it
         return this.httpClient.get(this.paperURL, {
-            Headers: { Authorization: `Bearer ${authToken}`}
+            headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }: { data?: ServerResponse }) => {
                 if (!data) {

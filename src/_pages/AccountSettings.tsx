@@ -5,15 +5,18 @@ import { toast } from 'react-toastify'
 import debounce from 'lodash.debounce'
 import axios from 'axios';
 import { GlobalContext } from '../contexts/GlobalContext';
+import DefaultSchoolLogo from "../img/school.png"
 
 const success_toast = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 const error_toast = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
-    autoClose: 2000
+    autoClose: 2000,
+    className: "sub-modal-texts"
 })
 
 interface ISchoolDisplay {
@@ -172,7 +175,7 @@ const AccountSettings = () => {
                         fontSize: "60px",
                         letterSpacing: "2px"
                     }} className="sub-names">
-                    {schoolDetails.name}
+                    {schoolDetails.name ? schoolDetails.name : <>Fetching school name...</>}
                     </span>
                 </div>
 
@@ -188,7 +191,7 @@ const AccountSettings = () => {
                             objectFit: "contain",
                             border: `1px solid ${themePicked}`,
                             borderRadius: "50%",
-                            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(${ logoPicked ? window.URL.createObjectURL(logoPicked) : schoolDetails.logo ? schoolDetails.logo : 'https://illustoon.com/photo/2871.png'})`,
+                            backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.527),rgba(0, 0, 0, 0.5)) , url(${ logoPicked ? window.URL.createObjectURL(logoPicked) : schoolDetails.logo ? schoolDetails.logo : DefaultSchoolLogo})`,
                             backgroundSize: 'cover'
                         }}
                     ></div>

@@ -28,13 +28,15 @@ const EditGrade = () => {
     const success_toastify = () => toast.success("Successfully created grade!", {
         position: toast.POSITION.TOP_LEFT,
         autoClose: 1000,
-        onClose: () => navigate(0)
+        onClose: () => navigate(0),
+        className: "sub-modal-texts"
     })
 
     const error_toastify = (message: string) => toast.error(message, {
         position: toast.POSITION.TOP_LEFT,
         progress: 0,
-        autoClose: false
+        autoClose: false,
+        className: "sub-modal-texts"
     })
 
 

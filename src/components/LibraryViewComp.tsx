@@ -217,6 +217,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                         return (
                                                                             <div className="col s6 m3 l2" key={`${_id}`}>
                                                                                 <div className="hoverable"
+                                                                                    // /library-paper/special/:studentId/:gradeName/:paperID/:savedStateID
                                                                                     onClick={_ => navigate(`/library-paper/special/${studentId}/${gradeName}/${paperID}/${historyID}`)}
                                                                                     style={{
                                                                                         backgroundColor: "#fffde7",
