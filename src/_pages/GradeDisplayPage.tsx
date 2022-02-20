@@ -14,6 +14,7 @@ const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
 const SubscriptionsDisplaySuspense = React.lazy(() => import("./SubscriptionsDisplay"));
 const LearnersSuspense = React.lazy(() => import("./Learners"));
 const SubjectsCompSuspense = React.lazy(() => import("./Subjects"));
+const MetricsCompSuspense = React.lazy(() => import("./Metrics"));
 
 interface IGrade {
     _id: string
@@ -135,9 +136,9 @@ const GradeDisplayPage = () => {
                             overflowX: "hidden"
                         }}>
                             <li className="tab col s3"><a href="#learners">Learners</a></li>
+                            <li className="tab col s3"><a href="#metrics">Gender Distribution</a></li>
                             <li className="tab col s3"><a className="active" href="#perfomance">Perfomance</a></li>
                             <li className="tab col s3"><a href="#subjects">Subjects</a></li>
-                            {/* <li className="tab col s3"><a href="#subscriptions">Subscriptions</a></li> */}
                         </ul>
                     </div>
                         </div>
@@ -159,6 +160,11 @@ const GradeDisplayPage = () => {
                             <div id="subjects" className="col s12">
                                 <React.Suspense fallback={<LoaderComp/>}>
                                     <SubjectsCompSuspense gradeName={grade.name}/>
+                                </React.Suspense>
+                            </div>
+                            <div id="metrics" className="col s12">
+                                <React.Suspense fallback={<LoaderComp/>}>
+                                    <MetricsCompSuspense/>
                                 </React.Suspense>
                             </div>
                             {/* <div id="subscriptions" className="col s12">
