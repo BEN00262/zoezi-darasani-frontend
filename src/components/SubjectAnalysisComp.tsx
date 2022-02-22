@@ -18,6 +18,7 @@ import { GlobalContext } from '../contexts/GlobalContext';
 import { ILearner } from '../_pages/Learners';
 import { useNavigate } from 'react-router-dom';
 import { get_learner_avatar } from '../utils/avatar_chooser';
+import { convertMillisecondsToTimeString } from './special_paper_display/grouper/millisecondsToTime';
 
 ChartJS.register(
     CategoryScale,
@@ -98,6 +99,27 @@ interface IPaperDoneDataPoint {
     }
 }
 
+const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
+    let perfomance_length = performance.length;
+
+    if (perfomance_length <= 1) {
+        return "First attempt";
+    }
+
+    let _perfomance = performance.reduce((acc, x) => [...acc, x.pass - x.fail],[] as number[]);
+    let _progress = _perfomance.slice(Math.max(_perfomance.length - 2, 1)).reduce((acc, y) => y - acc, 0);
+
+    console.log(_progress)
+
+    if (_progress === 0) {
+        return "No change"
+    } else if (_progress < 0) {
+        return "Failing"
+    } else {
+        return "Improving"
+    }
+}
+
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     const { authToken } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -126,6 +148,9 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
         pass: number[],
         fail: number[]
     }>({ pass: [], fail: [] });
+
+    const [performanceTrend, setPerformanceTrend] = useState("First attempt");
+    const [averageTimePerQuestion, setAverageTimePerQuestion] = useState(0);
 
     const isMobilePhone = false;
     // get the listing of the students in the entire class ( whether they did anything or not )
@@ -158,12 +183,21 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                 headers: { Authorization: `Bearer ${authToken}`}
             }).then(({ data }) => {
                 if (data) {
-                    let _plottable = data.plottable as IPaperDoneDataPoint[];
+                    let _plottable = [...((data.plottable || []) as IPaperDoneDataPoint[])].reverse();
+                    // check the length of data :)
+                    // get the length of the data
+
                     // we need to set the graph at this point :)
                     setPlottableData({
                         pass: _plottable.map(x => x.score.passed),
                         fail: _plottable.map(x => x.score.total - x.score.passed)
                     });
+                    setAverageTimePerQuestion(data.time_per_question as number);
+                    // TODO: fix the wrong message bug :)
+                    setPerformanceTrend(perfomance_comment(_plottable.map(x => ({
+                        pass: x.score.passed,
+                        fail: x.score.total - x.score.passed
+                    }))))
 
                     setLibraryPapers(_plottable);
                     return;
@@ -308,6 +342,34 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                     </div>
 
                     <div className="col s12 m12 l8">
+                       {
+                           libraryPapers.length ? 
+                           <div className="card z-depth-0" style={{
+                                border: "1px solid #dcdee2"
+                            }}>
+                                <div className="card-content sub-modal-texts center">
+                                    Comment: <span style={{
+                                            border: "1px solid green",
+                                            padding: "1px 2px",
+                                            borderRadius: "2px"
+                                    }}>
+                                        <b>{performanceTrend}</b>
+                                    </span>
+                                    {
+                                        averageTimePerQuestion > 0 ?
+                                        <>
+                                            {' '}<b>|</b>{' '}
+                                            Average Time Per Question: <span style={{
+                                                border: "1px solid green",
+                                                padding: "1px 2px",
+                                                borderRadius: "2px"
+                                            }}><b>{convertMillisecondsToTimeString(averageTimePerQuestion)}</b></span>
+                                        </> : null
+                                    }
+                                </div>
+                            </div>: null
+                       }
+
                         <div className="card z-depth-0" style={{border:"1px solid #dcdee2"}}>
                             <div className="card-content">
                                 <div className="row" id="insertChart">

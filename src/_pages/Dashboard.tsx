@@ -4,6 +4,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import DefaultSchoolLogo from "../img/school.png"
+import SchoolMetrics from "../components/SchoolMetrics";
 
 interface IStatic {
     name: string
@@ -23,6 +24,7 @@ const Static: React.FC<IStatic> = ({ name, numeric }) => {
     )
 }
 
+// get the number of girls vs the number of boys :)
 const Dashboard = () => {
     const { authToken } = useContext(GlobalContext);
     const [stats, setStats] = useState<IStatic[]>([
@@ -62,29 +64,32 @@ const Dashboard = () => {
         <main style={{display: "flex",justifyContent: "center",alignItems: "center"}}>
             <div className="container">
                 <div className="section">
+                    {/* <div className="row center">
+                        <img 
+                            id="profile-pic-preview"
+                            style={{
+                                border: "1px solid #efefef",
+                                padding: "2px",
+                                height: "50px",
+                                width: "50px",
+                                objectFit: "contain",
+                                borderRadius: "50%",
+                            }}
+                            src={schoolName.logo ? schoolName.logo : DefaultSchoolLogo}/>
+                    </div> */}
 
                     <div className="row center">
                         <h5 style={{
                             letterSpacing: "3px"
                         }}>
-                            {
-                                schoolName.name ? <b>{schoolName.name}</b> : <Skeleton/>
-                            }
+                            { schoolName.name ? <b>{schoolName.name}</b> : <Skeleton/> }
                         </h5>
                     </div>
 
-                    <div className="row center">
-                         <img 
-                            id="profile-pic-preview"
-                            style={{
-                                border: "1px solid #efefef",
-                                padding: "2px",
-                                height: "200px",
-                                width: "200px",
-                                objectFit: "contain",
-                                borderRadius: "50%"
-                            }}
-                            src={schoolName.logo ? schoolName.logo : DefaultSchoolLogo}/>
+                    <div className="row">
+                        <div className="col s12">
+                            <SchoolMetrics/>
+                        </div>
                     </div>
 
                     <div className="row center">

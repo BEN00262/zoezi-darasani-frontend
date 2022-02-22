@@ -6,6 +6,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import axios from "axios";
 import EditSubject from "./EditSubject";
 import Skeleton from "react-loading-skeleton";
+import LoaderComp from "../components/LoaderComp";
 
 const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"))
 
@@ -98,7 +99,7 @@ const SubjectAnalysis = () => {
                         {/* Dispaly the students on per line ( but now what data will we show ) */}
 
                         {/* display the charts and other stuffs */}
-                        <React.Suspense fallback={<>loading...</>}>
+                        <React.Suspense fallback={<LoaderComp/>}>
                             <SubjectAnalysisCompSuspense subject={subject.name}/>
                         </React.Suspense>
                     </div>
