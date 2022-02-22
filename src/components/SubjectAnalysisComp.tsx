@@ -19,6 +19,9 @@ import { ILearner } from '../_pages/Learners';
 import { useNavigate } from 'react-router-dom';
 import { get_learner_avatar } from '../utils/avatar_chooser';
 import { convertMillisecondsToTimeString } from './special_paper_display/grouper/millisecondsToTime';
+import { IContent, ILibPaperQuestions, IQuestion } from './normal_paper_display/interface/ILibPaper';
+import produce from "immer";
+import DiffNormalPaperDisplay from './diff_paper_display/normal_paper_display';
 
 ChartJS.register(
     CategoryScale,
@@ -99,6 +102,12 @@ interface IPaperDoneDataPoint {
     }
 }
 
+// we have stuff :)
+interface IAttemptTreePapers {
+    questions: IQuestion[]
+    trees: ILibPaperQuestions[]
+}
+
 const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
     let perfomance_length = performance.length;
 
@@ -109,6 +118,7 @@ const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
     let _perfomance = performance.reduce((acc, x) => [...acc, x.pass - x.fail],[] as number[]);
     let _progress = _perfomance.slice(Math.max(_perfomance.length - 2, 1)).reduce((acc, y) => y - acc, 0);
 
+    console.log(_perfomance);
     console.log(_progress)
 
     if (_progress === 0) {
@@ -118,6 +128,41 @@ const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
     } else {
         return "Improving"
     }
+}
+
+/*
+    interface IAttemptTreePapers {
+        questions: IContent[]
+        trees: ILibPaperQuestions[]
+    }
+*/
+// returns a library paper state :)
+const mergePastPaperStates = (questions: IQuestion[], state: ILibPaperQuestions): ILibPaperQuestions => {
+    // use the state to sub and get the questions :)
+    const findQuestion = (questionId: string) => questions.find(x => x._id === questionId);
+
+    // console.log(questions);
+    // console.log(state);
+
+    // loop through it and replace stuff :)
+    console.log("Merge papers called");
+    console.log(questions.map(x => x._id))
+
+    return produce(state, draft => {
+        // this is weird but i sure hope it works :)
+        draft.content = draft.content.map(_state => {
+            // @ts-ignore
+            let _question = findQuestion(_state.content.question);
+            console.log(_state.content.question);
+
+            if (!_question) {
+                return null;
+            }
+            // we now have the question ( just push it in :) ) and we are done
+            _state.content.question = _question;
+            return _state;
+        }).filter(x => x) as IContent[]
+    });
 }
 
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
@@ -152,6 +197,13 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     const [performanceTrend, setPerformanceTrend] = useState("First attempt");
     const [averageTimePerQuestion, setAverageTimePerQuestion] = useState(0);
 
+    // currently clicked button :)
+    const [clickedPastPaperState, setClickedPastPaperState] = useState(0); // we start with the first index i.e., 0
+    const [attemptTree, setAttemptTree] = useState<IAttemptTreePapers>({
+        questions: [],
+        trees: []
+    });
+
     const isMobilePhone = false;
     // get the listing of the students in the entire class ( whether they did anything or not )
     // show them in a dropdown and then enable filtering on the papers they did 
@@ -170,9 +222,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
             }
         })
 
-        M.Tabs.init(document.querySelector(".sub-tabs"), {
-            swipeable: true
-        })
+        M.Tabs.init(document.querySelector(".sub-tabs"), {})
     }, []);
 
     useEffect(() => {
@@ -199,6 +249,11 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                         fail: x.score.total - x.score.passed
                     }))))
 
+                    let _attempt_trees = data.attempt_trees as IAttemptTreePapers;
+                    setAttemptTree({
+                        ..._attempt_trees,
+                        trees: [..._attempt_trees.trees].reverse() // reverse the papers to get them in the right order
+                    });
                     setLibraryPapers(_plottable);
                     return;
                 } 
@@ -283,7 +338,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                         overflowX: "hidden"
                     }}>
                         <li className="tab col s6"><a href="#analytics" className='active'>Analytics</a></li>
-                        <li className={`tab col s6 ${libraryPapers.length ? '' : 'disabled'}`}><a href="#lastDonePapers">Last ({libraryPapers.length}) Paper(s)</a></li>
+                        <li className={`tab col s6 ${attemptTree.trees.length ? '' : 'disabled'}`}><a href="#lastDonePapers">Last ({libraryPapers.length}) Paper(s)</a></li>
                     </ul>
                 </div>
 
@@ -348,7 +403,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                 border: "1px solid #dcdee2"
                             }}>
                                 <div className="card-content sub-modal-texts center">
-                                    Comment: <span style={{
+                                    Remarks: <span style={{
                                             border: "1px solid green",
                                             padding: "1px 2px",
                                             borderRadius: "2px"
@@ -359,11 +414,11 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                         averageTimePerQuestion > 0 ?
                                         <>
                                             {' '}<b>|</b>{' '}
-                                            Average Time Per Question: <span style={{
+                                            Av. Time Per Question: <span style={{
                                                 border: "1px solid green",
                                                 padding: "1px 2px",
                                                 borderRadius: "2px"
-                                            }}><b>{convertMillisecondsToTimeString(averageTimePerQuestion)}</b></span>
+                                            }}><b>{convertMillisecondsToTimeString(averageTimePerQuestion, true)}</b></span>
                                         </> : null
                                     }
                                 </div>
@@ -402,49 +457,43 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                 </div>
 
                 <div id="lastDonePapers">
-                    { libraryPapers.length ? 
+                    { attemptTree.trees.length ? 
                     <div className="col s12 m12">
                         <div className="section">
-                            {
-                                libraryPapers.map((libpaper, index) => {
-                                    // check if whether the paper is special or not
-                                    return (
-                                        <div className="col s6 m2 l2" key={index}>
-                                            <div className="hoverable" 
-                                                onClick={_ => navigate(
-                                                    libpaper.isSpecial ? `/library-paper/special/${selectedLearner}/${libpaper.grade}/${libpaper.paperID}/${libpaper._id}`: `/library-paper/${selectedLearner}/${libpaper._id}`
-                                                )}
-
+                            <div className="col s12">
+                                {/* render the buttons depending on the number of attempts ( create a sort of tabs ) */}
+                                {
+                                    attemptTree.trees.map((tree, position) => {
+                                        return (
+                                            <button 
+                                                key={`attempt_pill_${position}`}
+                                                className={`btn-flat sub-modal-texts ${clickedPastPaperState === position ? "teal lighten-5": ""}`} 
                                                 style={{
-                                                        backgroundColor: "#fffde7",
-                                                        marginBottom: "5px",
-                                                        cursor: "pointer",
-                                                        border: "1px solid #d3d3d3",
-                                                        borderRadius: "2px",
-                                                        padding: "4px"
-                                                    }}
-                                                >
+                                                    border: "1px solid #d3d3d3",
+                                                    borderTop: "2px solid #80cbc4",
+                                                    borderRadius: "5px 5px 0px 0px",
+                                                    marginRight: "1px"
+                                                }} 
+                                                onClick={_ => {
+                                                    setClickedPastPaperState(position);
+                                                }}
+                                            >
+                                                <b>Attempt {position + 1}{' '}
+                                                <span className='red-text sub-names'>( {tree.score.passed} / {tree.score.total})</span>
+                                                </b>
+                                            </button>
+                                        )
+                                    })
+                                }
 
-                                                <div className="center">
-
-                                                    <span className="sub-names truncate"><b>{libpaper.subject}</b></span>
-                                                    <br/>
-                                                    <span className="sub-modal-texts teal-text truncate" style={{
-                                                        backgroundColor: "#fff",
-                                                        border: "1px solid #d3d3d3",
-                                                        padding: "4px",
-                                                        borderRadius: "2px"
-                                                    }}>
-                                                        <b>{libpaper.subject.split(" ")[0].toLocaleLowerCase().includes("kiwahili") ? "ALAMA": "SCORE"}
-                                                            ({libpaper.score.passed }/{libpaper.score.total})
-                                                        </b>
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )
-                                })
-                            }
+                                <div className="divider" style={{
+                                    marginBottom: "5px" // for the spacing :)
+                                }}></div>
+                            </div>
+                            <div className="col s12">
+                                {/* show the paper now :) am almost there buana */}
+                                <DiffNormalPaperDisplay tree={attemptTree.trees[clickedPastPaperState]}/>
+                            </div>
                         </div>
                     </div>
                     : null }
