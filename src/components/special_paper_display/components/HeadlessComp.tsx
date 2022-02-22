@@ -9,7 +9,7 @@ import PaperFetch from '../rendering_engine/PaperFetch';
 import QuestionHOC from './QuestionHOC';
 
 // we take the page map and the actual question array
-const initialize_pages_structures = (paperMap: IPaperMap, questions: IQuestion[]) => {
+export const initialize_pages_structures = (paperMap: IPaperMap, questions: IQuestion[]) => {
     let pages = {}
 
     Object.entries(paperMap.pages).forEach(([page, boundaries]) => {

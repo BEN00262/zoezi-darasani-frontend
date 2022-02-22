@@ -70,13 +70,26 @@ const SubjectAnalysis = () => {
                             src={`https://www.zoezi-education.com/img/kcpe/${subject.name.toLowerCase().split(" ")[0]}.png`}
                         />
 
-                        <ul>
-                            <li className="sub-modal-texts" style={{
-                                letterSpacing: "1px"
-                            }}><b>{subject.name}</b></li>
-                            <li className="sub-modal-texts">Subject Teacher: {subject.teacher.name ? subject.teacher.name : <Skeleton/>}</li>
-                            <li className="sub-modal-texts">Email: {subject.teacher.email ? subject.teacher.email : <Skeleton/>}</li>
-                        </ul>
+                        <div className="row sub-modal-texts">
+                            <div className="col s12">
+                                <span style={{
+                                    letterSpacing: "1px"
+                                }}>
+                                    <b>{subject.name}</b>
+                                </span>
+                            </div>
+                            <div className="col s12">
+                                <span className="truncate">
+                                Subject Teacher: {subject.teacher.name ? subject.teacher.name : <Skeleton/>}
+                                </span>
+                            </div>
+                            <div className="col s12">
+                                <span className="truncate">
+                                Email: {subject.teacher.email ? subject.teacher.email : <Skeleton/>}
+                                </span>
+                            </div>
+                        </div>
+
                         <div hidden={isTeacher}>
                             <a href="#" data-target="edit-subject" className="waves-effect waves-light btn-flat sidenav-trigger" style={{
                                 border: "1px solid teal",

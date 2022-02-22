@@ -1,10 +1,10 @@
 import React,{useState, useEffect,Suspense, useContext, useMemo} from 'react';
 import { Container } from 'react-materialize';
 
-import '../App.css';
-import { IQuestion } from '../rendering_engine/DataLoaderInterface';
-import { GlobalContext } from '../contexts/global';
-import { get_already_done_pages_questions_total } from '../grouper/grouper';
+import '../../special_paper_display/App.css';
+import { IQuestion } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
+import { GlobalContext as LocalContext } from '../../special_paper_display/contexts/global';
+import { get_already_done_pages_questions_total } from '../../special_paper_display/grouper/grouper';
 
 const LazyQuestionComponent = React.lazy(() => import('./question_comp'));
 
@@ -13,7 +13,7 @@ export default function QuestionHOC({ wasTimed }: { wasTimed: boolean }) {
     // @ts-ignore
     updateNoQuesPerPage,
     questions, paperMap
-  } = useContext(GlobalContext);
+  } = useContext(LocalContext);
 
   const [data,setData] = useState<IQuestion[]>([]);
   const [alreadyDone, setAlreadyDone] = useState<number>(0);
@@ -24,7 +24,7 @@ export default function QuestionHOC({ wasTimed }: { wasTimed: boolean }) {
     let current_page = paperMap.pages[currentPage];
     updateNoQuesPerPage(current_page.endIndex - current_page.startIndex); // compute the value every time
     setData(questions.slice(current_page.startIndex, current_page.endIndex))
-  }, [currentPage]);
+  }, [currentPage])
   
   return (
         <>

@@ -22,6 +22,8 @@ import { convertMillisecondsToTimeString } from './special_paper_display/grouper
 import { IContent, ILibPaperQuestions, IQuestion } from './normal_paper_display/interface/ILibPaper';
 import produce from "immer";
 import DiffNormalPaperDisplay from './diff_paper_display/normal_paper_display';
+import { PagedPaper } from './special_paper_display/rendering_engine/DataLoaderInterface';
+import DiffSpecialPaperDisplay from './diff_paper_display/special_paper_display';
 
 ChartJS.register(
     CategoryScale,
@@ -104,7 +106,8 @@ interface IPaperDoneDataPoint {
 
 // we have stuff :)
 interface IAttemptTreePapers {
-    questions: IQuestion[]
+    isSpecial: boolean
+    paper: PagedPaper // this is the paper for the special stuff :)
     trees: ILibPaperQuestions[]
 }
 
@@ -116,10 +119,7 @@ const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
     }
 
     let _perfomance = performance.reduce((acc, x) => [...acc, x.pass - x.fail],[] as number[]);
-    let _progress = _perfomance.slice(Math.max(_perfomance.length - 2, 1)).reduce((acc, y) => y - acc, 0);
-
-    console.log(_perfomance);
-    console.log(_progress)
+    let _progress = (_perfomance.length > 2 ? _perfomance.slice(Math.max(_perfomance.length - 2, 1)) : _perfomance).reduce((acc, y) => y - acc, 0)
 
     if (_progress === 0) {
         return "No change"
@@ -140,13 +140,6 @@ const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
 const mergePastPaperStates = (questions: IQuestion[], state: ILibPaperQuestions): ILibPaperQuestions => {
     // use the state to sub and get the questions :)
     const findQuestion = (questionId: string) => questions.find(x => x._id === questionId);
-
-    // console.log(questions);
-    // console.log(state);
-
-    // loop through it and replace stuff :)
-    console.log("Merge papers called");
-    console.log(questions.map(x => x._id))
 
     return produce(state, draft => {
         // this is weird but i sure hope it works :)
@@ -200,7 +193,8 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     // currently clicked button :)
     const [clickedPastPaperState, setClickedPastPaperState] = useState(0); // we start with the first index i.e., 0
     const [attemptTree, setAttemptTree] = useState<IAttemptTreePapers>({
-        questions: [],
+        isSpecial: false,
+        paper: ({} as PagedPaper),
         trees: []
     });
 
@@ -479,6 +473,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                                 }}
                                             >
                                                 <b>Attempt {position + 1}{' '}
+                                                {/* we need to pass the score as the tree here :) */}
                                                 <span className='red-text sub-names'>( {tree.score.passed} / {tree.score.total})</span>
                                                 </b>
                                             </button>
@@ -491,8 +486,18 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                 }}></div>
                             </div>
                             <div className="col s12">
+                                {/* check if the paper is a special paper if so render it differently */}
                                 {/* show the paper now :) am almost there buana */}
-                                <DiffNormalPaperDisplay tree={attemptTree.trees[clickedPastPaperState]}/>
+                                {
+                                    attemptTree.isSpecial ?
+                                    <DiffSpecialPaperDisplay 
+                                        gradeName={"Sample Grade"} 
+                                        prePaper={attemptTree.paper}
+                                        prePrevState={attemptTree.trees[clickedPastPaperState]}
+                                    />
+                                    :
+                                    <DiffNormalPaperDisplay tree={attemptTree.trees[clickedPastPaperState]}/>
+                                }
                             </div>
                         </div>
                     </div>
