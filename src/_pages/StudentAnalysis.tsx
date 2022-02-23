@@ -10,6 +10,7 @@ import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderComp from '../components/LoaderComp';
 import DefaultLearnerAvatar from "../img/default_learner_avatar.png"
 import { get_learner_avatar } from '../utils/avatar_chooser';
+import Skeleton from 'react-loading-skeleton';
 
 interface IStudent {
     _id: "",
@@ -75,7 +76,9 @@ const StudentAnalysis = () => {
                             <br />
                             <span className="sub-modal-texts" style={{
                                 letterSpacing: "1px"
-                            }}><b>{student.firstname} {student.lastname}</b></span>
+                            }}><b>{student.firstname && student.lastname ? <>
+                                {student.firstname} {student.lastname}
+                            </> : <Skeleton/>}</b></span>
                             <span style={{
                                 marginRight: "5px",
                                 marginLeft: "5px"

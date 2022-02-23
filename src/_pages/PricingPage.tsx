@@ -1,8 +1,7 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import EmptyComp from "../components/Empty";
-import {GlobalContext} from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { ISubscription } from "./market/steps/ChooseSubscriptionComp";
 

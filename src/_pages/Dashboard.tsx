@@ -61,7 +61,7 @@ const Dashboard = () => {
 
 
     return (
-        <main style={{display: "flex",justifyContent: "center",alignItems: "center"}}>
+        <main>
             <div className="container">
                 <div className="section">
                     {/* <div className="row center">

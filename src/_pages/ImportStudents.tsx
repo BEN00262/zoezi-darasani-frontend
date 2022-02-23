@@ -2,8 +2,7 @@ import axios from "axios";
 import { SyntheticEvent, useContext, useState } from "react"
 import { GlobalContext } from "../contexts/GlobalContext"
 // for toast displays
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
 const ImportStudent = () => {
@@ -84,7 +83,6 @@ const ImportStudent = () => {
                     }
 
                     <div className="row">
-                        <ToastContainer/>
                         <form method='post' onSubmit={handleFormSubmission} className="col s12 m6 push-m3">
                             <div className="col s12 file-field input-field">
                                 <div className="btn">

@@ -7,8 +7,7 @@ import Select from 'react-select'
 import { GlobalContext } from '../contexts/GlobalContext';
 import { ISelectableData } from './NewGrade';
 import { ITeacherComp } from './TeacherDisplayPage';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
 
 interface ISubjectData {

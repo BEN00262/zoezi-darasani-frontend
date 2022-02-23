@@ -1,46 +1,13 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '../contexts/GlobalContext';
 import axios from 'axios';
+import { Pie, PieChart, ResponsiveContainer, Tooltip as RechartsToolTip } from 'recharts';
 
-ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
-
-const options = (isMobile: boolean) => ({
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-        radiusBackground: {
-            color: "#d1d1d1"
-        },
-        title: {
-            display: false
-        },
-        legend: {
-            display: true,
-            position: "right",
-            fullSize: true,
-        },
-        pieceLabel: {
-            render: 'label',
-            arc: true,
-            fontColor: '#000',
-            position: 'outside'
-        },
-        datalabels: {
-            color: "#000",
-            clamp: true,
-            font: {
-                weight: 'bold'
-            },
-            formatter: function(value: any, context: any) {
-                return Math.round(value) + '%';
-            }
-        }
-    }
-})
-
+let renderLabel = function(entry: any) {
+    return <text x={entry.x} y={entry.y} stroke={entry.fill}>
+        {entry.name} ( {entry.value}% )
+    </text>
+}
 
 const Metrics = () => {
     const { authToken } = useContext(GlobalContext);
@@ -62,8 +29,8 @@ const Metrics = () => {
                     let total = metrics.boys + metrics.girls;
 
                     setAnalytics({
-                        boys: ((metrics.boys/total)*100),
-                        girls: ((metrics.girls/total)*100)
+                        boys: +((metrics.boys/total)*100).toFixed(0),
+                        girls: +((metrics.girls/total)*100).toFixed(0)
                     })
                     return;
                 }
@@ -103,27 +70,24 @@ const Metrics = () => {
             <div className="col s12" style={{
                             height: "400px"
                         }}>
-                <Doughnut
-                    // @ts-ignore
-                    options={options(false)} 
-                    data={{
-                        labels: ['Boys', 'Girls'],
-                        datasets: [
-                          {
-                            label: 'Boys vs Girls',
-                            data: [analytics.boys, analytics.girls],
-                            backgroundColor: [
-                              'rgba(255, 99, 132, 0.2)',
-                              'rgba(54, 162, 235, 0.2)',
-                            ],
-                            borderColor: [
-                              'rgba(255, 99, 132, 1)',
-                              'rgba(54, 162, 235, 1)',
-                            ],
-                            borderWidth: 2,
-                          },
-                        ],
-                    }} />
+
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            dataKey="value"
+                            
+                            data={[
+                                { name: "Boys", value: analytics.boys, fill: "rgba(255, 99, 132, 1)" },
+                                { name: "Girls", value: analytics.girls, fill: "rgba(54, 162, 235, 1)"},
+                            ]}
+                            innerRadius={70}
+                            outerRadius={140}
+                            fill="#82ca9d"
+                            label={renderLabel}
+                        />
+                        <RechartsToolTip />
+                    </PieChart>
+                </ResponsiveContainer>
             </div>
         </div>
     )
