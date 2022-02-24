@@ -149,7 +149,10 @@ const AccountSettings = () => {
 
                     // we have errors from the server for the form ---> we can see them
                     setErrors(data.message);
+                    return;
                 }
+
+                throw new Error("Unexpected error!");
             })
             .catch(error => {
                 error_toast(error.message);

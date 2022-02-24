@@ -47,6 +47,7 @@ const NewSchool = () => {
                     }
 
                     setErrors([data.message]);
+                    return;
                 }
 
                 throw new Error("Failed unexpectedly");

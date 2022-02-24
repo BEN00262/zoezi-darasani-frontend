@@ -8,27 +8,35 @@ import { get_already_done_pages_questions_total } from '../../special_paper_disp
 
 const LazyQuestionComponent = React.lazy(() => import('./question_comp'));
 
-export default function QuestionHOC({ wasTimed }: { wasTimed: boolean }) {
+export default function QuestionHOC({ wasTimed, setCurrentlySavedPageNumber }: { 
+    wasTimed: boolean, 
+    setCurrentlySavedPageNumber: (position: number) => void 
+}) {
   const {subject, currentPage, 
     // @ts-ignore
     updateNoQuesPerPage,
-    questions, paperMap
+    questions, paperMap,
   } = useContext(LocalContext);
 
   const [data,setData] = useState<IQuestion[]>([]);
   const [alreadyDone, setAlreadyDone] = useState<number>(0);
+  const [reRender, setReRender] = useState(-1);
   const isKiswahili =  useMemo(() => subject.split(" ")[0].toLowerCase() === "kiswahili", [subject])
 
   useEffect(() => {
     setAlreadyDone(get_already_done_pages_questions_total(questions,paperMap, currentPage));
     let current_page = paperMap.pages[currentPage];
     updateNoQuesPerPage(current_page.endIndex - current_page.startIndex); // compute the value every time
-    setData(questions.slice(current_page.startIndex, current_page.endIndex))
+    setData(questions.slice(current_page.startIndex, current_page.endIndex));
+
+    // i think we should also rerender this :)
+    setReRender(Math.random());
+    setCurrentlySavedPageNumber(currentPage);
   }, [currentPage])
   
   return (
         <>
-          <Suspense fallback={
+          <Suspense key={reRender} fallback={
             <Container>
                 {isKiswahili ? "Karatasi inatayarishwa ..." : "Preparing paper ..."}
             </Container>
