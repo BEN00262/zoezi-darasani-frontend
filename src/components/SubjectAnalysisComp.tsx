@@ -24,6 +24,7 @@ import produce from "immer";
 import DiffNormalPaperDisplay from './diff_paper_display/normal_paper_display';
 import { IPrevState, PagedPaper } from './special_paper_display/rendering_engine/DataLoaderInterface';
 import DiffSpecialPaperDisplay from './diff_paper_display/special_paper_display';
+import { atom } from 'recoil';
 
 ChartJS.register(
     CategoryScale,
@@ -131,6 +132,16 @@ const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
     }
 }
 
+export const currentlySavedPageNumberState =  atom({
+    key: "currentlySavedPageNumberId",
+    default: -1
+});
+
+export const currentlySavedSubPageNumberState = atom({
+    key: "currentlySavedSubPageNumberId",
+    default: -1
+})
+
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     const { authToken } = useContext(GlobalContext);
     const navigate = useNavigate();
@@ -170,9 +181,6 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
         trees: [],
         prevStates: []
     });
-
-    const [currentlySavedPageNumber, setCurrentlySavedPageNumber] = useState(-1); // starts with an invalid question number
-    const [currentlySavedSubPageNumber, setCurrentlySavedSubPageNumber] = useState(-1);
 
     const isMobilePhone = false;
     // get the listing of the students in the entire class ( whether they did anything or not )
@@ -478,9 +486,6 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                 {
                                     attemptTree.isSpecial ?
                                     <DiffSpecialPaperDisplay
-                                    currentlySavedPageNumber={currentlySavedPageNumber}
-                                    setCurrentlySavedPageNumber={setCurrentlySavedPageNumber}
-                                    currentlySavedSubPageNumber={currentlySavedSubPageNumber}
                                         gradeName={"Sample Grade"} 
                                         prePaper={attemptTree.paper}
                                         prePrevState={attemptTree.prevStates[clickedPastPaperState]}

@@ -5,14 +5,18 @@ import '../../special_paper_display/App.css';
 import { IQuestion } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
 import { GlobalContext as LocalContext } from '../../special_paper_display/contexts/global';
 import { get_already_done_pages_questions_total } from '../../special_paper_display/grouper/grouper';
+import { useSetRecoilState } from 'recoil';
+import { currentlySavedPageNumberState, currentlySavedSubPageNumberState } from '../../SubjectAnalysisComp';
 
 const LazyQuestionComponent = React.lazy(() => import('./question_comp'));
 
-export default function QuestionHOC({ wasTimed, setCurrentlySavedPageNumber }: { 
-    wasTimed: boolean, 
-    setCurrentlySavedPageNumber: (position: number) => void 
+export default function QuestionHOC({ wasTimed }: { 
+    wasTimed: boolean,
 }) {
-  const {subject, currentPage, 
+  const setCurrentlySavedPageNumber = useSetRecoilState(currentlySavedPageNumberState);
+  const setCurrentlySavedSubPageNumber = useSetRecoilState(currentlySavedSubPageNumberState);
+
+  const {subject, currentPage, compSubQuestionPage,
     // @ts-ignore
     updateNoQuesPerPage,
     questions, paperMap,
@@ -32,7 +36,11 @@ export default function QuestionHOC({ wasTimed, setCurrentlySavedPageNumber }: {
     // i think we should also rerender this :)
     setReRender(Math.random());
     setCurrentlySavedPageNumber(currentPage);
-  }, [currentPage])
+  }, [currentPage]);
+
+  useEffect(() => {
+    setCurrentlySavedSubPageNumber(compSubQuestionPage);
+  }, [compSubQuestionPage]);
   
   return (
         <>

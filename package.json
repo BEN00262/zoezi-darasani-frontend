@@ -40,6 +40,7 @@
     "react-select": "^5.2.2",
     "react-toastify": "^8.1.1",
     "recharts": "^2.1.9",
+    "recoil": "^0.6.1",
     "rxjs": "^7.5.2",
     "socket.io-client": "^4.4.0",
     "spinners-react": "^1.0.6"

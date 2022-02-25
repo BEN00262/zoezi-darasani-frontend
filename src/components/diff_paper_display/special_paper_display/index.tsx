@@ -8,6 +8,8 @@ import { IPrevState, PagedPaper } from '../../special_paper_display/rendering_en
 import QuestionHOC from './QuestionHOC';
 import { initialize_pages_structures } from '../../special_paper_display/components/HeadlessComp';
 import GlobalErrorBoundaryComp from '../../special_paper_display/components/GlobalErrorBoundaryComp';
+import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
+import { currentlySavedPageNumberState, currentlySavedSubPageNumberState } from '../../SubjectAnalysisComp';
 
 export interface IHeadlessComp {
     gradeName: string
@@ -29,15 +31,14 @@ export interface IPreloadedData {
 // we need the tree buana to use :) and then to somehow show the 
 const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & { 
     gradeName: string
-    setCurrentlySavedPageNumber: (position: number) => void
-    currentlySavedPageNumber: number,
-    currentlySavedSubPageNumber: number
 }> = ({ 
     gradeName,  prePaper, prePrevState, // the prev state should be indexable
-    currentlySavedPageNumber, setCurrentlySavedPageNumber, currentlySavedSubPageNumber
 }) => {
+    const currentlySavedPageNumber = useRecoilValue(currentlySavedPageNumberState);
+    const currentlySavedSubPageNumber = useRecoilValue(currentlySavedSubPageNumberState);
+
     // @ts-ignore
-    const { updateQuestions, setSubjectName, attemptTree } = useContext(LocalContext);
+    const { updateQuestions, setSubjectName } = useContext(LocalContext);
 
     const [paper, setPaper] = useState<PagedPaper>();
     const [navigate, setNavigate] = useState(false);
@@ -53,7 +54,7 @@ const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & {
 
         // save this on the top shelf :)
         let _currentlySavedPageNumber = currentlySavedPageNumber > -1 ? currentlySavedPageNumber : (prePrevState.currentPage || 0)
-        // let _currentlySavedSubPageNumber = currentlySavedSubPageNumber > -1 ? currentlySavedSubPageNumber : (prePrevState.compSubQuestionPage || 0)
+        let _currentlySavedSubPageNumber = currentlySavedSubPageNumber > -1 ? currentlySavedSubPageNumber : (prePrevState.compSubQuestionPage || 0)
 
         // do we really need the paperID really :(
         updateQuestions({
@@ -64,7 +65,7 @@ const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & {
             isLibraryPaper: true,
             paperHistoryID: prePrevState._id || "",
             currentPage: _currentlySavedPageNumber,
-            compSubQuestionPage: prePrevState.compSubQuestionPage || 0,
+            compSubQuestionPage: _currentlySavedSubPageNumber,
             isMarked: prePrevState.isMarked || false,
             isTimed: (prePrevState.isTimed || paper?.isTimed) || false,
             remainingTime: prePrevState.remainingTime || 10000,// 0,
@@ -92,8 +93,7 @@ const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & {
     // by default is false :)
     if (navigate) {
         return <QuestionHOC 
-            wasTimed={false} key={rerender} 
-            setCurrentlySavedPageNumber={setCurrentlySavedPageNumber}/>
+            wasTimed={false} key={rerender}/>
     }
 
     return null;
@@ -102,17 +102,16 @@ const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & {
 // the diff of the paper and then display it :)
 const DiffSpecialPaperDisplay: React.FC<IPreloadedData & { 
     gradeName: string,
-    setCurrentlySavedPageNumber: (position: number) => void
-    currentlySavedPageNumber: number,
-    currentlySavedSubPageNumber: number
 }> = (props) => {
     return (
-        <LocalContextComp>
-            <GlobalErrorBoundaryComp>
-                <_DiffSpecialPaperDisplay 
-                   {...props}/>
-            </GlobalErrorBoundaryComp>
-        </LocalContextComp>
+        <RecoilRoot>
+            <LocalContextComp>
+                <GlobalErrorBoundaryComp>
+                    <_DiffSpecialPaperDisplay 
+                    {...props}/>
+                </GlobalErrorBoundaryComp>
+            </LocalContextComp>
+        </RecoilRoot>
     )
 };
 

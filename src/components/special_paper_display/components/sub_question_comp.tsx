@@ -133,6 +133,7 @@ const SubQuestionComp = ({
     const [suggestedAnswer,setSuggestedAnswer] = useState<{ _id: string, option: string,isCorrect: boolean }[]>([]);
     const [isCorrect, setIsCorrect] = useState<boolean>(false);
     const [submitToParent, setSubmitToParent] = useState<number>(0);
+    const [reRenderSubQuestions, setReRenderSubQuestions] = useState(-1);
 
 
     useEffect(() => {
@@ -161,6 +162,7 @@ const SubQuestionComp = ({
             ...suggestedAnswer,
             ...attempt_snapshot
         ])
+        setReRenderSubQuestions(Math.random())
     }, []);
 
     // this collects it here which wont work in our current paper model
@@ -272,7 +274,7 @@ const SubQuestionComp = ({
                 }}
             ></span>
 
-            <RenderQuestion index={index} isMarked={isMarked} isCorrect={isCorrect}>
+            <RenderQuestion index={index} key={reRenderSubQuestions} isMarked={isMarked} isCorrect={isCorrect}>
                 {
                     question.options.map(({option,isCorrect, _id}:{
                         option: string,
