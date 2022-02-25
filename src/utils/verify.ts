@@ -8,6 +8,8 @@ const verifyToken = (token: string) => {
         }
 
         const { exp, school, _id } = jwt_decode(token) as any;
+
+        // if the token is expired just exit :)
         return {
             authToken: Date.now() >= exp * 1000 ? null : token, // by default i was checking for this
             isTeacher: !(school as boolean),

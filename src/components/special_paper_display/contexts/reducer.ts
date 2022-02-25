@@ -71,6 +71,9 @@ const reducer: (state:IState, action:IAction)=>IState = (state, action) => {
                 // the current page is set ( meaning we assume that )
                 let compSubQuestionPage = action.payload.next_sub_page > -Infinity ? action.payload.next_sub_page : 0;
                 
+                // console.log(currentPage);
+                // console.log(compSubQuestionPage);
+
                 // we can update the sub questions while also updating the main page ( to allow for back navigations )
                 return {
                     ...state,

@@ -88,23 +88,28 @@ const GradeDisplayPage = () => {
                         {/* then the class teacher */}
                         <br />
                         {/* <span className="sub-modal-texts">Class Teacher: {grade.classTeacher.name}</span> */}
-                        
-                        <ul>
-                            {/* <li>Grade {name}</li> */}
-                            <li className="sub-modal-texts">Class Teacher: {grade.classTeacher.name ? grade.classTeacher.name : <Skeleton/>}</li>
-                            <li className="sub-modal-texts">Stream: {grade.stream ? grade.stream : <Skeleton/>}</li>
-                            <li className="sub-modal-texts">Year: {grade.year ? grade.year : <Skeleton/>}</li>
-                            <span style={{
-                                border: `1px solid ${grade.isClosed ? "red" : "green"}`,
-                                paddingRight: "20px",
-                                paddingLeft: "20px",
-                                borderRadius: "20px",
-                                background: `${grade.isClosed ? "rgba(255,0,0,.4)" : "rgba(0,255,0,.4)"}`
-                            }}>
-                                {grade.isClosed ? "closed": "active"}
-                            </span>
-                            {/* <li className="sub-modal-texts">{(classRef?.students || []).length} learners</li> */}
-                        </ul>
+                        <div className="row sub-modal-texts">
+                            <div className="col s12 truncate">
+                                Class Teacher: {grade.classTeacher.name ? grade.classTeacher.name : <Skeleton/>}
+                            </div>
+                            <div className="col s12 truncate">
+                                Stream: {grade.stream ? grade.stream : <Skeleton/>}
+                            </div>
+                            <div className="col s12 truncate">
+                                Year: {grade.year ? grade.year : <Skeleton/>}
+                            </div>
+                            <div className="col s12">
+                                <span style={{
+                                    border: `1px solid ${grade.isClosed ? "red" : "green"}`,
+                                    paddingRight: "20px",
+                                    paddingLeft: "20px",
+                                    borderRadius: "20px",
+                                    background: `${grade.isClosed ? "rgba(255,0,0,.4)" : "rgba(0,255,0,.4)"}`
+                                }}>
+                                    {grade.isClosed ? "closed": "active"}
+                                </span>
+                            </div>
+                        </div>
                         <div hidden={isTeacher}>
                             <br />
                             <a href="#" data-target="edit-grade" className="waves-effect waves-light btn-flat sidenav-trigger" style={{

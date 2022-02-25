@@ -96,7 +96,6 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
 
-
     let sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
     let current_sub_page = sub_pages[compSubQuestionPage];
     
@@ -150,6 +149,7 @@ const ComprehensionComp = ({
     const [internalPaperContent, setInternalPaperContent] = useState<INormalContent[]>([]);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
     const [questionText, setQuestionText] = useState(question.question);
+    const [reRender, setReRender] = useState(-1);
 
     const is_broken_passage: boolean = useMemo(() => (question.children as IChildren[])[0].question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1,[question]);
     
@@ -208,6 +208,10 @@ const ComprehensionComp = ({
         setSavedContext(content.children);
     },[]);
 
+    useEffect(() => {
+        setReRender(Math.random());
+    }, [compSubQuestionPage]);
+
     return (
         <div>
             <span
@@ -220,6 +224,7 @@ const ComprehensionComp = ({
                 marginTop:"5px"
             }}>
                 <SubQuestionManagerComp
+                    key={reRender}
                     AddInternalPaperContents={AddInternalPaperContents}
                     parentId={question._id}
                     position={position}

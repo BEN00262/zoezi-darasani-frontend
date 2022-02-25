@@ -174,7 +174,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
 
     useEffect(() => {
-        setAttempted(findAlreadyDoneHistory(attemptTree.pages[currentPage]))
+        setAttempted(findAlreadyDoneHistory(attemptTree.pages[currentPage]));
     }, [compSubQuestionPage])
 
     useEffect(() => {
@@ -287,11 +287,11 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                 border: "1px solid #d3d3d3",
                 position:"sticky",
                 // marginTop:"55px",
-                top: isTabletOrMobileDevice ? 64.2 : 60,
+                top: isTabletOrMobileDevice ? 64.2 : 64,
                 zIndex:2,
             }}>
                     <button
-                        className="waves-effect waves-light btn-small"
+                        className="waves-effect waves-light btn-small z-depth-0"
 
                         // enable it for even comprehension papers
                         // modify this to allow for navigation ( somehow )
@@ -305,6 +305,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                                         -Infinity,
                                         compSubQuestionPage > 0 ? compSubQuestionPage - 1: compSubQuestionPage, 
                                         currentPage, 
+                                        // i think the error is here :)
                                         pageStudentPaperContent[currentPage]
                                     );
                                     return
@@ -325,12 +326,15 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
                             previous_sub_page_count -= previous_sub_page_count > 0 ? 1 : 0;
 
+                            // this was supposed to do that :) it aint
                             updateStudentTreeContentAtAndMove(
                                 next_full_page, 
                                 previous_sub_page_count, 
                                 currentPage, 
                                 pageStudentPaperContent[currentPage]
                             );
+
+                            updatePageNumber(next_full_page);
                         }}
                     >
                         <i className="material-icons">arrow_back</i>
@@ -405,7 +409,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                                 updatePageNumber(next_page)
                             }
 
-                        }} className="waves-effect waves-light z-depth-1 btn-small">
+                        }} className="waves-effect waves-light z-depth-0 btn-small">
                             <i className="material-icons">arrow_forward</i>    
                         </button>
                     </div>
