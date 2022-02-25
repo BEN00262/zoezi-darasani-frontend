@@ -8,7 +8,8 @@ import EditSubject from "./EditSubject";
 import Skeleton from "react-loading-skeleton";
 import LoaderComp from "../components/LoaderComp";
 
-const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"))
+const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"));
+const GeneralSubjectAnalysisCompSuspense = React.lazy(() => import("../components/GeneralSubjectAnalysis"));
 
 interface ISubjectInformation {
     _id: string
@@ -26,6 +27,7 @@ const SubjectAnalysis = () => {
     const [subject, setSubject] = useState<ISubjectInformation>({
         name: "", teacher: { email: "", name: ""}, _id:""
     }); // resolve this here first :) then we can proceed
+    const [activeWindow, setActiveWindow] = useState<"general" | "students">("general");
 
     useEffect(() => {
         // attach the materialize js stuff :)
@@ -90,6 +92,21 @@ const SubjectAnalysis = () => {
                             </div>
                         </div>
 
+                        <div className="row">
+                            {/* for the switching btwn the two analytics --> general on the subject and per student */}
+                            <button onClick={_ => {
+                                setActiveWindow("general");
+                            }} disabled={activeWindow === "general"} style={{
+                                border: "1px solid #d3d3d3"
+                            }} className="btn-flat sub-modal-texts"><b>General</b></button>
+
+                            <button onClick={_ => {
+                                setActiveWindow("students");
+                            }} disabled={activeWindow === "students"} style={{
+                                border: "1px solid #d3d3d3",
+                            }} className="btn-flat sub-modal-texts"><b>Students</b></button>
+                        </div>
+
                         <div hidden={isTeacher}>
                             <a href="#" data-target="edit-subject" className="waves-effect waves-light btn-flat sidenav-trigger" style={{
                                 border: "1px solid teal",
@@ -108,12 +125,18 @@ const SubjectAnalysis = () => {
                     </div>
 
                     {/* select the student and other stuff :) */}
+                    {/* we need to create a display that will cater for the general subject analysis and so forth :) */}
                     <div className="col s12 m10">
                         {/* Dispaly the students on per line ( but now what data will we show ) */}
 
                         {/* display the charts and other stuffs */}
                         <React.Suspense fallback={<LoaderComp/>}>
-                            <SubjectAnalysisCompSuspense subject={subject.name}/>
+                            {
+                                activeWindow === "general" ? 
+                                    <GeneralSubjectAnalysisCompSuspense subject={subject.name}/>
+                                    :
+                                    <SubjectAnalysisCompSuspense subject={subject.name}/>
+                            }
                         </React.Suspense>
                     </div>
                 </div>
