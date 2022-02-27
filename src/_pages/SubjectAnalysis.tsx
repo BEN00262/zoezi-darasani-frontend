@@ -7,6 +7,8 @@ import axios from "axios";
 import EditSubject from "./EditSubject";
 import Skeleton from "react-loading-skeleton";
 import LoaderComp from "../components/LoaderComp";
+import { useRecoilValue } from "recoil";
+import { gradeNameState } from "./GradeDisplayPage";
 
 const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"));
 const GeneralSubjectAnalysisCompSuspense = React.lazy(() => import("../components/GeneralSubjectAnalysis"));
@@ -28,6 +30,7 @@ const SubjectAnalysis = () => {
         name: "", teacher: { email: "", name: ""}, _id:""
     }); // resolve this here first :) then we can proceed
     const [activeWindow, setActiveWindow] = useState<"general" | "students">("general");
+    const gradeName = useRecoilValue(gradeNameState);
 
     useEffect(() => {
         // attach the materialize js stuff :)
@@ -49,7 +52,9 @@ const SubjectAnalysis = () => {
         M.Sidenav.init(document.querySelectorAll('.sidenav'), {
             edge: "right"
         });
-    }, [])
+    }, []);
+
+    const _subjectName = subject.name.toLowerCase() === "sst&cre" ? "social" : subject.name.toLowerCase().split(" ")[0];
 
     return (
         <main>
@@ -69,7 +74,7 @@ const SubjectAnalysis = () => {
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "50%"
                             }} 
-                            src={`https://www.zoezi-education.com/img/kcpe/${subject.name.toLowerCase().split(" ")[0]}.png`}
+                            src={`https://www.zoezi-education.com/img/${gradeName === "eight" ? "kcpe" : gradeName}/${_subjectName}.png`}
                         />
 
                         <div className="row sub-modal-texts">
