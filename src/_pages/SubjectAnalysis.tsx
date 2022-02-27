@@ -98,13 +98,13 @@ const SubjectAnalysis = () => {
                                 setActiveWindow("general");
                             }} disabled={activeWindow === "general"} style={{
                                 border: "1px solid #d3d3d3"
-                            }} className="btn-flat sub-modal-texts"><b>General</b></button>
+                            }} className="btn-flat sub-modal-texts"><b>Performance</b></button>
 
                             <button onClick={_ => {
                                 setActiveWindow("students");
                             }} disabled={activeWindow === "students"} style={{
                                 border: "1px solid #d3d3d3",
-                            }} className="btn-flat sub-modal-texts"><b>Students</b></button>
+                            }} className="btn-flat sub-modal-texts"><b>Learners</b></button>
                         </div>
 
                         <div hidden={isTeacher}>

@@ -1,8 +1,10 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
+import { useRecoilValue } from "recoil";
 import LoaderComp from "../components/LoaderComp";
 import { GlobalContext } from "../contexts/GlobalContext";
+import { gradeNameState } from "./GradeDisplayPage";
 import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
 
@@ -59,6 +61,7 @@ const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
     const [subjects, setSubjects] = useState<ISubject[]>([]);
     const [error, setError] = useState("");
     const [isFetching, setIsFetching] = useState(false);
+    const _gradeName = useRecoilValue(gradeNameState);
 
     // fetch the subjects in this grade and then see what it has
     useEffect(() => {
@@ -119,8 +122,6 @@ const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
                 <div className="col s12">
                     <button 
                         onClick={_ => {
-                            let _gradeName = localStorage.getItem("gradeName");
-
                             if (_gradeName) {
                                 return navigate(`/subject/new/${_gradeName}`)
                             }

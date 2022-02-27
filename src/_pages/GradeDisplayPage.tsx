@@ -8,6 +8,7 @@ import { ITeacherComp } from "./TeacherDisplayPage";
 import LoaderComp from "../components/LoaderComp";
 import EditGrade from "./EditGrade";
 import Skeleton from "react-loading-skeleton";
+import { atom, useSetRecoilState } from "recoil";
 
 // dynamic imports
 const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
@@ -26,8 +27,68 @@ interface IGrade {
     classRef?: string
 }
 
+/*
+    localStorage.setItem("classId", _grade._id);
+    localStorage.setItem("classRefId", _grade.classRef || "");
+    localStorage.setItem("gradeName", _grade.name);
+*/
+
+export const gradeNameState = atom<string>({
+    key: "gradeNameId",
+    default: "",
+    effects: [
+        ({ onSet, trigger, setSelf }) => {
+            if (trigger === "get") {
+                setSelf(localStorage.getItem("gradeName") || "")
+            }
+
+            onSet((newValue, _, isReset) => {
+                isReset ? localStorage.removeItem("gradeName") : localStorage.setItem("gradeName", newValue);
+            })
+        }
+    ]
+});
+
+export const classIdState = atom<string>({
+    key: "classIdStateId",
+    default: "",
+    effects: [
+        ({ onSet, trigger, setSelf }) => {
+            if (trigger === "get") {
+                setSelf(localStorage.getItem("classId") || "")
+            }
+
+            onSet((newValue, _, isReset) => {
+                isReset ? localStorage.removeItem("classId") : localStorage.setItem("classId", newValue);
+            })
+        }
+    ]
+});
+
+export const classRefIdState = atom<string>({
+    key: "classRefIdStateId",
+    default: "",
+    effects: [
+        ({ onSet, trigger, setSelf }) => {
+            if (trigger === "get") {
+                setSelf(localStorage.getItem("classRefId") || "")
+            }
+
+            onSet((newValue, _, isReset) => {
+                isReset ? localStorage.removeItem("classRefId") : localStorage.setItem("classRefId", newValue);
+            })
+        }
+    ]
+});
+
+
 const GradeDisplayPage = () => {
     const { authToken, isTeacher } = useContext(GlobalContext);
+
+    const setGradeName = useSetRecoilState(gradeNameState);
+    const setClassIdState = useSetRecoilState(classIdState);
+    const setClassRefIdState = useSetRecoilState(classRefIdState);
+
     const [classMeanScore, setClassMeanScore] = useState(0);
     const params = useParams();
     const [grade, setGrade] = useState<IGrade>({
@@ -45,10 +106,10 @@ const GradeDisplayPage = () => {
 
                     // use local storage to store the values
                     // find a way to set this in a better way :)
-                    localStorage.setItem("classId", _grade._id);
-                    localStorage.setItem("classRefId", _grade.classRef || "");
-                    localStorage.setItem("gradeName", _grade.name);
-                    
+                    setClassIdState(_grade._id);
+                    setClassRefIdState(_grade.classRef || "");
+                    setGradeName(_grade.name);
+
                     setGrade(_grade)
                 }
             })
@@ -172,15 +233,6 @@ const GradeDisplayPage = () => {
                                     <MetricsCompSuspense/>
                                 </React.Suspense>
                             </div>
-                            {/* <div id="subscriptions" className="col s12">
-                                <React.Suspense fallback={
-                                    <>
-                                        Loading...
-                                    </>
-                                }>
-                                    <SubscriptionsDisplaySuspense/>
-                                </React.Suspense>
-                            </div> */}
                         </div>
                     </div>
 

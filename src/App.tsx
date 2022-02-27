@@ -4,6 +4,7 @@ import {
   Route,
   Routes
 } from "react-router-dom";
+import { RecoilRoot } from "recoil";
 import "./App.css";
 import Footer from "./components/Footer"
 import Navigation from "./components/Navigation"
@@ -44,6 +45,7 @@ const App = () => {
     <Router>
       <React.Suspense fallback={<LoaderPage/>}>
       <GlobalContextComp>
+        <RecoilRoot>
         <Navigation/>
           <Routes>
             <Route element={<ForwardProtectedRoute/>}>
@@ -106,6 +108,7 @@ const App = () => {
             <Route path="*" element={<ErrorPage code={404} message={"Page Not Found"}/>}/>
           </Routes>
         <Footer/>
+        </RecoilRoot>
       </GlobalContextComp>
       </React.Suspense>
     </Router>
