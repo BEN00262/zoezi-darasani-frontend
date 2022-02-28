@@ -109,7 +109,6 @@ const NormalQuestionComp: React.FC<ITopFailedPaperQuestion & { position: number 
     const chooseRenderingOption = ChooseRenderingOption();
     
     return (
-        // try to inject the box styling here
         <div>
             <span
                 dangerouslySetInnerHTML={{

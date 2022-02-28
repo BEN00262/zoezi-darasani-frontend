@@ -38,6 +38,7 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
         active: 0, mean: 0, total: 0
     });
     const [meanString, setMeanString] = useState("0.00");
+    const [error, setError] = useState("");
 
     useEffect(() => {
         axios.get(`/api/deep-analytics/subject-mean/${classId}/${gradeName}/${subject}`, {
@@ -54,12 +55,34 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
                 throw new Error("Unexpected error!")
             })
             .catch(error => {
-                console.log(error);
+                setError(error.message);
             })
     }, []);
     
     return (
         <div className="section">
+            {
+                error ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
             <div className="row center sub-names">
                 <div className="col s12">
                     <span style={{
@@ -86,7 +109,7 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
                         },
                         {
                             label: "Student Percentage",
-                            point: `${((generalAnalytic.active/generalAnalytic.total) * 100).toFixed(0)}%`
+                            point: `${((generalAnalytic.active/(generalAnalytic.total || 1)) * 100).toFixed(0)}%`
                         }
                     ].map(({ label, point }, index) => {
                         return <Static key={`static_${index}`} name={label} numeric={`${point}`}/>

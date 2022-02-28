@@ -12,6 +12,13 @@ export interface ITopFailedPaperQuestion {
     passed: number
     failed: number
     choices: {[optionId: string]: number}
+    children_stats: {
+        students: number
+        passed: number
+        failed: number
+        choices: {[optionId: string]: number}
+        questionId: string
+    }[]
     question: IQuestion
 }
 
@@ -40,8 +47,11 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
         stats: [], students: 0
     });
     const setTotalStudentsInSubject = useSetRecoilState(totalStudentsInSubject);
+    const [isFetching, setIsFetching] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
+        setIsFetching(true);
         axios.get(`/api/deep-analytics/${classId}/${gradeName}/${subject}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
@@ -56,16 +66,45 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
                 throw new Error("Unexpected error!");
             })
             .catch(error => {
-                console.log(error);
+                setError(error.message);
             })
-    }, [])
+            .finally(() => {
+                setIsFetching(false);
+            })
+    }, []);
+
+    if (isFetching) {
+        return <LoaderComp/>
+    }
 
     return (
-        <>
+        <div className="section">
+            {
+                error ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
             <React.Suspense fallback={<LoaderComp/>}>
                 <FailedQuestionsPaperDisplayCompSus {...topFailedData}/>
             </React.Suspense>
-        </>
+        </div>
     )
 }
 
