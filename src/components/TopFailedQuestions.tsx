@@ -5,25 +5,29 @@ import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
 import LoaderComp from "./LoaderComp";
+import GlobalErrorBoundaryComp from "./special_paper_display/components/GlobalErrorBoundaryComp";
 import { IQuestion } from "./special_paper_display/rendering_engine/DataLoaderInterface";
+
+export interface ITopFailedChildrenStats {
+    students: number
+    passed: number
+    failed: number
+    choices: {[optionId: string]: number}
+    questionId: string
+}
 
 export interface ITopFailedPaperQuestion {
     students: number
     passed: number
     failed: number
     choices: {[optionId: string]: number}
-    children_stats: {
-        students: number
-        passed: number
-        failed: number
-        choices: {[optionId: string]: number}
-        questionId: string
-    }[]
+    children_stats: ITopFailedChildrenStats[]
     question: IQuestion
 }
 
 export interface ITopFailedPaperAnalytics {
     students: number
+    students_who_did: number
     stats: ITopFailedPaperQuestion[]
 }
 
@@ -33,6 +37,10 @@ export const totalStudentsInSubject = atom({
     default: 0
 })
 
+export const studentsWhoPartcipatedState = atom({
+    key: "studentsWhoPartcipatedStateId",
+    default: 0
+})
 // check if the selection is special or not :)
 const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
     // interested in fetching the top failed questions per subject :)
@@ -44,9 +52,10 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
     const gradeName = useRecoilValue(gradeNameState);
 
     const [topFailedData, setTopFailedData] = useState<ITopFailedPaperAnalytics>({
-        stats: [], students: 0
+        stats: [], students: 0, students_who_did: 0
     });
     const setTotalStudentsInSubject = useSetRecoilState(totalStudentsInSubject);
+    const setStudentsWhoParticipated = useSetRecoilState(studentsWhoPartcipatedState);
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState("");
 
@@ -60,6 +69,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
                     let _topFailedAnalytics = data.paper as ITopFailedPaperAnalytics;
                     setTopFailedData(_topFailedAnalytics);
                     setTotalStudentsInSubject(_topFailedAnalytics.students);
+                    setStudentsWhoParticipated(_topFailedAnalytics.students_who_did);
                     return;
                 }
 
@@ -101,9 +111,11 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
                 </div>
                 : null
             }
-            <React.Suspense fallback={<LoaderComp/>}>
-                <FailedQuestionsPaperDisplayCompSus {...topFailedData}/>
-            </React.Suspense>
+            <GlobalErrorBoundaryComp>
+                <React.Suspense fallback={<LoaderComp/>}>
+                    <FailedQuestionsPaperDisplayCompSus {...topFailedData}/>
+                </React.Suspense>
+            </GlobalErrorBoundaryComp>
         </div>
     )
 }

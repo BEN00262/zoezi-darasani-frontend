@@ -5,8 +5,8 @@ import M from 'materialize-css';
 import SubQuestionComp from './sub_question_comp';
 import { IChildren } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
 import { INormalContent } from '../../special_paper_display/interfaces/librarypaper';
-import { useRecoilValue } from 'recoil';
-import { ITopFailedPaperQuestion, totalStudentsInSubject } from '../../TopFailedQuestions';
+import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
+import { ITopFailedChildrenStats, ITopFailedPaperQuestion, studentsWhoPartcipatedState, totalStudentsInSubject } from '../../TopFailedQuestions';
 import { compSubQuestionPageState } from '..';
 
 
@@ -32,48 +32,6 @@ const group_questions: GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) =
     return book
 }
 
-type FOUND_ANSWERS = {
-    position: number,
-    isCorrect: boolean,
-    option: string
-}
-
-const merge_broken_passage_with_answers = (questionText: string, children: IChildren[], base_position: number = 0) => (answers_delta: INormalContent[], isMarked: boolean = false) => {
-    let found_answer_positions: FOUND_ANSWERS[] = [];
-
-    answers_delta.forEach(delta => {
-        let selected_option = delta.attempted_options[0].optionID;
-        let selected_option_index = delta.attempted_options[0].optionIndex;
-
-        let worked_question = delta.question;
-
-        for (let position = 0; position < children.length; position++) {
-            let _child = children[position];
-
-            if (_child._id === worked_question) {
-
-                let found = _child.options.find((_option, _optionIndex) => (_option._id === selected_option) || (_optionIndex === selected_option_index));
-
-                if (found) {
-                    found_answer_positions.push({
-                        position: position + 1 + base_position,
-                        option: found.option,
-                        isCorrect: found.isCorrect
-                    })
-                }
-
-                break;
-            }
-        }
-    });
-
-    return found_answer_positions.reduce((acc, x) => acc.replace(
-            new RegExp(`_{2,4}\\s?${x.position}\\s?_{2,4}`),
-            `<span style="color:${isMarked && x.isCorrect ? "green" : "red"};"><u><b>${x.option}</b></u></span>`
-        ), questionText);
-}
-
-
 // a next day event move
 interface ISubQuestionManagerComp {
     sub_questions: IChildren[]
@@ -86,6 +44,8 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
     parentId, sub_questions,savedChildren
 }) => {
     const compSubQuestionPage = useRecoilValue(compSubQuestionPageState);
+
+    // pass the context of the current sub page and use it :)
 
     const findSubQuestion = useCallback((questionID: string) => {
         return savedChildren.find(x => x.question === questionID) || null
@@ -113,41 +73,32 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
             }
         </>
     )
+});
+
+export const isBrokenPassageState = atom({
+    key: 'isBrokenPassageId',
+    default : false
+})
+
+export const subQuestionsContextState = atom<ITopFailedChildrenStats[]>({
+    key: "subQuestionsContextStateId",
+    default: []
 })
 
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
-    question, failed, students: studentsTotal
+    question, failed, students: studentsTotal, children_stats
 }) => {
     // push the elements into this store
-    const [internalPaperContent, setInternalPaperContent] = useState<INormalContent[]>([]);
+    const setIsBrokenPassage = useSetRecoilState(isBrokenPassageState);
+    const setSubQuestionsContext = useSetRecoilState(subQuestionsContextState);
+    const studentsWhoParticipated = useRecoilValue(studentsWhoPartcipatedState);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
     const [questionText, setQuestionText] = useState(question.question);
     const [reRender, setReRender] = useState(-1);
     const compSubQuestionPage = useRecoilValue(compSubQuestionPageState);
     const totalStudentsInSubjectValue = useRecoilValue(totalStudentsInSubject);
-
-    const is_broken_passage: boolean = useMemo(() => (question.children as IChildren[])[0].question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1,[question]);
-    
-    // look into the base position thing :)
-    // we might need to extract it from the actual questions themselves :)
-    const hot_merge_function = is_broken_passage ? 
-        merge_broken_passage_with_answers(question.question, question.children as IChildren[], 0) 
-        : (n:INormalContent[]) => question.question;
-
-    useEffect(() => {
-        // save this every time ( highly inefficient refactor after the launch )
-        if (internalPaperContent.length > 0) {
-
-            if (is_broken_passage) {
-                setQuestionText(
-                    hot_merge_function(internalPaperContent, true)
-                );
-            }
-        }
-
-    }, [internalPaperContent])
 
     useEffect(() => {
         let elems = document.querySelectorAll(".question-comp img");
@@ -158,6 +109,19 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
         setReRender(Math.random());
     }, [compSubQuestionPage]);
 
+    useEffect(() => {
+        if (children_stats.length) {
+            // only set if we have something otherwise dont :)
+            setSubQuestionsContext(children_stats);
+        }
+    }, [children_stats]);
+
+    useEffect(() => {
+        setIsBrokenPassage(
+            (question.children as IChildren[])[0].question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1
+        )
+    }, [question])
+
     return (
         <div>
             <span
@@ -167,9 +131,6 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
                         <div>
                             <span class="sub-modal-texts green-text" style="margin-left:5px;">
                                 <b>[ Attempted by ${studentsTotal} (${((studentsTotal/(totalStudentsInSubjectValue || 1))*100).toFixed(0)}%) student(s) ]</b>
-                            </span>
-                            <span class="sub-modal-texts red-text" style="margin-left:5px;">
-                                <b>[ Failed by ${((failed/studentsTotal)*100).toFixed(0)}% of the students ]</b>
                             </span>
                         </div>
                         <div class="question-comp">${questionText}</div>

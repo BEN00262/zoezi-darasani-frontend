@@ -1,13 +1,16 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
 import { INormalContent } from '../../special_paper_display/interfaces/librarypaper';
 import { IChildren, IOption } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
+import { ITopFailedChildrenStats, totalStudentsInSubject } from '../../TopFailedQuestions';
+import { isBrokenPassageState, subQuestionsContextState } from './ComprehensionQuestionComp';
 
-const CheckBoxComp = ({option, index, position,isMultiAnswersQuestion}: {
+const CheckBoxComp = ({option, index, position, optionAnalytics}: {
     option: IOption
     index: number
     keyValue: string
     position: number
-    isMultiAnswersQuestion: boolean,
+    optionAnalytics: number,
 }) => {
     return (
         <div key={index}>
@@ -19,7 +22,10 @@ const CheckBoxComp = ({option, index, position,isMultiAnswersQuestion}: {
                         <b>
                             <span
                                 dangerouslySetInnerHTML={{
-                                    __html: option.option
+                                    __html: `
+                                        <div>${option.option}</div>
+                                        <div class="sub-modal-texts ${option.isCorrect ?'green-text': 'red-text'}">Selected by (${optionAnalytics.toFixed(0)}%) of the students</div>
+                                    `
                                 }}
                             ></span>
                         </b>
@@ -30,11 +36,11 @@ const CheckBoxComp = ({option, index, position,isMultiAnswersQuestion}: {
     );
 }
 
-const OptionComp = ({option,keyValue,position, isMultiAnswersQuestion}: {
+const OptionComp = ({option,keyValue,position, optionAnalytics}: {
     option: IOption,
     keyValue: string,
     position: number,
-    isMultiAnswersQuestion: boolean,
+    optionAnalytics: number,
 }) => {
     return (
             <p key={keyValue}>
@@ -48,7 +54,10 @@ const OptionComp = ({option,keyValue,position, isMultiAnswersQuestion}: {
                         <b>
                             <span
                                 dangerouslySetInnerHTML={{
-                                    __html: option.option
+                                    __html: `
+                                    <div>${option.option}</div>
+                                    <div class="sub-modal-texts ${option.isCorrect ?'green-text': 'red-text'}">Selected by (${optionAnalytics.toFixed(0)}%) of the students</div>
+                                    `
                                 }}
                             ></span>
                         </b>
@@ -69,8 +78,9 @@ const MultiAnswerComp = ({ children, index }: {
             marginBottom:"5px",
             display:"flex",
             flexDirection:"row",
+            alignItems: "flex-start"
         }}>
-            {index+1}.
+            <p>{index+1}.</p>
             <div>
                 { children }
             </div>
@@ -95,6 +105,7 @@ const NonMultiAnswerComp = ({ children }: {
 
 
 // get the sub question stuff :)
+// 
 const SubQuestionComp = ({
     question, index,  savedState, parentId
 }:{
@@ -103,31 +114,34 @@ const SubQuestionComp = ({
     index: number,
     savedState: INormalContent | null,
 }) => {
-    useEffect(() => {
-       
-    }, []);
-
+    const subQuestionsContext = useRecoilValue(subQuestionsContextState); // get the entire stuff
+    const isBrokenPassage = useRecoilValue(isBrokenPassageState);
+    const totalStudents = useRecoilValue(totalStudentsInSubject); // all the students in the class
     const isMultipleOption = useMemo(() => question?.options?.filter(x => x.isCorrect)?.length > 1,[question]);
-    const isMultiAnswersQuestion: boolean = question.question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1;
 
-    const RenderQuestion = isMultiAnswersQuestion ? MultiAnswerComp : NonMultiAnswerComp;
+    const RenderQuestion = isBrokenPassage ? MultiAnswerComp : NonMultiAnswerComp;
+
+    const fetchedSubQuestionContext = useMemo(() => {
+        return subQuestionsContext.find(x => x.questionId === question._id) || {} as ITopFailedChildrenStats;
+    }, [subQuestionsContext, question]); // only redo if that changes
 
     const ChooseRenderingOption = () => {
         let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
-        return ({position, index, option,quesIndex }:{
+        return ({position, index, option,quesIndex, optionAnalytics }:{
             position: number
             index: number
             option: IOption
-            quesIndex: number
+            quesIndex: number,
+            optionAnalytics: number
         }) => {
             return <Renderer
                     keyValue={`sub_option_${index}_${quesIndex}`}
-                    isMultiAnswersQuestion={isMultiAnswersQuestion}
                     key={`sub_option_${index}_${quesIndex}`} 
                     position={position} 
                     option={option} 
                     index={index}
+                    optionAnalytics={optionAnalytics}
             />
         }
     }
@@ -142,7 +156,7 @@ const SubQuestionComp = ({
         }}>
             <span
                 dangerouslySetInnerHTML={{
-                    __html: !isMultiAnswersQuestion ? `
+                    __html: !isBrokenPassage ? `
                         <div style="display:flex;flex-direction:row;">
                             <p style="margin-right:5px;">
                                 ${index+1}.  
@@ -158,14 +172,28 @@ const SubQuestionComp = ({
             <RenderQuestion index={index}>
                 {
                     question.options.map((option,quesIndex) => {
+                            // lets get the analytics for the option
+                            let optionAnalytics = Object.keys(fetchedSubQuestionContext).length ? ((fetchedSubQuestionContext.choices[option._id]) / (fetchedSubQuestionContext.students || 1)) * 100 : 0;
+
                             return chooseRenderingOption({
                                 position:index,
                                 index,
                                 quesIndex,
                                 option,
+                                optionAnalytics: optionAnalytics || 0
                             })
                     })
                 }
+                <div style={{ 
+                    letterSpacing: "1px",
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                }} className="sub-modal-texts blue-text">
+                    <i className="material-icons">info</i> <b style={{
+                        marginLeft: "4px"
+                    }}>Attempted by {fetchedSubQuestionContext.students} ( {(((fetchedSubQuestionContext.students || 0)/(totalStudents || 1))*100).toFixed(0)} %) of the learners</b>
+                </div>
             </RenderQuestion>
 
             <div style={{

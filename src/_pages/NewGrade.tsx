@@ -1,11 +1,9 @@
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react'
-import Select from 'react-select'
+import { SyntheticEvent, useContext, useEffect, useState } from 'react';
+import Select from 'react-select';
 import { GlobalContext } from '../contexts/GlobalContext';
 import { ITeacherComp } from './TeacherDisplayPage';
-
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 export interface ISelectableData {
@@ -17,7 +15,6 @@ export interface ISelectableData {
 const NewGrade = () => {
     const navigate = useNavigate();
     const { authToken } = useContext(GlobalContext);
-
     const [grades, setGrades] = useState<ISelectableData[]>([]);
 
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
@@ -137,9 +134,7 @@ const NewGrade = () => {
                     : null
                 }
                 <div className="row">
-                    <ToastContainer/>
                     <form method='post' onSubmit={handleFormSubmission} className="col s12 m6 push-m3">
-                            
                         <div className="col s12 m12">
                             {/* if a subject has already been created we cant recreate it ( we have to check this ) */}
                             <label>Select Grade</label>

@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom"
-import EmptyComp from "../components/Empty";
+import { useNavigate } from "react-router-dom";
 
 export interface Grade {
     _id: string

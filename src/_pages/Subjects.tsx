@@ -5,7 +5,6 @@ import { useRecoilValue } from "recoil";
 import LoaderComp from "../components/LoaderComp";
 import { GlobalContext } from "../contexts/GlobalContext";
 import { gradeNameState } from "./GradeDisplayPage";
-import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
 
 interface ISubject {

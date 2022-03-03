@@ -1,4 +1,17 @@
-import React from "react";
+import React from 'react';
+
+// export default function GlobalErrorBoundaryFallback({error, resetErrorBoundary}: any) {
+//   return (
+//     <div className="row center">
+//       <h6>Something went wrong. We are very sorry for the inconvenience. </h6>
+//       {/* give them an ability to send the bug shit to the server */}
+//       <button
+//         onClick={resetErrorBoundary}
+//         className="waves-effect waves-light materialize-red btn"
+//       >RELOAD PAGE</button>
+//     </div>
+//   )
+// }
 
 export default class GlobalErrorBoundaryComp extends React.Component {
     constructor(props: any) {
