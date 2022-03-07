@@ -77,7 +77,7 @@ const OptionComp = ({option,index, position, analytics}: {
 
 // we have the question and its stats ---> now what ?
 const NormalQuestionComp: React.FC<ITopFailedPaperQuestion & { position: number }> = ({
-    question, failed, students: studentsTotal, position, choices
+    question, failed, students: studentsTotal, position, choices, paperName, questionPosition
 }) => {
     const totalStudentsInSubjectValue = useRecoilValue(totalStudentsInSubject);
     const numberOfCorrectOptions: number = useMemo(() => question?.options_next?.filter(x => x.isCorrect)?.length || 0,[question]);
@@ -110,6 +110,20 @@ const NormalQuestionComp: React.FC<ITopFailedPaperQuestion & { position: number 
     
     return (
         <div>
+            {/* TODO: link this to the actual papers */}
+            {
+                paperName && (questionPosition && questionPosition > 0) ? 
+                <div className='center' style={{
+                    marginTop: "8px"
+                }}>
+                    <span className='sub-modal-texts teal-text' style={{
+                        border: "1px solid #d3d3d3",
+                        padding: "5px 15px",
+                        cursor: "pointer"
+                    }}> <b>{paperName} | Number {questionPosition}</b> </span>
+                </div>
+                : null
+            }
             <span
                 dangerouslySetInnerHTML={{
                     __html: `

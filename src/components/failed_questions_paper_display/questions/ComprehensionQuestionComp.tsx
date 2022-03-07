@@ -88,7 +88,7 @@ export const subQuestionsContextState = atom<ITopFailedChildrenStats[]>({
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
-    question, failed, students: studentsTotal, children_stats
+    question, failed, students: studentsTotal, children_stats, paperName, questionPosition
 }) => {
     // push the elements into this store
     const setIsBrokenPassage = useSetRecoilState(isBrokenPassageState);
@@ -124,6 +124,19 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
 
     return (
         <div>
+            {
+                paperName && (questionPosition && questionPosition > 0) ? 
+                <div className='center' style={{
+                    marginTop: "8px"
+                }}>
+                    <span className='sub-modal-texts teal-text' style={{
+                        border: "1px solid #d3d3d3",
+                        padding: "5px 15px",
+                        cursor: "pointer"
+                    }}> <b>{paperName} | Number {questionPosition}</b> </span>
+                </div>
+                : null
+            }
             <span
                 dangerouslySetInnerHTML={{
                     __html: `

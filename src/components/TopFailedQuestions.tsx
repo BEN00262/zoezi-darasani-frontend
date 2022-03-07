@@ -20,6 +20,8 @@ export interface ITopFailedPaperQuestion {
     students: number
     passed: number
     failed: number
+    paperName: string | null
+    questionPosition: number | null
     choices: {[optionId: string]: number}
     children_stats: ITopFailedChildrenStats[]
     question: IQuestion

@@ -74,16 +74,23 @@ const StudentAnalysis = () => {
                             />
                             {/* then the class teacher */}
                             <br />
-                            <span className="sub-modal-texts" style={{
-                                letterSpacing: "1px"
-                            }}><b>{student.firstname && student.lastname ? <>
-                                {student.firstname} {student.lastname}
-                            </> : <Skeleton/>}</b></span>
-                            <span style={{
-                                marginRight: "5px",
-                                marginLeft: "5px"
-                            }}>|</span>
-                            <span className="sub-modal-texts">Last active: {student.lastActive}</span>
+                            {/* we can replace with a loading skeleton the entire stuff */}
+                            {
+                                student.firstname && student.lastname ?
+                                <>
+                                    <span className="sub-modal-texts" style={{
+                                        letterSpacing: "1px"
+                                    }}>
+                                        <b>{student.firstname} {student.lastname}</b>
+                                    </span>
+                                    <span style={{
+                                        marginRight: "5px",
+                                        marginLeft: "5px"
+                                    }}>|</span>
+                                    <span className="sub-modal-texts">Last active: {student.lastActive}</span>
+                                </>
+                                : <Skeleton width={200}/>
+                            }
                             <br />
                             <br />
                             <div style={{
