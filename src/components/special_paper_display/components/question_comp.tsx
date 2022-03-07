@@ -50,7 +50,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
         return Math.floor((number_of_questions || 0) / 5) + (((number_of_questions || 0) % 5) > 0 ? 1 : 0);
     },[currentPage]);
 
-    const findAlreadyDoneHistory = (previous_snapshot: ILibraryPaperContent[]) => {
+    const findAlreadyDoneHistory = useCallback((previous_snapshot: ILibraryPaperContent[]) => {
         return previous_snapshot.reduce((acc, snapshot) => {
             switch (snapshot.questionType) {
                 case 'normal':
@@ -76,9 +76,9 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
             return acc
         }, 0);
-    }
+    }, [compSubQuestionPage])
 
-    const findCumulativeTotal = (previous_snapshot: ILibraryPaperContent[]) => {
+    const findCumulativeTotal = useCallback((previous_snapshot: ILibraryPaperContent[]) => {
         return previous_snapshot.reduce((acc, snapshot) => {
             switch (snapshot.questionType) {
                 case 'comprehension':
@@ -98,7 +98,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
             return acc
         }, 0);
-    }
+    }, [compSubQuestionPage])
 
     const totalAlreadyDone = useMemo(() => {
         if (isComprehensionQuestion) {
@@ -161,14 +161,13 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
     // what if we use this state to push the time up i think
     useEffect(() => {
-        let previous_snapshot = attemptTree.pages[currentPage]
-
-        setAttempted(findAlreadyDoneHistory(previous_snapshot))
+        let previous_snapshot = attemptTree.pages[currentPage];
+        setAttempted(findAlreadyDoneHistory(previous_snapshot));
 
         setPageStudentPaperContent({
             ...pageStudentPaperContent,
             [currentPage]: previous_snapshot
-        })
+        });
     }, [currentPage])
 
 
@@ -195,6 +194,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
             let next_sub_page = compSubQuestionPage + 1;
 
             if (next_sub_page < comprehension_sub_pages) {
+                console.log("[*] We are here ---> ", next_sub_page, comprehension_sub_pages)
                 // get the number of questions done here
                 setCurrentSubPage(next_sub_page);
 
@@ -208,7 +208,10 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
         let next_page = currentPage + 1
 
         if (next_page < totalPages) {
-            updateStudentTreeContentAtAndMove(next_page, -Infinity, currentPage, pageStudentPaperContent[currentPage]);
+            updateStudentTreeContentAtAndMove(
+                next_page, -Infinity, 
+                currentPage, pageStudentPaperContent[currentPage]
+            );
         }
     }
 
@@ -234,7 +237,10 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
     }
 
     const findQuestion = useCallback((questionID: string) => {
-        let page = pageStudentPaperContent[currentPage]
+        // console.log(currentPage);
+        console.log(pageStudentPaperContent);
+
+        let page = pageStudentPaperContent[currentPage] || [];
         return page.find(x => x.content.question === questionID) || null;
     }, [currentPage]);
 
@@ -278,18 +284,22 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
     }
 
     return (
-        <>
-            {/* this part is unnecesarily rerendered */}
-            <div className="white" style={{
+       <div style={{
+            paddingTop: "0.3rem"
+       }}>
+             {/* this part is unnecesarily rerendered */}
+             <div className="white" style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent:"space-between",
+                alignItems: "center",
+                border:  "1px solid #d3d3d3",
                 borderRadius:"2px",
                 boxShadow: "0 4px 8px 0 rgba(0,0,0,0.2)",
                 padding:"5px 6px",
                 position:"sticky",
                 // marginTop:"55px",
-                top: isTabletOrMobileDevice ? 64.2 : 56.2,
+                top: isTabletOrMobileDevice ? 64.2 : 62,
                 zIndex:2,
             }}>
                     <button
@@ -437,7 +447,8 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
             <div id="zoeziPaper">
             <Card
                 style={{
-                    marginTop: "13px"
+                    marginTop: "8px",
+                    border: "1px solid #d3d3d3"
                 }}
 
                 header= {
@@ -490,25 +501,10 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                 }
                 }>
                     { questions.map((question: IQuestion,index: number) => selectQuestionType(question,index)) }
-
-                    <Button
-                        node="button"
-                        waves="light"
-                        small
-                        style={{
-                            marginTop:"15px"
-                        }}
-
-                        disabled={isMarked}
-                    >
-                        { 
-                            isLastPage ? isKiswahili ? "SAHIHISHA KARATASI" : "MARK PAPER"  : isKiswahili ? "GEUZA UKURUSA" : "TURN PAGE" 
-                        }
-                    </Button>
                 </form>
             </Card>
-            </div>
-        </>
+            </div>   
+        </div>
     )
 }
 

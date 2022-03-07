@@ -23,20 +23,27 @@ export default function QuestionHOC({ wasTimed }: { wasTimed: boolean }) {
   useEffect(() => {
     setAlreadyDone(get_already_done_pages_questions_total(questions,paperMap, currentPage));
     let current_page = paperMap.pages[currentPage];
+
     updateNoQuesPerPage(current_page.endIndex - current_page.startIndex); // compute the value every time
     setData(questions.slice(current_page.startIndex, current_page.endIndex));
     setRerender(Math.random());
+    
+    console.log("The current page is changing");
+    console.log(current_page);
+    console.log(currentPage);
+
   }, [currentPage]);
   
   return (
         <>
-          <Suspense key={reRender} fallback={
+          <Suspense fallback={
             <Container>
                 {isKiswahili ? "Karatasi inatayarishwa ..." : "Preparing paper ..."}
             </Container>
           }>
             <LazyQuestionComponent 
               questions={data} 
+              key={reRender}
               alreadyDone={alreadyDone} 
               isKiswahili={isKiswahili}
               wasTimed={wasTimed}

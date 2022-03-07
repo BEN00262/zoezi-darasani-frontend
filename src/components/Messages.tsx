@@ -18,10 +18,10 @@ const failure_toastify = (message: string) => toast.error(message, {
     autoClose: 2000
 })
 
-const socket = io(); // io("http://localhost:3500/");
+const socket = io("http://localhost:3500/");
 
 interface IMessage {
-    type: "payments"
+    type: "payments" // add other message types later :)
     message: {
         status: boolean
         message: string

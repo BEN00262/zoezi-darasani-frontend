@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { GlobalContext } from '../../../contexts/GlobalContext';
 import LoaderPage from '../../../_pages/loader';
+import LoaderComp from '../../LoaderComp';
 import { GlobalContext as LocalContext } from '../contexts/global';
 import { generate_paper_map, get_number_of_questions_in_paper, IPaperMap } from '../grouper/grouper';
 import { IQuestion, PagedPaper } from '../rendering_engine/DataLoaderInterface';
@@ -65,12 +66,15 @@ const HeadlessComp: React.FC<IHeadlessComp> = ({ gradeName, paperID, savedStateI
 
     const [paper, setPaper] = useState<PagedPaper>();
     const [navigate, setNavigate] = useState(false);
+    const [error, setError] = useState("");
+    const [isFetching, setIsFetching] = useState(false);
 
     // we also need the authToken to be able to fetch stuff
     const BASE_URL = `/api/library/special_paper/${studentId}/${paperID}/${savedStateID}`
     const paperFetch = new PaperFetch(new HttpClientAxios(), BASE_URL);
 
     useEffect(() => {
+        setIsFetching(true);
         paperFetch.getPaper(authToken || "")
             .then(({ paper, prevState }) => {
                 setPaper(paper);
@@ -105,11 +109,46 @@ const HeadlessComp: React.FC<IHeadlessComp> = ({ gradeName, paperID, savedStateI
                     }
                 });
                 setNavigate(true);
-            });
+            })
+            .catch(error => {
+                setError(error.message);
+            })
+            .finally(() => {
+                setIsFetching(false);
+            })
     }, []);
 
-    if (!paper) {
-        return <LoaderPage/>
+    if (isFetching) {
+        return (
+            <div className="section">
+                <LoaderComp/>    
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="section">
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid red",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(255,0,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">error_outline</i>
+                            <p>{error}</p>
+                        </div>
+                    </div>
+                </div>  
+            </div>
+        )
     }
 
     if (navigate) {

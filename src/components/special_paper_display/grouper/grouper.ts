@@ -15,6 +15,7 @@ export interface IPaperMap {
 }
 
 // generate the paper map and then use it
+// optimize it later :)
 function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
     let paperMap: number[][] = [];
     let holders = []; // an array of numbers ( question indexes )

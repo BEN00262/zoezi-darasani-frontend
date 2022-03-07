@@ -78,20 +78,29 @@ interface ISubQuestionManagerComp {
     position: number
     sub_questions: IChildren[]
     parentId: string
-    compSubQuestionPage: number
-    AddInternalPaperContents: (content: INormalContent) => void
     setCorrectAnswersCount: (num:number) => void
     setAttempted: (attempted: number) => void
     savedChildren: INormalContent[]
 }
 
 // create a simple compressor for the displayed questions ( to show the answers within them )
-const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({ 
+const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({ 
     parentId,
-    position, sub_questions,
-     AddInternalPaperContents, setCorrectAnswersCount, setAttempted, 
-     compSubQuestionPage, savedChildren
+    position, 
+    sub_questions, 
+    setCorrectAnswersCount, 
+    setAttempted,
+    savedChildren
 }) => {
+    const {
+        compSubQuestionPage,
+        currentPage
+    } = useContext(GlobalContext);
+
+    // console.log(sub_questions);
+    // console.log(currentPage);
+    // console.log(compSubQuestionPage);
+
     const findSubQuestion = useCallback((questionID: string) => {
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
@@ -103,6 +112,10 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
             return acc + x.length;
         }, 0);
 
+    // useEffect(() => {
+    //     console.log("I have been rerendered");
+    // }, []);
+
     return (
         <>
             {
@@ -113,7 +126,7 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
                             question={child}
                             savedState={findSubQuestion(child._id)}
                             index={index + pages_total_done + position}
-                            AddInternalPaperContents={AddInternalPaperContents}
+                            AddInternalPaperContents={(n: INormalContent) => {}}
                             setAttempted={setAttempted}
                             setCorrectAnswersCount={setCorrectAnswersCount}
                         />
@@ -121,13 +134,13 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
             }
         </>
     )
-})
+}
 
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionComp = ({
     question,isMarked, position, setAttempted, 
-    setCorrectAnswersCount, AddPageStudentPaperContent, savedQuestion
+    setCorrectAnswersCount
 }:{
     question: IQuestion,
     isMarked: boolean,
@@ -145,6 +158,8 @@ const ComprehensionComp = ({
         attemptTree
     } = useContext(GlobalContext);
 
+    console.log(question._id)
+
     // push the elements into this store
     const [internalPaperContent, setInternalPaperContent] = useState<INormalContent[]>([]);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
@@ -157,33 +172,8 @@ const ComprehensionComp = ({
         merge_broken_passage_with_answers(question.question, question.children as IChildren[], position) 
         : (n:INormalContent[]) => question.question;
 
-    const AddInternalPaperContents = (content: INormalContent) => {
-        let local_internal_paper_content = [...internalPaperContent];
-        let indexFound = local_internal_paper_content.findIndex(x => x.question === content.question);
-        
-        if (indexFound > -1) {
-            local_internal_paper_content[indexFound] = content;
-        } else {
-            local_internal_paper_content = [...local_internal_paper_content, content] 
-        }
-
-        setInternalPaperContent(local_internal_paper_content)
-    }
-
     useEffect(() => {
-        // save this every time ( highly inefficient refactor after the launch )
         if (internalPaperContent.length > 0) {
-
-            AddPageStudentPaperContent(question._id, {
-                questionType: "comprehension",
-                content: {
-                    question: question._id,
-                    children: internalPaperContent
-                }
-            });
-
-            
-
             if (is_broken_passage) {
                 setQuestionText(
                     hot_merge_function(internalPaperContent, isMarked)
@@ -210,7 +200,8 @@ const ComprehensionComp = ({
 
     useEffect(() => {
         setReRender(Math.random());
-    }, [compSubQuestionPage]);
+        console.log(`The current sub page is ${compSubQuestionPage}`);
+    }, [currentPage]);
 
     return (
         <div>
@@ -225,11 +216,9 @@ const ComprehensionComp = ({
             }}>
                 <SubQuestionManagerComp
                     key={reRender}
-                    AddInternalPaperContents={AddInternalPaperContents}
                     parentId={question._id}
                     position={position}
                     savedChildren={savedContext}
-                    compSubQuestionPage={compSubQuestionPage}
                     setAttempted={setAttempted}
                     setCorrectAnswersCount={setCorrectAnswersCount}
                     sub_questions={question.children || []} 

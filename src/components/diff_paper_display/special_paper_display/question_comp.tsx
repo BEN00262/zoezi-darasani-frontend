@@ -50,6 +50,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
         return Math.floor((number_of_questions || 0) / 5) + (((number_of_questions || 0) % 5) > 0 ? 1 : 0);
     },[currentPage]);
 
+    // optimize this later
     const findAlreadyDoneHistory = (previous_snapshot: ILibraryPaperContent[]) => {
         return previous_snapshot.reduce((acc, snapshot) => {
             switch (snapshot.questionType) {
