@@ -3,85 +3,13 @@ import { useEffect, useCallback, useState, useContext, FC, useMemo } from 'react
 import M from 'materialize-css';
 
 import SubQuestionComp from './sub_question_comp';
-import { IChildren, IQuestion } from '../rendering_engine/DataLoaderInterface';
-import { IComprehensionContent, ILibraryPaperContent, INormalContent } from '../interfaces/librarypaper';
-import { GlobalContext } from '../contexts/global';
-import React from 'react';
+import { IChildren, IQuestion } from '../special_paper_display/rendering_engine/DataLoaderInterface';
+import { IComprehensionContent, ILibraryPaperContent, INormalContent } from '../special_paper_display/interfaces/librarypaper';
+import { GlobalContext } from '../special_paper_display/contexts/global';
+import { group_questions, ISubQuestionManagerComp, merge_broken_passage_with_answers } from '../special_paper_display/components/comprehension_question_comp';
+import { useRecoilValue } from 'recoil';
+import { selectedQuestionAtom } from '.';
 
-
-// helper for segmenting the sub questions
-export type GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => IChildren[][]
-
-// using the sliding window algorithm to compute the pages
-export const group_questions: GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => {
-    let page_size = 5;
-    let remainder = contigous_questions.length%page_size;
-    let page_count = Math.floor(contigous_questions.length / page_size) + (remainder > 0 ? 1 : 0)
-
-    let book = new Array(page_count).fill([] as IChildren[]);
-
-    for (let r = 0; r < page_count; r++){
-        // push a page into the book
-        book[r] = contigous_questions.slice(
-            r * page_size,
-            r * page_size + page_size
-        )
-    }
-
-    return book
-}
-
-export type FOUND_ANSWERS = {
-    position: number,
-    isCorrect: boolean,
-    option: string
-}
-
-export const merge_broken_passage_with_answers = (questionText: string, children: IChildren[], base_position: number = 0) => (answers_delta: INormalContent[], isMarked: boolean = false) => {
-    let found_answer_positions: FOUND_ANSWERS[] = [];
-
-    answers_delta.forEach(delta => {
-        let selected_option = delta.attempted_options[0].optionID;
-        let selected_option_index = delta.attempted_options[0].optionIndex;
-
-        let worked_question = delta.question;
-
-        for (let position = 0; position < children.length; position++) {
-            let _child = children[position];
-
-            if (_child._id === worked_question) {
-
-                let found = _child.options.find((_option, _optionIndex) => (_option._id === selected_option) || (_optionIndex === selected_option_index));
-
-                if (found) {
-                    found_answer_positions.push({
-                        position: position + 1 + base_position,
-                        option: found.option,
-                        isCorrect: found.isCorrect
-                    })
-                }
-
-                break;
-            }
-        }
-    });
-
-    return found_answer_positions.reduce((acc, x) => acc.replace(
-            new RegExp(`_{2,4}\\s?${x.position}\\s?_{2,4}`),
-            `<span style="color:${isMarked && x.isCorrect ? "green" : "red"};"><u><b>${x.option}</b></u></span>`
-        ), questionText);
-}
-
-
-// a next day event move
-export interface ISubQuestionManagerComp {
-    position: number
-    sub_questions: IChildren[]
-    parentId: string
-    setCorrectAnswersCount: (num:number) => void
-    setAttempted: (attempted: number) => void
-    savedChildren: INormalContent[]
-}
 
 // create a simple compressor for the displayed questions ( to show the answers within them )
 const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({ 
@@ -97,10 +25,6 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
         currentPage
     } = useContext(GlobalContext);
 
-    // console.log(sub_questions);
-    // console.log(currentPage);
-    // console.log(compSubQuestionPage);
-
     const findSubQuestion = useCallback((questionID: string) => {
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
@@ -111,10 +35,6 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
     let pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
             return acc + x.length;
         }, 0);
-
-    // useEffect(() => {
-    //     console.log("I have been rerendered");
-    // }, []);
 
     return (
         <>
@@ -158,9 +78,8 @@ const ComprehensionComp = ({
         attemptTree
     } = useContext(GlobalContext);
 
-    console.log(question._id)
-
     // push the elements into this store
+    const selectedQuestionId = useRecoilValue(selectedQuestionAtom);
     const [internalPaperContent, setInternalPaperContent] = useState<INormalContent[]>([]);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
     const [questionText, setQuestionText] = useState(question.question);
@@ -204,7 +123,10 @@ const ComprehensionComp = ({
     }, [currentPage]);
 
     return (
-        <div>
+        <div style={{
+            border: selectedQuestionId === question._id ? '1px solid red' : 'inherit',
+            padding: selectedQuestionId === question._id ? '4px' : 'inherit'
+        }}>
             <span
                 dangerouslySetInnerHTML={{
                     __html: `<div class="question-comp">${questionText}</div>`

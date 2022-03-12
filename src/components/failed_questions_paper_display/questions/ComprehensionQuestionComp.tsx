@@ -8,6 +8,7 @@ import { INormalContent } from '../../special_paper_display/interfaces/librarypa
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil';
 import { ITopFailedChildrenStats, ITopFailedPaperQuestion, studentsWhoPartcipatedState, totalStudentsInSubject } from '../../TopFailedQuestions';
 import { compSubQuestionPageState } from '..';
+import { Link } from 'react-router-dom';
 
 
 // helper for segmenting the sub questions
@@ -88,7 +89,7 @@ export const subQuestionsContextState = atom<ITopFailedChildrenStats[]>({
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
-    question, failed, students: studentsTotal, children_stats, paperName, questionPosition
+    question, failed, students: studentsTotal, children_stats, paperName, questionPosition, paperID
 }) => {
     // push the elements into this store
     const setIsBrokenPassage = useSetRecoilState(isBrokenPassageState);
@@ -125,15 +126,17 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
     return (
         <div>
             {
-                paperName && (questionPosition && questionPosition > 0) ? 
+                paperName && (questionPosition && questionPosition > 0) && paperID ? 
                 <div className='center' style={{
                     marginTop: "8px"
                 }}>
-                    <span className='sub-modal-texts teal-text' style={{
-                        border: "1px solid #d3d3d3",
-                        padding: "5px 15px",
-                        cursor: "pointer"
-                    }}> <b>{paperName} | Number {questionPosition}</b> </span>
+                     <Link to={`/view-paper/${paperID}/${question._id}`}>
+                        <span className='sub-modal-texts teal-text' style={{
+                            border: "1px solid #d3d3d3",
+                            padding: "5px 15px",
+                            cursor: "pointer"
+                        }}> <b>{paperName} | Number {questionPosition}</b> </span>
+                    </Link>
                 </div>
                 : null
             }

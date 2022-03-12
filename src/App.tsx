@@ -9,6 +9,7 @@ import "./App.css";
 import Footer from "./components/Footer"
 import Navigation from "./components/Navigation"
 import NormalPaperDisplay from "./components/normal_paper_display";
+import PointedQuestionPaper from "./components/pointed_question_paper";
 import SpecialPaperLibraryPaper from "./components/special_paper_display";
 import GlobalContextComp from "./contexts/GlobalContext"
 import ProtectedRoute, { AdminScopedRoute, ForwardProtectedRoute } from "./protected"
@@ -61,6 +62,7 @@ const App = () => {
               {/* this is not scoped as an admin only page :) */}
               <Route path="/teacher/:id" element={<TeacherDisplayPage/>}/>
               <Route path="/teacher/edit/:id" element={<NewTeacher/>}/>
+              <Route path="/view-paper/:paperID/:selectedQuestion" element={<PointedQuestionPaper/>}/>
 
               <Route element={<AdminScopedRoute/>}>
                 <Route path="/dashboard" element={<Dashboard/>}/>
