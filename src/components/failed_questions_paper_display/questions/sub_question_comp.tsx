@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { INormalContent } from '../../special_paper_display/interfaces/librarypaper';
 import { IChildren, IOption } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
 import { ITopFailedChildrenStats, totalStudentsInSubject } from '../../TopFailedQuestions';
-import { isBrokenPassageState, subQuestionsContextState } from './ComprehensionQuestionComp';
+import { baseQuestionNumberState, isBrokenPassageState, subQuestionsContextState } from './ComprehensionQuestionComp';
 
 const CheckBoxComp = ({option, index, position, optionAnalytics}: {
     option: IOption
@@ -71,6 +71,8 @@ const MultiAnswerComp = ({ children, index }: {
     children: any,
     index: number,
 }) => {
+    const baseQuestionNumber = useRecoilValue(baseQuestionNumberState);
+
     return (
         <div style={{
             marginLeft:"15px",
@@ -80,7 +82,7 @@ const MultiAnswerComp = ({ children, index }: {
             flexDirection:"row",
             alignItems: "flex-start"
         }}>
-            <p>{index+1}.</p>
+            <p>{baseQuestionNumber + index}.</p>
             <div>
                 { children }
             </div>
@@ -114,6 +116,7 @@ const SubQuestionComp = ({
     index: number,
     savedState: INormalContent | null,
 }) => {
+    const baseQuestionNumber = useRecoilValue(baseQuestionNumberState);
     const subQuestionsContext = useRecoilValue(subQuestionsContextState); // get the entire stuff
     const isBrokenPassage = useRecoilValue(isBrokenPassageState);
     const totalStudents = useRecoilValue(totalStudentsInSubject); // all the students in the class
@@ -159,7 +162,7 @@ const SubQuestionComp = ({
                     __html: !isBrokenPassage ? `
                         <div style="display:flex;flex-direction:row;">
                             <p style="margin-right:5px;">
-                                ${index+1}.  
+                                ${baseQuestionNumber + index}.  
                             </p>
                             <p><strong>
                             ${question.question}

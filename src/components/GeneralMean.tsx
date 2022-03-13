@@ -1,13 +1,20 @@
 import axios from "axios";
+import React from "react";
 import { useContext, useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 import { useRecoilValue } from "recoil";
 import {GlobalContext} from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
 
+const PerformanceDistributionCompLazy = React.lazy(() => import("./PerformanceDistribution"))
+
 interface IGeneralMeanAnalytic {
-    active: number // students
+    active: number // Learners
     mean: number // subject mean
     total: number // students
+    performance_percentages: {
+        [key: string]: number
+    }
 }
 
 interface IStatic {
@@ -35,12 +42,14 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
     const classId = useRecoilValue(classIdState);
     const gradeName = useRecoilValue(gradeNameState);
     const [generalAnalytic, setGeneralAnalytic] = useState<IGeneralMeanAnalytic>({
-        active: 0, mean: 0, total: 0
+        active: 0, mean: 0, total: 0, performance_percentages: {}
     });
     const [meanString, setMeanString] = useState("0.00");
     const [error, setError] = useState("");
+    const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
+        setIsFetching(true);
         axios.get(`/api/deep-analytics/subject-mean/${classId}/${gradeName}/${subject}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
@@ -56,6 +65,9 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
             })
             .catch(error => {
                 setError(error.message);
+            })
+            .finally(() => {
+                setIsFetching(false);
             })
     }, []);
     
@@ -83,6 +95,28 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
                 </div>
                 : null
             }
+            {
+                isFetching ?
+                <div className="row">
+                    <div className="col s12">
+                        <div className="sub-modal-texts" style={{
+                            borderLeft: "2px solid green",
+                            paddingLeft: "5px",
+                            paddingRight: "5px",
+                            borderRadius: "3px",
+                            lineHeight: "4em",
+                            backgroundColor: "rgba(0,255,0, 0.1)",
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center"
+                        }}>
+                            <i className="material-icons left">info</i>
+                            <span><b>Fetching analytics...</b></span>
+                        </div>
+                    </div>
+                </div>
+                : null
+            }
             <div className="row center sub-names">
                 <div className="col s12">
                     <span style={{
@@ -97,14 +131,22 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
                 </div>
             </div>
             <div className="row center">
+                <React.Suspense fallback={<Skeleton width={400} height={50}/>}>
+                    <PerformanceDistributionCompLazy
+                        performance_percentages={generalAnalytic.performance_percentages}
+                        student_total={generalAnalytic.total}
+                    />
+                </React.Suspense>
+            </div>
+            <div className="row center">
                 {
                     [
                         {
-                            label: "Active Students",
+                            label: "Active Learners",
                             point: `${generalAnalytic.active}`
                         }, 
                         {
-                            label: "Total Students",
+                            label: "Total Learners",
                             point: `${generalAnalytic.total}`
                         },
                         {

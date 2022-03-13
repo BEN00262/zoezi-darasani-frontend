@@ -86,6 +86,11 @@ export const subQuestionsContextState = atom<ITopFailedChildrenStats[]>({
     default: []
 })
 
+export const baseQuestionNumberState = atom({
+    key: "baseQuestionNumberStateId",
+    default: 0
+});
+
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
@@ -93,6 +98,7 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
 }) => {
     // push the elements into this store
     const setIsBrokenPassage = useSetRecoilState(isBrokenPassageState);
+    const setBaseQuestionNumberState = useSetRecoilState(baseQuestionNumberState);
     const setSubQuestionsContext = useSetRecoilState(subQuestionsContextState);
     const studentsWhoParticipated = useRecoilValue(studentsWhoPartcipatedState);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
@@ -118,9 +124,13 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
     }, [children_stats]);
 
     useEffect(() => {
+        setBaseQuestionNumberState(questionPosition || 1);
+    }, [questionPosition])
+
+    useEffect(() => {
         setIsBrokenPassage(
             (question.children as IChildren[])[0].question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1
-        )
+        );
     }, [question])
 
     return (
@@ -135,7 +145,7 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
                             border: "1px solid #d3d3d3",
                             padding: "5px 15px",
                             cursor: "pointer"
-                        }}> <b>{paperName} | Number {questionPosition}</b> </span>
+                        }}> <b>{paperName} | Numbers {questionPosition} - {questionPosition + (question.children?.length || 1) - 1}</b> </span>
                     </Link>
                 </div>
                 : null

@@ -82,6 +82,7 @@ const SchoolMetrics = () => {
                             innerRadius={50}
                             outerRadius={100}
                             fill="#82ca9d"
+                            paddingAngle={5}  
                             label={renderLabel}
                         />
                         <RechartsToolTip />
