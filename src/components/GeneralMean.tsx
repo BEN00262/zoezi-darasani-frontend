@@ -140,17 +140,17 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
             </div>
             <div className="row center">
                 {
-                    [
-                        {
-                            label: "Active Learners",
-                            point: `${generalAnalytic.active}`
-                        }, 
+                    [ 
                         {
                             label: "Total Learners",
                             point: `${generalAnalytic.total}`
                         },
                         {
-                            label: "Student Percentage",
+                            label: "Active Learners",
+                            point: `${generalAnalytic.active}`
+                        },
+                        {
+                            label: "Engagement Percentage",
                             point: `${((generalAnalytic.active/(generalAnalytic.total || 1)) * 100).toFixed(0)}%`
                         }
                     ].map(({ label, point }, index) => {

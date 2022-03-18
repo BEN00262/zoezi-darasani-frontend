@@ -63,7 +63,7 @@ export const options = {
   },
 };
 
-const labels = ['January'];
+const labels = ['score'];
 
 export default function PerformanceDistributionComp({ performance_percentages, student_total }: {
     performance_percentages: { [key: string]: number }
@@ -76,7 +76,8 @@ export default function PerformanceDistributionComp({ performance_percentages, s
   return <Bar
   height={30}
 //   @ts-ignore
-  options={options} data={{
+  options={options} 
+  data={{
     labels,
     datasets: [
       {

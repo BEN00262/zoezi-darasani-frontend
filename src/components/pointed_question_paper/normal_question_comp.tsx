@@ -72,10 +72,7 @@ const OptionComp = ({option, index, position}: {
     )
 }
 
-const NormalQuestionComp = ({
-    question, position, isMarked, setAttempted, setCorrectAnswersCount,
-    savedQuestion, AddPageStudentPaperContent
-}: {
+const NormalQuestionComp = ({ question, position, isMarked }: {
     question: IQuestion,
     position: number,
     isMarked: boolean,
@@ -85,19 +82,7 @@ const NormalQuestionComp = ({
     setAttempted: (attempted: number) => void
     AddPageStudentPaperContent: (question_id: string, content: ILibraryPaperContent) => void
 }) => {
-    const {
-        currentPage,
-        attemptTree
-    } = useContext(GlobalContext);
-
     const selectedQuestionId = useRecoilValue(selectedQuestionAtom);
-    const [suggestedAnswer,setSuggestedAnswer] = useState<{
-        _id: string,
-        option: string,
-        isCorrect: boolean
-    }[]>([]);
-    
-    const [isCorrect, setIsCorrect] = useState<boolean>(false);
     const numberOfCorrectOptions: number = useMemo(() => question?.options_next?.filter(x => x.isCorrect)?.length || 0,[question]);
     const isMultipleOption: boolean = (numberOfCorrectOptions > 1) || false;
     const divRef = useRef(null);
@@ -110,60 +95,8 @@ const NormalQuestionComp = ({
     }, [selectedQuestionId, question]);
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
-        M.Materialbox.init(elems);
-
-        let historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
-
-        if (!historyFound) {
-            return
-        }
-
-        let content = historyFound.content as INormalContent
-
-        let attempt_snapshot = (question.options_next || []).filter(
-            (x, optionIndex) => content.attempted_options.findIndex(
-                y => (y.optionID === x._id) || (y.optionIndex === optionIndex)
-            ) > -1
-        )
-        
-        setIsCorrect(attempt_snapshot.length > 0 ? attempt_snapshot.every(x => x.isCorrect) : false)
-        setSuggestedAnswer([
-            // @ts-ignore
-            ...suggestedAnswer,
-            ...attempt_snapshot
-        ])
+        M.Materialbox.init(document.querySelectorAll(".question-comp img"));
     },[]);
-
-    useEffect(() => {
-
-        if (suggestedAnswer.length > 0) {
-            AddPageStudentPaperContent(question._id, {
-                questionType: "normal",
-                content: {
-                    status: suggestedAnswer.length > 0 ? suggestedAnswer.every(x => x.isCorrect) : false,
-                    question: question._id,
-                    attempted_options: suggestedAnswer.map(answer => ({ 
-                        optionID: answer._id,
-                        optionIndex: (question.options_next || []).findIndex(x => x._id === answer._id), 
-                    }))
-                }
-            })
-
-        }
-
-    }, [suggestedAnswer])
-
-    useEffect(() => {
-        if (isMarked && (numberOfCorrectOptions === suggestedAnswer.length)){
-            // this is proving to be wrong we need to first check for the length of the array and default to false 
-            // if the array is empty 
-            let checkIfCorrect: boolean = suggestedAnswer.length > 0 ? suggestedAnswer.every(x => x.isCorrect) : false;
-
-            setIsCorrect(checkIfCorrect);
-            setCorrectAnswersCount(checkIfCorrect ? 1 : 0);  
-        }
-    },[isMarked]);
     
     const ChooseRenderingOption = () => {
         let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
@@ -187,6 +120,7 @@ const NormalQuestionComp = ({
         // try to inject the box styling here
         <div ref={divRef} style={{
             border: selectedQuestionId === question._id ? '1px solid red' : 'inherit',
+            borderRadius: selectedQuestionId === question._id ? "4px" : "inherit",
             padding: selectedQuestionId === question._id ? '4px' : 'inherit'
         }} >
             <span

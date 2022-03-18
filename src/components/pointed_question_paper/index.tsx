@@ -26,6 +26,11 @@ const PointedQuestionPaper = () => {
     useEffect(() => {
         setSelectedQuestionAtom(params.selectedQuestion || "");
         setToBeViewedPaperAtom(params.paperID || "");
+
+        return () => {
+            setSelectedQuestionAtom(null);
+            setToBeViewedPaperAtom(null);
+        }
     }, []);
 
     return (

@@ -21,8 +21,7 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
     savedChildren
 }) => {
     const {
-        compSubQuestionPage,
-        currentPage
+        compSubQuestionPage
     } = useContext(GlobalContext);
 
     const findSubQuestion = useCallback((questionID: string) => {
@@ -59,7 +58,7 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
 // find an effecient way to do this without rerendering the whole question shit
 // find a way to handle control for navigation to this piece
 const ComprehensionComp = ({
-    question,isMarked, position, setAttempted, 
+    question, position, setAttempted, 
     setCorrectAnswersCount
 }:{
     question: IQuestion,
@@ -72,59 +71,24 @@ const ComprehensionComp = ({
     setAttempted: (attempted: number) => void
     AddPageStudentPaperContent: (question_id: string, content: ILibraryPaperContent) => void
 }) => {
-    const { 
-        compSubQuestionPage,
-        currentPage,
-        attemptTree
-    } = useContext(GlobalContext);
-
-    // push the elements into this store
+    const { currentPage } = useContext(GlobalContext);
     const selectedQuestionId = useRecoilValue(selectedQuestionAtom);
-    const [internalPaperContent, setInternalPaperContent] = useState<INormalContent[]>([]);
     const [savedContext, setSavedContext] = useState<INormalContent[]>([]);
     const [questionText, setQuestionText] = useState(question.question);
     const [reRender, setReRender] = useState(-1);
 
-    const is_broken_passage: boolean = useMemo(() => (question.children as IChildren[])[0].question.trim().replace(/(<([^>]+)>)/ig, "").trim().length <= 1,[question]);
-    
-    const hot_merge_function = is_broken_passage ? 
-        merge_broken_passage_with_answers(question.question, question.children as IChildren[], position) 
-        : (n:INormalContent[]) => question.question;
-
     useEffect(() => {
-        if (internalPaperContent.length > 0) {
-            if (is_broken_passage) {
-                setQuestionText(
-                    hot_merge_function(internalPaperContent, isMarked)
-                );
-            }
-        }
-
-    }, [internalPaperContent])
-
-    useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
-        M.Materialbox.init(elems);
-
-
-        let historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
-
-        if (!historyFound) { return }
-
-        let content = historyFound.content as IComprehensionContent
-
-        setInternalPaperContent(content.children);
-        setSavedContext(content.children);
+        M.Materialbox.init(document.querySelectorAll(".question-comp img"));
     },[]);
 
     useEffect(() => {
         setReRender(Math.random());
-        console.log(`The current sub page is ${compSubQuestionPage}`);
     }, [currentPage]);
 
     return (
         <div style={{
             border: selectedQuestionId === question._id ? '1px solid red' : 'inherit',
+            borderRadius: selectedQuestionId === question._id ? "4px" : "inherit",
             padding: selectedQuestionId === question._id ? '4px' : 'inherit'
         }}>
             <span

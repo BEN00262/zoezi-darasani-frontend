@@ -19,7 +19,7 @@ const ContactUs = () => {
                         <h3><i className="mdi-content-send brown-text"></i></h3>
                         <h4 className="sub-names">Talk to Us</h4>
                     </div>
-                    <p className="light"><i className="im im-mail" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="mailto:inquiries@zoezi-education.com" style={{color: "black"}}><b>inquiries@zoezi-education.com</b></a><br/><i className="im im-mobile" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="tel:+254115815941" style={{color: "black"}}><b>+254115815941</b></a></p>
+                    <p className="light"><i className="im im-mail" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="mailto:ask@zoezi-education.com" style={{color: "black"}}><b>ask@zoezi-education.com</b></a><br/><i className="im im-mobile" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="tel:+254115815941" style={{color: "black"}}><b>+254115815941</b></a></p>
 
                     <a href="https://wa.me/254115815941" target="_blank" style={{
                         marginRight: "4px"

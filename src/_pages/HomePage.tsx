@@ -11,36 +11,42 @@ import CreateGradeImage from "../img/Create Grade .png";
 import MonitorLearnerPerfomanceImage from "../img/Monitor Learner Performance.png"
 import SelfServiceShopingImage from "../img/Self Service Shoping .png";
 
-interface IFeature { title: string, imagePath: string }
+interface IFeature { title: string, imagePath: string, description: string }
 
 const Features: IFeature[] = [
     {
         title: "Learner's Library",
+        description: "Review and compare papers done",
         imagePath: AccessLearnerLibraryImage
     },
     {
         title: "Add Class Teachers",
+        description: "Monitor learner per grade or subject performance",
         imagePath: AddClassTeachersImage
     },
     {
         title: "Class And Learner Performance Analysis",
+        description: "Learner, subject and class performance analysis",
         imagePath: ClassAndLearnerPerformanceAnalysis
     },
     {
         title: "Create Grade",
+        description: "",
         imagePath: CreateGradeImage
     },
     {
         title: "Monitor Learner Performance",
+        description: "",
         imagePath: MonitorLearnerPerfomanceImage
     },
     {
         title: "Self Service Shoping",
+        description: "",
         imagePath: SelfServiceShopingImage
     }
 ]
 
-const FeatureComp: React.FC<{ title: string, imagePath: string }> = ({ title, imagePath }) => {
+const FeatureComp: React.FC<IFeature> = ({ title, imagePath, description }) => {
     return (
         <SplideSlide>
             <div
@@ -65,7 +71,7 @@ const FeatureComp: React.FC<{ title: string, imagePath: string }> = ({ title, im
                 <div className="center" style={{
                     width: "80%"
                 }}>
-                    <p className="sub-modal-texts">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tenetur reiciendis qui nulla inventore enim non itaque natus vero eum dignissimos, illo excepturi delectus maxime placeat dolor corrupti doloremque amet at!</p>
+                    <p className="sub-modal-texts">{description}</p>
                 </div>
             </div>
         </SplideSlide>
