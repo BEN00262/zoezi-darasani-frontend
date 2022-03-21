@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import {Link} from "react-router-dom"
 import { GlobalContext } from "../contexts/GlobalContext"
+import { ZoeziQueryClient } from "../utils/queryclient";
 
 const Navigation = () => {
     const { 
@@ -24,7 +25,11 @@ const Navigation = () => {
                 <li><Link to={isTeacher ? `/teacher/edit/${communicationId}` : "/account"} className="black-text">Settings</Link></li>
                 <li className="divider"></li>
                 {/* just log out the person by wiping the current context */}
-                <li><a onClick={wipeCurrentContext} className="black-text">Sign Out</a></li>
+                <li><a onClick={_ => {
+                    wipeCurrentContext();
+                    // reset all the queries in react query ( wipe them out :))
+                    ZoeziQueryClient.removeQueries('in_app_');
+                }} className="black-text">Sign Out</a></li>
             </ul>
 
             <div className="navbar-fixed">

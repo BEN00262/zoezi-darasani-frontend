@@ -5,6 +5,7 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import DefaultSchoolLogo from "../img/school.png"
 import SchoolMetrics from "../components/SchoolMetrics";
+import { useQuery } from "react-query";
 
 interface IStatic {
     name: string
@@ -36,8 +37,10 @@ const Dashboard = () => {
         name: "", logo:""
     });
 
-    useEffect(() => {
-        axios.get("/api/school", {
+    const {
+        isError, error, data, isSuccess
+    } = useQuery('in_app_school_dashboard', () => {
+        return axios.get("/api/school", {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
@@ -52,32 +55,49 @@ const Dashboard = () => {
                         }
                     }
 
-                    setSchoolName(data.school);
-                    setStats(_stats);
-                    return
+                    return { stats: _stats, school: data.school as { name: string, logo: string} }
                 }
-            })
-    }, []);
 
+                throw new Error("Unexpected error!");
+            })
+    }, {
+        enabled: !!authToken,
+        staleTime: 5 * 60 * 1000 // 5 minutes
+    });
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            setSchoolName(data.school);
+            setStats(data.stats);
+        }
+    }, [isSuccess]);
 
     return (
         <main>
             <div className="container">
                 <div className="section">
-                    {/* <div className="row center">
-                        <img 
-                            id="profile-pic-preview"
-                            style={{
-                                border: "1px solid #efefef",
-                                padding: "2px",
-                                height: "50px",
-                                width: "50px",
-                                objectFit: "contain",
-                                borderRadius: "50%",
-                            }}
-                            src={schoolName.logo ? schoolName.logo : DefaultSchoolLogo}/>
-                    </div> */}
-
+                {
+                        isError ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{(error as Error).message}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                     <div className="row center">
                         <h5 style={{
                             letterSpacing: "3px"

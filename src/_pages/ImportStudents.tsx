@@ -4,6 +4,9 @@ import { GlobalContext } from "../contexts/GlobalContext"
 // for toast displays
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
+import { ZoeziQueryClient } from "../utils/queryclient";
+import { useRecoilValue } from "recoil";
+import { classIdState, classRefIdState } from "./GradeDisplayPage";
 
 const ImportStudent = () => {
     const navigate = useNavigate();
@@ -12,6 +15,9 @@ const ImportStudent = () => {
     const [file, setFile] = useState<File | null>(null);
     const [isImporting, setIsImporting] = useState(false);
     const [error, setError] = useState("");
+
+    const classRefId = useRecoilValue(classRefIdState);
+    const classId = useRecoilValue(classIdState);
 
     const success_toastify = () => toast.success("Successfully imported learner(s)!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -27,10 +33,6 @@ const ImportStudent = () => {
             const form = new FormData();
             form.set('excelFile', file);
 
-            // get the current stuff and use it
-            const classId = localStorage.getItem("classId") || "";
-            const classRefId = localStorage.getItem("classRefId") || "";
-
             setIsImporting(true);
 
             axios.post(`/api/learner/import/${classId}/${classRefId}`, form, {
@@ -42,6 +44,7 @@ const ImportStudent = () => {
                 .then(({ data }) => {
                     if (data) {
                         if (data.status) {
+                            ZoeziQueryClient.invalidateQueries(['in_app_grade_learners', classId])
                             return success_toastify();
                         }
                     }

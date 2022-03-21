@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { PieChart, Pie, Tooltip as RechartsToolTip, ResponsiveContainer } from "recharts";
 import { GlobalContext } from '../contexts/GlobalContext';
 import axios from 'axios';
+import { useQuery } from 'react-query';
 
 
 let renderLabel = function(entry: any) {
@@ -17,10 +18,11 @@ const SchoolMetrics = () => {
         boys: 50,
         girls: 50
     });
-    const [error, setError] = useState("");
 
-    useEffect(() => {
-        axios.get("/api/school/gender-analytics", {
+    const {
+        isError, error, data, isSuccess
+    } = useQuery('in_app_school_gender_distribution', () => {
+        return axios.get("/api/school/gender-analytics", {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
@@ -28,25 +30,30 @@ const SchoolMetrics = () => {
                     let metrics = data as { boys: number, girls: number };
                     let total = metrics.boys + metrics.girls;
 
-                    setAnalytics({
+                    return {
                         boys: +((metrics.boys/total)*100).toFixed(0),
                         girls: +((metrics.girls/total)*100).toFixed(0)
-                    })
-                    return;
+                    }
                 }
 
                 throw new Error("Unexpected error");
             })
-            .catch(error => {
-                setError(error.message);
-            })
-    }, [])
+    }, {
+        enabled: !!authToken,
+        staleTime: 1 * 60 * 1000 // refetch after 1 minute :)
+    })
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            setAnalytics(data);
+        }
+    }, [isSuccess]);
 
 
     return (
         <div className="row">
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s10 push-s1">
                         <div className="sub-modal-texts" style={{
@@ -61,7 +68,7 @@ const SchoolMetrics = () => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error).message}</p>
                         </div>
                     </div>
                 </div>

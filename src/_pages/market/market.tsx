@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom"
 import { GlobalContext } from "../../contexts/GlobalContext";
 import LoaderPage from "../loader";
@@ -49,16 +50,15 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
 
 const MarketPage = () => {
     const { authToken } = useContext(GlobalContext);
-    const [fetchedGrades, setFetchedGrades] = useState<IZoeziGrade[]>([]);
-
-    // fetch the grades and display them
-    useEffect(() => {
-        axios.get("/api/market",  { headers: {
+    const {
+        isLoading, data: fetchedGrades, isError, error, isSuccess
+    } = useQuery('in_app_shop_grades', () => {
+        return axios.get("/api/market",  { headers: {
             'Authorization': `Bearer ${authToken}`
         }})
             .then(({ data }) => {
                 if (data) {
-                    setFetchedGrades(
+                    return (
                         [
                             ...data.normal_grades.map((x: any) => ({
                                 ...x,
@@ -71,12 +71,17 @@ const MarketPage = () => {
                                 isSpecial: true
                             }))
                         ]
-                    )
+                    ) as IZoeziGrade[]
                 }
-            })
-    }, []);
 
-    if (!fetchedGrades.length) {
+                throw new Error("Unexpected error!");
+            })
+    }, { 
+        enabled: !!authToken /* should only be fetched if there is an authToken ready */, 
+        staleTime: 60 * 1000 * 2
+    });
+
+    if (isLoading) {
         return <LoaderPage/>
     }
 
@@ -84,6 +89,28 @@ const MarketPage = () => {
         <main>
              <div className="container">
                 <div className="section">
+                    {
+                        isError ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{(error as Error).message}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                     <div className="row">
                         <div className="col s12 welcome-font">
                             <p style={{
@@ -91,10 +118,6 @@ const MarketPage = () => {
                             }}><span className="teal-text">Welcome to</span>{' '}<span className="materialize-red-text">Zoezi Darasani</span></p>
                         </div>
                     </div>
-                {/* grades
-                <h3 className="hide-on-small-only"><i className="mdi-content-send brown-text"></i></h3>
-                <h5 className="center sub-sub-headings">GRADES</h5>
-                <div className="divider"></div> */}
 
                 <div className="section">
                     <div className="row">
@@ -118,7 +141,7 @@ const MarketPage = () => {
 
                     <div className="row">
 
-                        {fetchedGrades.map((grade, index) => {
+                        {isSuccess && (fetchedGrades || []).map((grade, index) => {
                             return <MarketItem key={`market_item_${index}`} {...grade}/>
                         })}
 

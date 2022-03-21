@@ -7,6 +7,7 @@ import DefaultMaleTeacher from "../img/male_teacher.png"
 
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { ZoeziQueryClient } from "../utils/queryclient";
 
 export interface ITeacher {
     name: string
@@ -105,6 +106,7 @@ const TeacherFormComp = () => {
         }).then(({ data }) => {
             if (data) {
                 if (data.status) {
+                    ZoeziQueryClient.invalidateQueries('in_app_school_teachers');
                     return success_toastify();
                 }
 

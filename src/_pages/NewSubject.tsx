@@ -9,6 +9,10 @@ import { ISelectableData } from './NewGrade';
 import { ITeacherComp } from './TeacherDisplayPage';
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { classIdState } from './GradeDisplayPage';
+import { useMutation } from 'react-query';
+import { ZoeziQueryClient } from '../utils/queryclient';
 
 interface ISubjectData {
     label: string // name of the grade for the visuals
@@ -101,17 +105,14 @@ interface ISubjectDetail {
 }
 
 const NewSubject = () => {
+    const { authToken } = useContext(GlobalContext);
+
     const navigate = useNavigate();
     const params = useParams();
-    const { authToken } = useContext(GlobalContext);
     const [subjects, setSubjects] = useState<ISubjectData[]>([]);
-    const [error, setError] = useState("");
-    const [isCreactingSubject, setIsCreatingSubject] = useState(false);
-
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
-
-    // this should be an array of this :)
     const [subjectDetails, setSubjectDetails] = useState<ISubjectDetail[]>([]);
+    const _classId = useRecoilValue(classIdState);
 
     const success_toastify = () => toast.success("Successfully created subject!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -127,14 +128,12 @@ const NewSubject = () => {
 
 
     useEffect(() => {
-        const classId = localStorage.getItem("classId") || "";
-
         M.Sidenav.init(document.querySelectorAll('.sidenav'), {
             edge: "right"
         });
         
         Promise.all([
-            axios.get(`/api/misc/subjects/${params.gradeName}/${classId}`, { headers: { 'Authorization': `Bearer ${authToken}`}}),
+            axios.get(`/api/misc/subjects/${params.gradeName}/${_classId}`, { headers: { 'Authorization': `Bearer ${authToken}`}}),
             axios.get("/api/teacher/all", { headers: { 'Authorization': `Bearer ${authToken}`}})
         ])
             .then(([{ data: _subjects }, { data }]) => {
@@ -174,43 +173,36 @@ const NewSubject = () => {
             })
     }, []);
 
-    const handleSubjectsCreation = () => {
-        // get the current stuff and use it
-        const classId = localStorage.getItem("classId") || "";
-        setIsCreatingSubject(true);
+    const new_subject_mutation = useMutation(() => {
+        if (!_classId) {
+            throw new Error("Invalid class id"); // this error is confusing ( solve it later )
+        }
 
-        // console.log(learnerDetails);
-        axios.post(`/api/subject/${classId}`, {
+        return axios.post(`/api/subject/${_classId}`, {
             subjects: subjectDetails.map(x => ({
                 subject: x.subject,
                 teacherId: x.teacherId
             }))
-        }, {
-            headers: { Authorization: `Bearer ${authToken}`}
-        })
-            .then(({ data }) => {
-                if (data) {
-                    if (data.status) {
-                        return success_toastify();
-                    }
-
-                    setError(data.error);
+        }, { headers: { Authorization: `Bearer ${authToken}`} })
+    }, {
+        onSuccess: (data, variables, context) => {
+            if (data) {
+                if (data.data.status) {
+                    success_toastify();
+                    // refetch the data :)
+                    ZoeziQueryClient.invalidateQueries(['in_app_grade_subjects', _classId]);
                     return;
+                } else {
+                    throw new Error(data.data.error);
                 }
+            }
 
-                throw new Error("Unexpected error!");
-            })
-            .catch((error: Error) => {
-                setError(error.message)
-            })
-            .finally(() => {
-                setIsCreatingSubject(false);
-            })
-    }
+            throw new Error("Unexpected error!");
+        }
+    });
 
     
     return (
-        // style={{display: "flex",justifyContent: "center",alignItems: "center"}}
         <main>
             <NewSubjectSideNav 
                 pushToList={(subject: ISubjectDetail) => {
@@ -219,14 +211,14 @@ const NewSubject = () => {
                         subject
                     ])
                 }}
-                isCreactingSubject={isCreactingSubject}
+                isCreactingSubject={new_subject_mutation.isLoading}
                 subjects={subjects.filter(x => !subjectDetails.find(y => y.subject === x.value))}
                 teachers={teachers}
             />
                 <div className='container'>
             <div className="section">
                 {
-                    error ?
+                    new_subject_mutation.isError ?
                     <div className="row">
                         <div className="col s12 m6 push-m3">
                             <div className="sub-modal-texts" style={{
@@ -241,7 +233,7 @@ const NewSubject = () => {
                                 alignItems: "center"
                             }}>
                                 <i className="material-icons left">error_outline</i>
-                                <p>{error}</p>
+                                <p>{(new_subject_mutation.error as Error).message}</p>
                             </div>
                         </div>
                     </div>
@@ -249,12 +241,12 @@ const NewSubject = () => {
                 }
                 <div className="row">
                     {/* @ts-ignore */}
-                   <a disabled={isCreactingSubject} href="#" data-target="new-subject" className='btn-flat sub-modal-texts sidenav-trigger' style={{
+                   <a disabled={new_subject_mutation.isLoading} href="#" data-target="new-subject" className='btn-flat sub-modal-texts sidenav-trigger' style={{
                        border: "1px solid #d3d3d3"
                    }}>
                     <b>New <i className="material-icons right">add</i></b>
                    </a>
-                   <button disabled={isCreactingSubject} onClick={_ => handleSubjectsCreation()} className='btn-flat sub-modal-texts' style={{
+                   <button disabled={new_subject_mutation.isLoading} onClick={_ => new_subject_mutation.mutate()} className='btn-flat sub-modal-texts' style={{
                        border: "1px solid #d3d3d3",
                        marginLeft: "5px"
                    }}>

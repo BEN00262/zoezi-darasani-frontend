@@ -9,6 +9,7 @@ import DefaultMaleTeacher from "../img/male_teacher.png"
 
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
 import EmptyComp from "../components/Empty";
+import { useQuery } from "react-query";
 
 interface ITeacher {
     _id: string
@@ -72,33 +73,28 @@ const Teachers = () => {
     const { authToken } = useContext(GlobalContext);
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [teachersTemp, setTeachersTemp] = useState<ITeacher[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
-    // const [searchTerm, setSearchTerm] = useState("");
 
-    // fetch on render 
-    useEffect(() => {
-        setIsFetching(true);
-
-        axios.get("/api/teacher/all", {
+    const {
+        isLoading: isFetching, isError, error, data, isSuccess, isIdle
+    } = useQuery('in_app_school_teachers', () => {
+        return axios.get("/api/teacher/all", {
             headers: { "Authorization": `Bearer ${authToken}`}
         })
             .then(({ data }) => {
-                if (data) {
-                    setTeachers(data.teachers);
-                    setTeachersTemp(data.teachers);
-                    return;
-                }
-
+                if (data) { return data }
                 throw new Error("Unexpected error!")
             })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
+    }, {
+        enabled: !!authToken,
+        staleTime: 1 * 60 * 100 // for one minute
+    });
+
+    useEffect(() => {
+        if (isSuccess) {
+            setTeachers(data.teachers);
+            setTeachersTemp(data.teachers);
+        }
+    }, [isSuccess])
 
     const handleSearch = (e: any) => {
         let searchTerm = (e.target.value || "").toLowerCase();
@@ -116,7 +112,7 @@ const Teachers = () => {
         )
     }
 
-    if (isFetching) {
+    if (isFetching || isIdle) {
         return <LoaderPage/>
     }
 
@@ -128,7 +124,7 @@ const Teachers = () => {
                 <div className="divider"></div>
                 <div className="section">
                     {
-                        error ?
+                        isError ?
                         <div className="row">
                             <div className="col s12">
                                 <div className="sub-modal-texts" style={{
@@ -143,7 +139,7 @@ const Teachers = () => {
                                     alignItems: "center"
                                 }}>
                                     <i className="material-icons left">error_outline</i>
-                                    <p>{error}</p>
+                                    <p>{(error as Error).message}</p>
                                 </div>
                             </div>
                         </div>
@@ -194,7 +190,7 @@ const Teachers = () => {
                     </div>
                     <div className="row">
                         {
-                            teachers.length ?
+                            isSuccess && teachers.length ?
                             <>
                                 {teachers.map((teacher, index) => {
                                     return <Teacher key={index} {...teacher}/>

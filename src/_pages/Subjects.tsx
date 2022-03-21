@@ -1,10 +1,11 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom"
 import { useRecoilValue } from "recoil";
 import LoaderComp from "../components/LoaderComp";
 import { GlobalContext } from "../contexts/GlobalContext";
-import { gradeNameState } from "./GradeDisplayPage";
+import { classIdState, gradeNameState } from "./GradeDisplayPage";
 import { ITeacherComp } from "./TeacherDisplayPage";
 
 interface ISubject {
@@ -57,38 +58,27 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher, gradeName }) => {
 const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
     const { authToken, isTeacher } = useContext(GlobalContext);
     const navigate = useNavigate();
-    const [subjects, setSubjects] = useState<ISubject[]>([]);
-    const [error, setError] = useState("");
-    const [isFetching, setIsFetching] = useState(false);
     const _gradeName = useRecoilValue(gradeNameState);
+    const _classId = useRecoilValue(classIdState);
 
-    // fetch the subjects in this grade and then see what it has
-    useEffect(() => {
-        const classId = localStorage.getItem("classId") || "";
-        setIsFetching(true);
-
-        axios.get(`/api/subject/${classId}`, {
+    const {
+        isLoading: isFetching, isIdle,
+        isError, error, data: subjects, isSuccess
+    } = useQuery(['in_app_grade_subjects', _classId], () => {
+        return axios.get(`/api/subject/${_classId}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
-                // get the grade name for obvious reasons
-
-                if (data) {
-                    setSubjects(data.subjects as ISubject[]);
-                    return;
-                }
-
+                if (data) { return data.subjects as ISubject[] }
                 throw new Error("Unexpected error!")
             })
-            .catch(error => {
-                setError(error.message)
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
+    }, {
+        enabled: !!authToken && !!_classId,
+        staleTime: 60 * 1000 * 1
+    })
 
-    if (isFetching) {
+
+    if (isFetching || isIdle) {
         return <LoaderComp/>
     }
 
@@ -96,7 +86,7 @@ const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
     return (
         <>
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s12">
                         <div className="sub-modal-texts" style={{
@@ -111,7 +101,7 @@ const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error).message}</p>
                         </div>
                     </div>
                 </div>
@@ -129,7 +119,7 @@ const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
                 </div>
             </div>
             <div className="row">
-                {subjects.map((subject, index) => {
+                {isSuccess && (subjects || []).map((subject, index) => {
                     return <Subject key={index} {...subject} gradeName={gradeName}/>
                 })}
             </div>

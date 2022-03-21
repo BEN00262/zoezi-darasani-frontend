@@ -5,6 +5,8 @@ import { GlobalContext } from '../contexts/GlobalContext';
 import { ITeacherComp } from './TeacherDisplayPage';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useMutation } from 'react-query';
+import { ZoeziQueryClient } from '../utils/queryclient';
 
 export interface ISelectableData {
     label: string // name of the grade for the visuals
@@ -16,16 +18,13 @@ const NewGrade = () => {
     const navigate = useNavigate();
     const { authToken } = useContext(GlobalContext);
     const [grades, setGrades] = useState<ISelectableData[]>([]);
-
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
     const [gradeDetails, setGradeDetails] = useState<{
         grade: string
         teacherId: string
         stream: string
         year: number
-    }>({ teacherId: "", grade: "", stream: "", year: (new Date()).getFullYear() })
-    const [error, setError] = useState("");
-    const [isCreactingGrade, setIsCreatingGrade] = useState(false);
+    }>({ teacherId: "", grade: "", stream: "", year: (new Date()).getFullYear() });
 
     const success_toastify = () => toast.success("Successfully created grade!", {
         position: toast.POSITION.TOP_RIGHT,
@@ -81,30 +80,29 @@ const NewGrade = () => {
         })
     }, []);
 
-
-    const handleFormSubmission = (e: SyntheticEvent) => {
-        e.preventDefault();
-
-        setIsCreatingGrade(true);
-        axios.post("/api/grade", gradeDetails, {
+    const new_grade_mutation = useMutation(() => {
+        return axios.post("/api/grade", gradeDetails, {
             headers: { 'Authorization': `Bearer ${authToken}` }
         })
             .then(({ data }) => {
                 if (data) {
-                    if (data.status) {
-                        return success_toastify();
-                    }
-
-                    setError(data.message);
-                    return;
+                    if (data.status) { return data.status }
+                    throw new Error(data.message);
                 }
 
                 throw new Error("Unexpected error!");
             })
-            .catch((error: Error) => {
-                setError(error.message);
-            })
-            .finally(() => setIsCreatingGrade(false));
+    }, {
+        onSuccess: (data, variables, context) => {
+            success_toastify();
+            ZoeziQueryClient.invalidateQueries('in_app_school_grades'); // refetch :)
+        }
+    })
+
+
+    const handleFormSubmission = (e: SyntheticEvent) => {
+        e.preventDefault();
+        new_grade_mutation.mutate();
     }
 
     return (
@@ -112,7 +110,7 @@ const NewGrade = () => {
              <div className='container'>
             <div className="section">
                 {
-                    error ?
+                    new_grade_mutation.isError ?
                     <div className="row">
                         <div className="col s12 m6 push-m3">
                             <div className="sub-modal-texts" style={{
@@ -127,7 +125,7 @@ const NewGrade = () => {
                                 alignItems: "center"
                             }}>
                                 <i className="material-icons left">error_outline</i>
-                                <p>{error}</p>
+                                <p>{(new_grade_mutation.error as Error).message}</p>
                             </div>
                         </div>
                     </div>
@@ -190,7 +188,7 @@ const NewGrade = () => {
                         <div className="col s12 m12" style={{
                             marginTop: "10px"
                         }}>
-                            <button className="btn-small">{isCreactingGrade ? "Creating Grade..." : "Create Grade"}</button>
+                            <button className="btn-small">{new_grade_mutation.isLoading? "Creating Grade..." : "Create Grade"}</button>
                         </div>
                     </form>
                 </div>

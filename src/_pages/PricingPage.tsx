@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import EmptyComp from "../components/Empty";
 import LoaderPage from "./loader";
@@ -61,30 +62,13 @@ const PricingItem: React.FC<IPricingItem> = ({
 }
 
 const PricingPage = () => {
-    const [subscriptions, setSubscriptions] = useState<ISubscription[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
-
-    useEffect(() => {
-        setIsFetching(true);
-
-        axios.get("/api/market/subscriptions")
-            .then(({ data }) => {
-                if (data){
-                    let _subscriptions = data as ISubscription[]
-                    setSubscriptions(_subscriptions);
-                    return;
-                }
-
-                throw new Error("Unexpected error!");
-            })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
+    const {isLoading: isFetching, isError, error, data: subscriptions, isSuccess } = useQuery('in_app_prices', () =>  {
+        return axios.get("/api/market/subscriptions")
+        .then(({ data }) => {
+            if (data){ return (data as ISubscription[]) }
+            throw new Error("Unexpected error!");
+        })
+    }, { staleTime: 60 * 1000 * 2 /* stale after 2 mins */ })
 
     if (isFetching) {
         return <LoaderPage/>
@@ -95,7 +79,7 @@ const PricingPage = () => {
             <div className="container">
                 <div className="section">
                     {
-                        error ?
+                        isError ?
                         <div className="row">
                             <div className="col s12">
                                 <div className="sub-modal-texts" style={{
@@ -110,7 +94,7 @@ const PricingPage = () => {
                                     alignItems: "center"
                                 }}>
                                     <i className="material-icons left">error_outline</i>
-                                    <p>{error}</p>
+                                    <p>{(error as Error).message}</p>
                                 </div>
                             </div>
                         </div>
@@ -124,10 +108,11 @@ const PricingPage = () => {
                         <p className="sub-modal-texts"><b>Zoezi Darasani</b> enables schools to integrate technology in teaching and learning.</p>
                     </div>
                         {
-                            subscriptions.length ?
+                            isSuccess && (subscriptions || []).length ?
                                 <>
                                     {
-                                        subscriptions.map((subscription, index) => {
+                                        // this check is redudant but am pleasing TS fuuuuck
+                                        (subscriptions || []).map((subscription, index) => {
                                             return <PricingItem {...subscription} key={`subscription_item_${index}`}/>
                                         })
                                     }

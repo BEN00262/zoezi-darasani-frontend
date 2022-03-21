@@ -7,9 +7,10 @@ import {get_learner_avatar} from "../utils/avatar_chooser"
 
 import { GlobalContext } from "../contexts/GlobalContext";
 import convertFromJsonToCsvFile from "../utils/jsonTocsv"
+import { useQuery } from "react-query";
 
 export interface ILearners {
-    classRefId: string
+    classRefId: string | null
 }
 
 export interface ILearner {
@@ -70,34 +71,29 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
     const navigate = useNavigate();
     const [learners, setLearners] = useState<ILearner[]>([]);
     const [learnersTemp, setLearnersTemp] = useState<ILearner[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
 
-    // mount slowly
-    useEffect(() => {
-        axios.get(`/api/grade/learners/${classRefId}`, {
+    const {
+        isError, error, isLoading: isFetching, isSuccess, isIdle
+    } = useQuery(['in_app_grade_learners', classRefId], () => {
+        return axios.get(`/api/grade/learners/${classRefId}`, {
             headers: { 'Authorization': `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data) {
                     let _learners = data.learners as ILearner[];
-
                     setLearners(_learners);
                     setLearnersTemp(_learners);
                     return;
                 }
 
-                setError("Failed to fetch learners");
+                throw new Error("Failed to fetch learners");
             })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(()=> {
-                setIsFetching(false);
-            })
-    }, []);
+    }, {
+        enabled: !!authToken && !!classRefId
+    })
 
-    if (isFetching) {
+    // mount slowly
+    if (isFetching || isIdle) {
         return <LoaderComp/>
     }
 
@@ -170,7 +166,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                 </div>
             </div>
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s12">
                         <div className="sub-modal-texts" style={{
@@ -185,14 +181,14 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error)}</p>
                         </div>
                     </div>
                 </div>
                 : null
             }
             <div className="row">
-                {learners.map((learner, index) => <Learner key={index} {...learner}/>)}
+                {isSuccess && learners.map((learner, index) => <Learner key={index} {...learner}/>)}
             </div>
         </>
     )

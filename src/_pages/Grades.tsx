@@ -6,6 +6,7 @@ import EmptyComp from "../components/Empty";
 import { GlobalContext } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
+import { useQuery } from "react-query";
 
 export interface IGrade {
     _id: string
@@ -64,32 +65,30 @@ const GradesPage = () => {
     const { authToken } = useContext(GlobalContext);
     const [grades, setGrades] = useState<IGrade[]>([]);
     const [schoolName, setSchoolName] = useState("");
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
+
+    const {
+        isLoading: isFetching, isError, error, isSuccess, data, isIdle
+    } = useQuery('in_app_school_grades', () => {
+        return axios.get("/api/grade/all", { 
+            headers: { 'Authorization': `Bearer ${authToken}`}
+        })
+        .then(({ data }) => {
+            if (data) { return data }
+            throw new Error("Unexpected error");
+        })
+    }, {
+        enabled: !!authToken,
+        staleTime: 1 * 60 * 1000 // refetch after one minute :)
+    })
 
     useEffect(() => {
-        // fetch the grades of the current school
-        setIsFetching(true);
+        if (isSuccess) {
+            setSchoolName(data.school as string);
+            setGrades(data.grades as IGrade[]);
+        }
+    }, [isSuccess])
 
-        axios.get("/api/grade/all", { headers: { 'Authorization': `Bearer ${authToken}`}})
-            .then(({ data }) => {
-                if (data) {
-                    setSchoolName(data.school as string);
-                    setGrades(data.grades as IGrade[]);
-                    return;
-                }
-
-                throw new Error("Unexpected error");
-            })
-            .catch((error: Error) => {
-                setError(error.message)
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
-
-    if (isFetching) {
+    if (isFetching || isIdle) {
         return <LoaderPage/>
     }
 
@@ -108,7 +107,7 @@ const GradesPage = () => {
                 <div className="divider"></div>
                 <div className="section">
                     {
-                        error ?
+                        isError ?
                         <div className="row">
                             <div className="col s12">
                                 <div className="sub-modal-texts" style={{
@@ -123,7 +122,7 @@ const GradesPage = () => {
                                     alignItems: "center"
                                 }}>
                                     <i className="material-icons left">error_outline</i>
-                                    <p>{error}</p>
+                                    <p>{(error as Error).message}</p>
                                 </div>
                             </div>
                         </div>
@@ -140,7 +139,7 @@ const GradesPage = () => {
                     </div>
                     <div className="row">
                         {
-                            grades.length ? 
+                            isSuccess && grades.length ? 
                             <>
                                 {grades.map((grade, index) => {
                                     return <Grade key={index} {...grade}/>

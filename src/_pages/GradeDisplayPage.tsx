@@ -9,10 +9,10 @@ import LoaderComp from "../components/LoaderComp";
 import EditGrade from "./EditGrade";
 import Skeleton from "react-loading-skeleton";
 import { atom, useSetRecoilState } from "recoil";
+import { useQuery } from "react-query";
 
 // dynamic imports
 const GradePerformanceSuspense = React.lazy(() => import("./GradePerfomance"));
-const SubscriptionsDisplaySuspense = React.lazy(() => import("./SubscriptionsDisplay"));
 const LearnersSuspense = React.lazy(() => import("./Learners"));
 const SubjectsCompSuspense = React.lazy(() => import("./Subjects"));
 const MetricsCompSuspense = React.lazy(() => import("./Metrics"));
@@ -93,30 +93,31 @@ const GradeDisplayPage = () => {
     const params = useParams();
     const [grade, setGrade] = useState<IGrade>({
         _id: "", classTeacher: {_id: "", email: "", name: "", profilePic: ""}, name: "", stream: "", year: (new Date()).getFullYear(), isClosed: true
-    })
+    });
 
-    useEffect(() => {
-        // fetch the grade data
-        axios.get(`/api/grade/${params.id}`, { headers: {
+    const { isError, error, data, isSuccess } = useQuery(['in_app_grade_display', params.id], () => {
+        return axios.get(`/api/grade/${params.id}`, { headers: {
             'Authorization': `Bearer ${authToken}`
         }})
             .then(({ data }) => {
-                if (data) {
-                    let _grade = data.grade as IGrade
-
-                    // use local storage to store the values
-                    // find a way to set this in a better way :)
-                    setClassIdState(_grade._id);
-                    setClassRefIdState(_grade.classRef || "");
-                    setGradeName(_grade.name);
-
-                    setGrade(_grade)
-                }
+                if (data) { return (data.grade as IGrade) }
+                throw new Error("Unexpected error!")
             })
+    }, {
+        enabled: !!authToken && !!params.id,
+    });
 
-        M.Tabs.init(document.querySelector(".tabs"), {
-            // swipeable: true
-        })
+    useEffect(() => {
+        if (isSuccess && data) {
+            setClassIdState(data._id);
+            setClassRefIdState(data.classRef || "");
+            setGradeName(data.name);
+            setGrade(data);
+        }
+    }, [isSuccess])
+
+    useEffect(() => {
+        M.Tabs.init(document.querySelector(".tabs"), {})
 
         M.Sidenav.init(document.querySelectorAll('.sidenav'), {
             edge: "right"
@@ -128,8 +129,28 @@ const GradeDisplayPage = () => {
             <EditGrade/>
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
             <div className="section">
-                {/* should we use the  */}
-                {/* the first row should show the na */}
+                {
+                        isError ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{(error as Error).message}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                 <div className="row">
                     <div className="col s12 m2 center sticky-side" style={{
                             borderRight: "1px solid #d3d3d3",
@@ -212,9 +233,9 @@ const GradeDisplayPage = () => {
                             <div id="learners" className="col s12">
                                 {/* shows all the current learners in the system for the given grade */}
                                 {/* <Learners classRefId={grade.classRef}/> */}
-                                {grade.classRef ? <React.Suspense fallback={<LoaderComp/>}>
-                                    <LearnersSuspense classRefId={grade.classRef}/>
-                                </React.Suspense>: null}
+                                {<React.Suspense fallback={<LoaderComp/>}>
+                                    <LearnersSuspense classRefId={grade.classRef || null}/>
+                                </React.Suspense>}
                             </div>
 
                             <div id="perfomance" className="col s12">

@@ -5,6 +5,10 @@ import {
   Routes
 } from "react-router-dom";
 import { RecoilRoot } from "recoil";
+import {
+  QueryClientProvider
+} from 'react-query';
+import { ZoeziQueryClient } from './utils/queryclient';
 import "./App.css";
 import Footer from "./components/Footer"
 import Navigation from "./components/Navigation"
@@ -46,71 +50,73 @@ const App = () => {
     <Router>
       <React.Suspense fallback={<LoaderPage/>}>
       <GlobalContextComp>
-        <RecoilRoot>
-        <Navigation/>
-          <Routes>
-            <Route element={<ForwardProtectedRoute/>}>
-              <Route path="/" element={<HomePage/>}/>
-            </Route>
-            <Route path="/login" element={<LoginPage/>}/>
-            <Route path="/new-school" element={<NewSchool/>}/>
-            <Route path="/pricing" element={<PricingPage/>}/>
+        <QueryClientProvider client={ZoeziQueryClient}>
+          <RecoilRoot>
+            <Navigation/>
+              <Routes>
+                <Route element={<ForwardProtectedRoute/>}>
+                  <Route path="/" element={<HomePage/>}/>
+                </Route>
+                <Route path="/login" element={<LoginPage/>}/>
+                <Route path="/new-school" element={<NewSchool/>}/>
+                <Route path="/pricing" element={<PricingPage/>}/>
 
-            <Route path="/recovery" element={<PasswordRecovery/>}/>
-            
-            <Route element={<ProtectedRoute/>}>
-              {/* this is not scoped as an admin only page :) */}
-              <Route path="/teacher/:id" element={<TeacherDisplayPage/>}/>
-              <Route path="/teacher/edit/:id" element={<NewTeacher/>}/>
-              <Route path="/view-paper/:paperID/:selectedQuestion" element={<PointedQuestionPaper/>}/>
+                <Route path="/recovery" element={<PasswordRecovery/>}/>
+                
+                <Route element={<ProtectedRoute/>}>
+                  {/* this is not scoped as an admin only page :) */}
+                  <Route path="/teacher/:id" element={<TeacherDisplayPage/>}/>
+                  <Route path="/teacher/edit/:id" element={<NewTeacher/>}/>
+                  <Route path="/view-paper/:paperID/:selectedQuestion" element={<PointedQuestionPaper/>}/>
 
-              <Route element={<AdminScopedRoute/>}>
-                <Route path="/dashboard" element={<Dashboard/>}/>
-                <Route path="/teacher" element={<Teachers/>}/>
-                <Route path="/teacher/new" element={<NewTeacher/>}/>
-                <Route path="/teacher/import" element={<ImportTeachers/>}/>
+                  <Route element={<AdminScopedRoute/>}>
+                    <Route path="/dashboard" element={<Dashboard/>}/>
+                    <Route path="/teacher" element={<Teachers/>}/>
+                    <Route path="/teacher/new" element={<NewTeacher/>}/>
+                    <Route path="/teacher/import" element={<ImportTeachers/>}/>
 
-                {/* market links */}
-                <Route path="/shop" element={<MarketPage/>}/>
-                <Route path="/shop/:gradeName" element={<MarketGrade/>}/>
-                <Route path="/shop/select/:gradeId" element={<ChooseGradesComp/>}/>
-                <Route path="/shop/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
+                    {/* market links */}
+                    <Route path="/shop" element={<MarketPage/>}/>
+                    <Route path="/shop/:gradeName" element={<MarketGrade/>}/>
+                    <Route path="/shop/select/:gradeId" element={<ChooseGradesComp/>}/>
+                    <Route path="/shop/checkout/:gradeId/:subscriptionId" element={<CheckoutComp/>}/>
 
-                {/* a listing of all the subscriptions */}
-                <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
-                <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
+                    {/* a listing of all the subscriptions */}
+                    <Route path="/subscriptions" element={<SubscriptionsPage/>}/>
+                    <Route path="/subscriptions/:transactionId" element={<SubscriptionViewPage/>}/>
 
-                {/* settings */}
-                <Route path="/account" element={<AccountSettings/>}/>
+                    {/* settings */}
+                    <Route path="/account" element={<AccountSettings/>}/>
 
-                <Route path="/grades" element={<GradesPage/>}/>
-                <Route path="/grades/new" element={<NewGrade/>}/>
+                    <Route path="/grades" element={<GradesPage/>}/>
+                    <Route path="/grades/new" element={<NewGrade/>}/>
 
-                {/*subject  */}
-                <Route path="/subject/new/:gradeName" element={<NewSubject/>}/> 
-              </Route>
+                    {/*subject  */}
+                    <Route path="/subject/new/:gradeName" element={<NewSubject/>}/> 
+                  </Route>
 
-              {/* library display */}
-              <Route path="/library-paper/:studentId/:paperId" element={<NormalPaperDisplay/>}/>
-              <Route 
-                path="/library-paper/special/:studentId/:gradeName/:paperID/:savedStateID" 
-                element={<SpecialPaperLibraryPaper/>}/>
+                  {/* library display */}
+                  <Route path="/library-paper/:studentId/:paperId" element={<NormalPaperDisplay/>}/>
+                  <Route 
+                    path="/library-paper/special/:studentId/:gradeName/:paperID/:savedStateID" 
+                    element={<SpecialPaperLibraryPaper/>}/>
 
-              <Route path="/grades/:id" element={<GradeDisplayPage/>}/>
+                  <Route path="/grades/:id" element={<GradeDisplayPage/>}/>
 
-              {/* learner routes */}
-              <Route path="/learner/:id" element={<StudentAnalysis/>}/>
-              <Route path="/learner/new" element={<RegistrationPage/>}/>
-              <Route path="/learner/edit/:studentId" element={<RegistrationPage/>}/>
-              <Route path="/learner/import" element={<ImportStudent/>}/>
+                  {/* learner routes */}
+                  <Route path="/learner/:id" element={<StudentAnalysis/>}/>
+                  <Route path="/learner/new" element={<RegistrationPage/>}/>
+                  <Route path="/learner/edit/:studentId" element={<RegistrationPage/>}/>
+                  <Route path="/learner/import" element={<ImportStudent/>}/>
 
-              {/*subject  */}
-              <Route path="/subject/:id" element={<SubjectAnalysis/>}/>
-            </Route>
-            <Route path="*" element={<ErrorPage code={404} message={"Page Not Found"}/>}/>
-          </Routes>
-        <Footer/>
-        </RecoilRoot>
+                  {/*subject  */}
+                  <Route path="/subject/:id" element={<SubjectAnalysis/>}/>
+                </Route>
+                <Route path="*" element={<ErrorPage code={404} message={"Page Not Found"}/>}/>
+              </Routes>
+            <Footer/>
+          </RecoilRoot>
+        </QueryClientProvider>
       </GlobalContextComp>
       </React.Suspense>
     </Router>

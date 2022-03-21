@@ -9,6 +9,9 @@ import { GlobalContext } from '../../../contexts/GlobalContext';
 // for toast displays
 import { toast } from 'react-toastify';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ZoeziQueryClient } from '../../../utils/queryclient';
+import { useRecoilValue } from 'recoil';
+import { classIdState, classRefIdState } from '../../GradeDisplayPage';
 
 export interface IFormData {
     firstname: string
@@ -37,6 +40,8 @@ const RegistrationPage = () => {
     const [errors, setErrors] = useState<string[]>([]);
     const [isSavingLearner, setIsSavingLearner] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
+    const classId = useRecoilValue(classIdState);
+    const classRefId = useRecoilValue(classRefIdState);
 
     const [configurations, setConfigurations] = useState<IConfiguration>({ 
         default_avatar: { alt: "", src: ""}, preloaded_avatars: [] 
@@ -94,14 +99,6 @@ const RegistrationPage = () => {
                     setErrors([error.message]);
                 })
         }
-
-        
-        // download the image configuration and use it
-        // axios.get("/fetch-profile-configurations")
-        //     .then(({ data }) => {
-        //         if (data) { setConfigurations(data) }
-        //     })
-
     }, []);
 
     const success_toastify = () => toast.success("Successfully created learner!", {
@@ -123,10 +120,6 @@ const RegistrationPage = () => {
             form.set("profilePic", profileImage, profileImage.name);
         }
 
-        // get the current stuff and use it
-        const classId = localStorage.getItem("classId") || "";
-        const classRefId = localStorage.getItem("classRefId") || "";
-
         axios({
             url: isUpdating ? `/api/learner/${classId}/${classRefId}/${params.studentId}` : `/api/learner/${classId}/${classRefId}`,
             method: isUpdating ? "put" : "post",
@@ -136,6 +129,7 @@ const RegistrationPage = () => {
             .then(({ data }) => {
                 if (data) {
                     if (data.status) {
+                        ZoeziQueryClient.invalidateQueries(['in_app_grade_learners', classId]);
                         return success_toastify();
                     }
                     setErrors(data.errors)
