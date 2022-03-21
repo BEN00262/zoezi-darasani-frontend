@@ -5,6 +5,7 @@ import { GlobalContext } from "../contexts/GlobalContext"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from "react-router-dom";
+import { ZoeziQueryClient } from "../utils/queryclient";
 
 const ImportTeachers = () => {
     const navigate = useNavigate();
@@ -39,6 +40,7 @@ const ImportTeachers = () => {
                 .then(({ data }) => {
                     if (data) {
                         if (data.status) {
+                            ZoeziQueryClient.invalidateQueries('in_app_school_teachers');
                             return success_toastify();
                         }
                     }
