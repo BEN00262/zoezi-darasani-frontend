@@ -206,7 +206,7 @@ const GlobalContextComp = ({ children }: any) => {
         })
     }
 
-    const switchCongratsOff = (status: boolean = false) => {
+    const switchCongratsOff = (status = false) => {
         dispatch({
             type: UPDATE_CONGRATS_POP_UP_STATE,
             payload: status

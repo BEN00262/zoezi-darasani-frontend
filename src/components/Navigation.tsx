@@ -1,17 +1,15 @@
-import { useContext } from "react"
 import {Link} from "react-router-dom"
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziDispatch, useGlobalZoeziTrackedState, wipeCurrentContext } from "../contexts/GlobalContext"
 import { ZoeziQueryClient } from "../utils/queryclient";
 
 const Navigation = () => {
     const { 
         authToken,
         isTeacher,
-        communicationId,
+        communicationId
+    } = useGlobalZoeziTrackedState();
+    const dispatch = useGlobalZoeziDispatch()
 
-        // @ts-ignore
-        wipeCurrentContext
-    } = useContext(GlobalContext);
 
     return (
         <>
@@ -26,7 +24,7 @@ const Navigation = () => {
                 <li className="divider"></li>
                 {/* just log out the person by wiping the current context */}
                 <li><a onClick={_ => {
-                    wipeCurrentContext();
+                    wipeCurrentContext(dispatch);
                     // reset all the queries in react query ( wipe them out :))
                     ZoeziQueryClient.removeQueries('in_app_');
                 }} className="black-text">Sign Out</a></li>

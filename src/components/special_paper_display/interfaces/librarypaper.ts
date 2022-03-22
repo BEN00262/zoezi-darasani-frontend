@@ -20,7 +20,7 @@ export interface IComprehensionContent {
 // for a normal paper | wdgf
 export interface IOldversionContent {
     status: boolean,
-    question: String,
+    question: string,
     attempted_option: string;
 }
 
@@ -48,8 +48,8 @@ export interface IPagePaperStudentTree {
 }
 
 export interface ILibraryPaper {
-    grade: String,
-    subject: String,
+    grade: string,
+    subject: string,
     score: {
         passed: number,
         total: number

@@ -2,13 +2,12 @@
 import M from 'materialize-css';
 
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {Link, useParams} from "react-router-dom"
 import LibraryViewComp from "../components/LibraryViewComp";
 import StudentReport from "../components/StudentReport"
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import LoaderComp from '../components/LoaderComp';
-import DefaultLearnerAvatar from "../img/default_learner_avatar.png"
 import { get_learner_avatar } from '../utils/avatar_chooser';
 import Skeleton from 'react-loading-skeleton';
 
@@ -24,7 +23,7 @@ interface IStudent {
 }
 
 const StudentAnalysis = () => {
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
     const params = useParams();
     const [student, setStudent] = useState<IStudent>({
         firstname: "", lastname: "", password: "", username: "", lastActive: "never", _id: "", profilePic: "",
@@ -38,7 +37,7 @@ const StudentAnalysis = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let _student = data.student as IStudent
+                    const _student = data.student as IStudent
                     setStudent(_student);
                     localStorage.setItem("_student_name_", _student.firstname);
                     return;
@@ -132,7 +131,7 @@ const StudentAnalysis = () => {
                                     );
 
                                     const link = document.createElement('a');
-                                    link.href = URL.createObjectURL(file);;
+                                    link.href = URL.createObjectURL(file);
                                     link.setAttribute(
                                         'download', `credentials (${student.firstname} ${student.lastname}).json`
                                     );

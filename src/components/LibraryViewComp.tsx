@@ -1,16 +1,16 @@
 // @ts-ignore
 import M from 'materialize-css';
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import SadKid from "../img/sad-kid.png"
 
 
 
 const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
     const navigate = useNavigate();
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     // continue to work on the library and also on the papers to finally create the link btwn the papers :)
     const [library, setLibrary] = useState<any[]>([]);

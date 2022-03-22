@@ -18,7 +18,7 @@ const failure_toastify = (message: string) => toast.error(message, {
     autoClose: 2000
 })
 
-const socket = io(); // io("http://localhost:3500/");
+const socket = io("http://localhost:3500/");
 
 interface IMessage {
     type: "payments" // add other message types later :)
@@ -47,7 +47,7 @@ const MessagesComp = () => {
         });
         
         socket.on('notification', function (data){
-            let message = JSON.parse(data) as IMessage;
+            const message = JSON.parse(data) as IMessage;
 
             switch (message.type) {
                 case 'payments':

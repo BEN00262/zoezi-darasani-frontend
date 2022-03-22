@@ -1,6 +1,6 @@
-import React,{useState, useEffect,Suspense, useContext} from 'react';
+import React,{useState, useEffect,Suspense} from 'react';
 import { useParams } from 'react-router-dom';
-import { GlobalContext } from '../../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../../contexts/GlobalContext';
 import LoaderPage from '../../_pages/loader';
 
 import './App.css';
@@ -10,7 +10,7 @@ import { ILibPaperQuestions } from './interface/ILibPaper';
 
 // get the paper id from the params
 const NormalPaperDisplay = () => {
-  const { authToken } = useContext(GlobalContext);
+  const { authToken } = useGlobalZoeziTrackedState();
   const params = useParams();
   const [data,setData] = useState<ILibPaperQuestions | null>(null);
 

@@ -1,20 +1,17 @@
 import { useState, useCallback, useEffect, useContext, useMemo } from 'react';
-import { Card, Button,  Container } from 'react-materialize';
-import { useMediaQuery } from 'react-responsive';
+import { Card } from 'react-materialize';
 
 import NormalQuestionComp from './normal_question_comp';
 import ComprehensionComp from './comprehension_question_comp';
 import OldVersionQuestion from '../special_paper_display/components/old_version_question';
 import { IQuestion } from '../special_paper_display/rendering_engine/DataLoaderInterface';
-import { IComprehensionContent, ILibraryPaperContent, INormalContent, IPagePaperStudentTree } from '../special_paper_display/interfaces/librarypaper';
+import { IComprehensionContent, ILibraryPaperContent, INormalContent } from '../special_paper_display/interfaces/librarypaper';
 import { GlobalContext } from '../special_paper_display/contexts/global';
-import { useRecoilValue } from 'recoil';
-import { selectedQuestionAtom } from '.';
 
 const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
     questions:IQuestion[]
     alreadyDone: number
-    isKiswahili: Boolean
+    isKiswahili: boolean
     wasTimed: boolean
 }) => {
     const {
@@ -43,9 +40,9 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
     }>({ [currentPage]: [] });
 
     // let isComprehensionQuestion = useMemo(() => questions.length === 1 ? questions[0].questionType ? questions[0].questionType === "comprehension" ? true : false : false : false, [currentPage]);
-    let number_of_questions = useMemo(() => isComprehensionQuestion ? questions[0].children?.length : questions.length, [currentPage]);
+    const number_of_questions = useMemo(() => isComprehensionQuestion ? questions[0].children?.length : questions.length, [currentPage]);
     
-    let actual_number_of_subpages = useMemo(() => {
+    const actual_number_of_subpages = useMemo(() => {
         if (!isComprehensionQuestion)
             return 0;
         return Math.floor((number_of_questions || 0) / 5) + (((number_of_questions || 0) % 5) > 0 ? 1 : 0);
@@ -56,18 +53,18 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
             switch (snapshot.questionType) {
                 case 'normal':
                     {
-                        let content = snapshot.content as INormalContent
+                        const content = snapshot.content as INormalContent
                         acc += content.attempted_options.length > 0 ? 1 : 0
                         break
                     }
                 case 'comprehension':
                     {
-                        let comprehensionQuestion = snapshot.content as IComprehensionContent
+                        const comprehensionQuestion = snapshot.content as IComprehensionContent
 
                         acc += comprehensionQuestion.children.slice(
                             compSubQuestionPage * 5, (compSubQuestionPage * 5) + 5
                         ).reduce((acc: number, _snapshot: INormalContent) => {
-                            let _child_snapshot = _snapshot;
+                            const _child_snapshot = _snapshot;
                             return acc + (_child_snapshot.attempted_options.length > 0 ? 1 : 0)
                         }, 0);
 
@@ -84,12 +81,12 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
             switch (snapshot.questionType) {
                 case 'comprehension':
                     {
-                        let comprehensionQuestion = snapshot.content as IComprehensionContent
+                        const comprehensionQuestion = snapshot.content as IComprehensionContent
 
                         acc += comprehensionQuestion.children.slice(
                             0, (compSubQuestionPage > 0 ? (compSubQuestionPage - 1) * 5  + 5 : compSubQuestionPage)
                         ).reduce((acc: number, _snapshot: INormalContent) => {
-                            let _child_snapshot = _snapshot
+                            const _child_snapshot = _snapshot
                             return acc + (_child_snapshot.attempted_options.length > 0 ? 1 : 0)
                         }, 0);
 
@@ -109,12 +106,12 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
         return (numberAttempted + alreadyDone) === numOfQuestions
     }, [numberAttempted, currentPage, questionsPerPage, numOfQuestions]);
 
-    let compFullPages = useMemo(() => isComprehensionQuestion ? Math.floor((number_of_questions || 0) / 5) : 1, [questions])
+    const compFullPages = useMemo(() => isComprehensionQuestion ? Math.floor((number_of_questions || 0) / 5) : 1, [questions])
 
     const AddPageStudentPaperContent = (question_id: string,content: ILibraryPaperContent) => {
-        let local_paper_tree = pageStudentPaperContent[currentPage];
+        const local_paper_tree = pageStudentPaperContent[currentPage];
 
-        let foundIndex = local_paper_tree.findIndex(x => x.content.question === question_id);
+        const foundIndex = local_paper_tree.findIndex(x => x.content.question === question_id);
 
         if (foundIndex < 0) {
             setPageStudentPaperContent({
@@ -154,7 +151,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
     // what if we use this state to push the time up i think
     useEffect(() => {
-        let previous_snapshot = attemptTree.pages[currentPage];
+        const previous_snapshot = attemptTree.pages[currentPage];
         setAttempted(findAlreadyDoneHistory(previous_snapshot));
 
         setPageStudentPaperContent({
@@ -176,10 +173,10 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
     const proceedToNextPage = () => {
         if (isComprehensionQuestion) {
-            let questions_on_last_page = (number_of_questions || 0) % 5;
-            let comprehension_sub_pages = compFullPages + (questions_on_last_page > 0 ? 1 : 0);
+            const questions_on_last_page = (number_of_questions || 0) % 5;
+            const comprehension_sub_pages = compFullPages + (questions_on_last_page > 0 ? 1 : 0);
 
-            let next_sub_page = compSubQuestionPage + 1;
+            const next_sub_page = compSubQuestionPage + 1;
 
             if (next_sub_page < comprehension_sub_pages) {
                
@@ -192,7 +189,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
         }
 
-        let next_page = currentPage + 1
+        const next_page = currentPage + 1
 
         if (next_page < totalPages) {
             updateStudentTreeContentAtAndMove(
@@ -227,7 +224,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
         // console.log(currentPage);
         console.log(pageStudentPaperContent);
 
-        let page = pageStudentPaperContent[currentPage] || [];
+        const page = pageStudentPaperContent[currentPage] || [];
         return page.find(x => x.content.question === questionID) || null;
     }, [currentPage]);
 
@@ -312,13 +309,13 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
 
                             let previous_sub_page_count = 0;
 
-                            let next_full_page = currentPage > 0 ? currentPage - 1 : currentPage;
+                            const next_full_page = currentPage > 0 ? currentPage - 1 : currentPage;
 
                             // get the full number of questions there
-                            let prev_page = attemptTree.pages[next_full_page];
+                            const prev_page = attemptTree.pages[next_full_page];
 
                             if (prev_page && (prev_page[0].questionType === 'comprehension')) {
-                                let local_number_of_questions = (prev_page[0].content as IComprehensionContent).children.length
+                                const local_number_of_questions = (prev_page[0].content as IComprehensionContent).children.length
                                 previous_sub_page_count = Math.floor((local_number_of_questions || 0) / 5) + (((local_number_of_questions || 0) % 5) > 0 ? 1 : 0)
                             }
 
@@ -342,8 +339,8 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                     <div hidden={!isMarked}>
                         <button disabled={(() => {
                             if (isComprehensionQuestion) {
-                                let questions_on_last_page = (number_of_questions || 0) % 5;
-                                let comprehension_sub_pages = compFullPages + (questions_on_last_page > 0 ? 1 : 0)
+                                const questions_on_last_page = (number_of_questions || 0) % 5;
+                                const comprehension_sub_pages = compFullPages + (questions_on_last_page > 0 ? 1 : 0)
                                 return (compSubQuestionPage + 1 === comprehension_sub_pages) && ((currentPage + 1) === totalPages)
                             }
 
@@ -351,7 +348,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                         })()} onClick={() => {
 
                             if (isComprehensionQuestion) {
-                                let next_sub_page = compSubQuestionPage + 1;
+                                const next_sub_page = compSubQuestionPage + 1;
 
                                 if (next_sub_page < actual_number_of_subpages) {
                                     setCurrentSubPage(next_sub_page);
@@ -361,7 +358,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                             }
 
 
-                            let next_page = currentPage + 1
+                            const next_page = currentPage + 1
 
                             if (next_page < totalPages) {
                                 updatePageNumber(next_page)
@@ -409,7 +406,7 @@ const QuestionComp = ({ questions, alreadyDone, isKiswahili, wasTimed }:{
                             }
 
                         } else {
-                            let remainders = ((number_of_questions || 0) % 5)
+                            const remainders = ((number_of_questions || 0) % 5)
 
                             if (numberAttempted !== remainders){
                                 // alert.info(isKiswahili ? "Tafadhali jibu maswali yote" : "complete all the questions");

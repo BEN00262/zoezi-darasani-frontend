@@ -2,8 +2,8 @@
 import M from 'materialize-css';
 import axios from "axios";
 import Select from 'react-select';
-import { useContext, useEffect, useState } from "react";
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import { useEffect, useState } from "react";
+import { useGlobalZoeziTrackedState } from "../../../contexts/GlobalContext";
 import { Link, useParams } from "react-router-dom";
 import ChooseSubscriptionComp from './ChooseSubscriptionComp';
 import { IPricingItem } from '../../../components/PricingItem';
@@ -18,7 +18,7 @@ interface IFetchedGrade {
 // create the components as the steps
 const ChooseGradesComp = () => {
     const params = useParams();
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const [unsubscribedGrades, setUnSubscribedGrades] = useState<{
         label: string
@@ -51,7 +51,7 @@ const ChooseGradesComp = () => {
     }, []);
 
     useEffect(() => {
-        if (!!selectedGrades.length) {
+        if (selectedGrades.length) {
             localStorage.setItem("selectedGrades", selectedGrades.join(","))
         }
     }, [selectedGrades]);

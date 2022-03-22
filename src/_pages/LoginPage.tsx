@@ -1,9 +1,9 @@
 // @ts-ignore
 import M from 'materialize-css';
 import axios from "axios";
-import { SyntheticEvent, useContext, useEffect, useState } from "react"
+import { SyntheticEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { setAuthorizationToken, useGlobalZoeziDispatch } from "../contexts/GlobalContext";
 import verifyToken from '../utils/verify';
 
 interface ILoginDetails {
@@ -76,10 +76,7 @@ const TeacherLoginForm: React.FC<ILoginPage> = ({
 }
 
 export default function LoginPage() {
-    const {
-        // @ts-ignore
-        setAuthorizationToken
-    } = useContext(GlobalContext);
+    const dispatch = useGlobalZoeziDispatch();
     const [loginDetails, setLoginDetails] = useState<ILoginDetails>({
         asTeacher: false, email: "", password: ""
     });
@@ -106,7 +103,7 @@ export default function LoginPage() {
         const { email, password } = loginDetails;
         setIsLoading(true);
 
-        let instance = M.Tabs.getInstance(document.getElementById("login_options_tab"));
+        const instance = M.Tabs.getInstance(document.getElementById("login_options_tab"));
 
         // check if a bunch of stuff are empty if not just send them
         axios.post(instance.index === 1 ? "/api/teacher/login" : "/api/school/login", { email, password })
@@ -115,9 +112,7 @@ export default function LoginPage() {
                 if (data) {
 
                     if (data.status) {
-                      // logged in successfully
-                      setAuthorizationToken(data.token);
-
+                      setAuthorizationToken(data.token, dispatch);
                       const {communicationId, isTeacher } = verifyToken(data.token); // this is redudant but who gives an f
                       return navigate(isTeacher ? `/teacher/${communicationId}`: "/shop", { replace: true })
                     }

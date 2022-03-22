@@ -1,7 +1,7 @@
 import axios from "axios"
-import { SyntheticEvent, useContext, useEffect, useState } from "react"
+import { SyntheticEvent, useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 import { ITeacherComp } from "../_pages/TeacherDisplayPage";
 import DefaultMaleTeacher from "../img/male_teacher.png"
 
@@ -18,7 +18,7 @@ export interface ITeacher {
 
 // get the current id of the system first then do the stuff
 const TeacherFormComp = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -51,13 +51,13 @@ const TeacherFormComp = () => {
 
 
     useEffect(() => {
-        if (!!params.id) {
+        if (params.id) {
             setIsUpdating(true);
             axios.get(`/api/teacher/${params.id}`, {
                 headers: { 'Authorization': `Bearer ${authToken}`}
             }).then(({ data }) => {
                 if (data) {
-                    let { name, email, _id } = data.teacher as ITeacherComp
+                    const { name, email, _id } = data.teacher as ITeacherComp
 
                     setCurrentTeacherId(_id);
                     setTeacherDetails(old => ({

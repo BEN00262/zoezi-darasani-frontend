@@ -1,10 +1,10 @@
 // @ts-ignore
 import M from 'materialize-css';
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import ProfileSelectorComp from "../components/compound/ProfileSelector"
 import RegisterPage from "../components/compound/Register";
-import { GlobalContext } from '../../../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../../../contexts/GlobalContext';
 
 // for toast displays
 import { toast } from 'react-toastify';
@@ -34,7 +34,7 @@ export interface IConfiguration {
 const RegistrationPage = () => {
     const navigate = useNavigate();
     const params = useParams(); // check if we have any stuff ( if we do we are in the edit page :))
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
@@ -75,7 +75,7 @@ const RegistrationPage = () => {
             })
                 .then(({ data }) => {
                     if (data) {
-                        let _student = data.student as { 
+                        const _student = data.student as { 
                             firstname: string
                             lastname: string
                             profilePic: string

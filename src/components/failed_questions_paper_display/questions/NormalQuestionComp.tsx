@@ -85,12 +85,12 @@ const NormalQuestionComp: React.FC<ITopFailedPaperQuestion & { position: number 
     const isMultipleOption: boolean = (numberOfCorrectOptions > 1) || false;
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
     },[]);
     
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({index, option, analytics}:{
             index: number,
@@ -153,7 +153,7 @@ const NormalQuestionComp: React.FC<ITopFailedPaperQuestion & { position: number 
                     question.options_next && question.options_next.map((option,index) => {
                         // lets compute the analytics now :)
                         // get the option
-                        let foundOption = Object.keys(choices).find(x => x === option._id);
+                        const foundOption = Object.keys(choices).find(x => x === option._id);
 
                         return chooseRenderingOption({
                             option,

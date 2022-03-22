@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, useContext, useCallback } from 'react';
+import { useState, useEffect, useMemo, useContext } from 'react';
 // @ts-ignore
 import M from 'materialize-css';
 
 
-import { IOption, IQuestion } from '../rendering_engine/DataLoaderInterface';
+import { IQuestion } from '../rendering_engine/DataLoaderInterface';
 import { ILibraryPaperContent, INormalContent } from '../interfaces/librarypaper';
 import { GlobalContext } from '../contexts/global';
 
@@ -116,18 +116,18 @@ const NormalQuestionComp = ({
     const checkIfWasSelected = (optionID: string) => !!suggestedAnswer.find(x => x._id === optionID);
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
 
-        let historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
+        const historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
 
         if (!historyFound) {
             return
         }
 
-        let content = historyFound.content as INormalContent
+        const content = historyFound.content as INormalContent
 
-        let attempt_snapshot = (question.options_next || []).filter(
+        const attempt_snapshot = (question.options_next || []).filter(
             (x, optionIndex) => content.attempted_options.findIndex(
                 y => (y.optionID === x._id) || (y.optionIndex === optionIndex)
             ) > -1
@@ -164,7 +164,7 @@ const NormalQuestionComp = ({
         if (isMarked && (numberOfCorrectOptions === suggestedAnswer.length)){
             // this is proving to be wrong we need to first check for the length of the array and default to false 
             // if the array is empty 
-            let checkIfCorrect: boolean = suggestedAnswer.length > 0 ? suggestedAnswer.every(x => x.isCorrect) : false;
+            const checkIfCorrect: boolean = suggestedAnswer.length > 0 ? suggestedAnswer.every(x => x.isCorrect) : false;
 
             setIsCorrect(checkIfCorrect);
             setCorrectAnswersCount(checkIfCorrect ? 1 : 0);  
@@ -183,7 +183,7 @@ const NormalQuestionComp = ({
             const isOptionExisting = suggestedAnswer.findIndex(x => x.option === trial.option);
 
             if (isOptionExisting > -1){
-                let localSuggestedAnswer = [...suggestedAnswer];
+                const localSuggestedAnswer = [...suggestedAnswer];
                 localSuggestedAnswer.splice(isOptionExisting);
                 // rerenders the logic
                 setSuggestedAnswer(localSuggestedAnswer);
@@ -199,7 +199,7 @@ const NormalQuestionComp = ({
     };
     
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index,_id, option,isCorrect, wasSelected}:{
             _id: string,

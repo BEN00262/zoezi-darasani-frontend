@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../../contexts/GlobalContext';
 import LoaderComp from '../LoaderComp';
 import { GlobalContext as LocalContext } from '../special_paper_display/contexts/global';
 import { generate_paper_map, get_number_of_questions_in_paper, IPaperMap } from '../special_paper_display/grouper/grouper';
@@ -15,7 +15,7 @@ import { initialize_pages_structures } from '../special_paper_display/components
 // import this
 const findPageWithQuestion = (paperMap: IPaperMap, questionIds: string[], questionId: string): number => {
     
-    for (let [page, boundaries] of Object.entries(paperMap.pages)) {
+    for (const [page, boundaries] of Object.entries(paperMap.pages)) {
         if (
                 questionIds.slice(
                     boundaries.startIndex,
@@ -34,7 +34,7 @@ const findPageWithQuestion = (paperMap: IPaperMap, questionIds: string[], questi
 const HeadlessComp = () => {
     // @ts-ignore
     const { updateQuestions, setSubjectName } = useContext(LocalContext);
-    const { authToken } = useContext(GlobalContext); // now this is the global context
+    const { authToken } = useGlobalZoeziTrackedState(); // now this is the global context
 
     // to enable the highlighting of the wanted question etc
     const toBeViewedPaperId = useRecoilValue(toBeViewedPaperAtom);

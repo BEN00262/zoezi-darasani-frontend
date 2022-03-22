@@ -1,4 +1,4 @@
-import { SyntheticEvent, useState } from "react"
+import { SyntheticEvent } from "react"
 import { IConfiguration, IFormData } from "../../pages/RegistrationPage"
 // import { default_avatar } from "../../preloaded-avatas"
 

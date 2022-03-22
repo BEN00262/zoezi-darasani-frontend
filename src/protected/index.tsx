@@ -1,12 +1,12 @@
-import { useContext, useState } from "react";
-import {Navigate, Outlet, Route, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import {Navigate, Outlet, useLocation } from "react-router-dom";
+import ForbiddenErrorComp from "../components/ForbiddenErrorComp";
 import MessagesComp from "../components/Messages";
-import { GlobalContext } from "../contexts/GlobalContext";
-import ErrorPage from "../_pages/404";
+import { GlobalContext, useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 
 const ProtectedRoute = () => {
-    let location = useLocation();
-    const { authToken } = useContext(GlobalContext);
+    const location = useLocation();
+    const { authToken } = useGlobalZoeziTrackedState();
 
 
     if (!authToken) {
@@ -16,6 +16,7 @@ const ProtectedRoute = () => {
     return (
         <>
             <MessagesComp/>
+            <ForbiddenErrorComp/>
             <Outlet/>
         </>
     )
@@ -36,7 +37,7 @@ export const AdminScopedRoute = () => {
 }
 
 export const ForwardProtectedRoute = () => {
-    let location = useLocation();
+    const location = useLocation();
     const { authToken, communicationId, isTeacher } = useContext(GlobalContext);
 
 

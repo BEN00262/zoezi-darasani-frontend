@@ -1,12 +1,12 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify';
 import LoaderComp from "../components/LoaderComp";
 import {get_learner_avatar} from "../utils/avatar_chooser"
 
-import { GlobalContext } from "../contexts/GlobalContext";
-import convertFromJsonToCsvFile from "../utils/jsonTocsv"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
+import convertFromJsonToCsvFile from "../utils/jsonTocsv"; // put this on a service worker later
 import { useQuery } from "react-query";
 
 export interface ILearners {
@@ -67,7 +67,7 @@ const Learner: React.FC<ILearner> = ({ _id, firstname, lastname, gender, profile
 }
 
 const Learners: React.FC<ILearners> = ({ classRefId }) => {
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
     const navigate = useNavigate();
     const [learners, setLearners] = useState<ILearner[]>([]);
     const [learnersTemp, setLearnersTemp] = useState<ILearner[]>([]);
@@ -80,7 +80,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let _learners = data.learners as ILearner[];
+                    const _learners = data.learners as ILearner[];
                     setLearners(_learners);
                     setLearnersTemp(_learners);
                     return;
@@ -98,7 +98,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
     }
 
     const handleSearch = (e: any) => {
-        let searchTerm = (e.target.value || "").toLowerCase();
+        const searchTerm = (e.target.value || "").toLowerCase();
 
         if (!searchTerm) {
             setLearners(learnersTemp);
@@ -133,7 +133,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                     ><i className="material-icons right">person_add</i>Add Learner</button>
 
                     {/* exporting the credentials */}
-                    <button disabled={!!!learners.length} className="waves-effect waves-light btn-flat"
+                    <button disabled={!learners.length} className="waves-effect waves-light btn-flat"
                         onClick={_ => {
                             // make an axios request to fetch the file
                             const classRefId = localStorage.getItem("classRefId") || "";
@@ -143,7 +143,7 @@ const Learners: React.FC<ILearners> = ({ classRefId }) => {
                             })
                                 .then(async ({ data }) => {
                                     if (data) {
-                                        let status = await convertFromJsonToCsvFile(data,"credentials.xlsx")
+                                        const status = await convertFromJsonToCsvFile(data,"credentials.xlsx")
 
                                         if (status) {
                                             success_toastify("Exported leaners credentials successfully!")

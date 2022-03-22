@@ -1,9 +1,8 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react"
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useEffect, useState } from "react"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
-import DefaultSchoolLogo from "../img/school.png"
 import SchoolMetrics from "../components/SchoolMetrics";
 import { useQuery } from "react-query";
 
@@ -27,7 +26,7 @@ const Static: React.FC<IStatic> = ({ name, numeric }) => {
 
 // get the number of girls vs the number of boys :)
 const Dashboard = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [stats, setStats] = useState<IStatic[]>([
         { name: "Grades", label: "grades", numeric: "0" },
         { name: "Learners", label: "learners", numeric: "0"},
@@ -45,11 +44,11 @@ const Dashboard = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let keys = Object.keys(data.metrics);
-                    let _stats = [...stats]
+                    const keys = Object.keys(data.metrics);
+                    const _stats = [...stats]
 
                     for (let i = 0; i < keys.length;i++) {
-                        let _one_stat = _stats.find(x => x.label.toLowerCase() === keys[i]);
+                        const _one_stat = _stats.find(x => x.label.toLowerCase() === keys[i]);
                         if (_one_stat) {
                             _one_stat.numeric = `${data.metrics[keys[i]]}`
                         }

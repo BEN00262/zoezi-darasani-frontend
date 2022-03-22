@@ -136,21 +136,21 @@ const SubQuestionComp = ({
 
 
     useEffect(() => {
-        let historyFound = attemptTree.pages[currentPage].find(x => x.content.question === parentId);
+        const historyFound = attemptTree.pages[currentPage].find(x => x.content.question === parentId);
 
         if (!historyFound) {
             return
         }
 
-        let parentContent = historyFound.content as IComprehensionContent
+        const parentContent = historyFound.content as IComprehensionContent
 
-        let contentFound = parentContent.children.find(x => x.question === question._id) as INormalContent
+        const contentFound = parentContent.children.find(x => x.question === question._id) as INormalContent
 
         if (!contentFound) {
             return
         }
 
-        let attempt_snapshot = (question.options || []).filter(
+        const attempt_snapshot = (question.options || []).filter(
             (x, optionIndex) => contentFound ? contentFound.attempted_options.findIndex(y => (y.optionID === x._id) || (y.optionIndex === optionIndex)) > -1 : false
         )
 
@@ -167,7 +167,7 @@ const SubQuestionComp = ({
     // we need to collect it in change
     useEffect(() => {
         if(isMarked && suggestedAnswer.length > 0){
-            let setAnswered = suggestedAnswer.every(x => x.isCorrect);
+            const setAnswered = suggestedAnswer.every(x => x.isCorrect);
             setIsCorrect(setAnswered);
         }
     },[isMarked, suggestedAnswer]);
@@ -199,8 +199,8 @@ const SubQuestionComp = ({
 
         // this is absimal af
         if (isMultipleOption) {
-            let local_answer_copy = [...suggestedAnswer];
-            let foundIndex = local_answer_copy.findIndex(x => x._id === answer._id);
+            const local_answer_copy = [...suggestedAnswer];
+            const foundIndex = local_answer_copy.findIndex(x => x._id === answer._id);
 
             if (foundIndex > -1) {
                 local_answer_copy[foundIndex] = answer;
@@ -218,7 +218,7 @@ const SubQuestionComp = ({
     const RenderQuestion = isMultiAnswersQuestion ? MultiAnswerComp : NonMultiAnswerComp;
 
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index, option,isCorrect,_id,quesIndex, wasSelected}:{
             position: number,

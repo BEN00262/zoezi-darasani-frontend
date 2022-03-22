@@ -106,7 +106,7 @@ const SubQuestionComp = ({content, index, subQuestionData }:{
     const RenderQuestion = isMultiAnswersQuestion ? MultiAnswerComp : NonMultiAnswerComp;
 
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index, option,isCorrect,quesIndex, wasSelected}:{
             position: number,

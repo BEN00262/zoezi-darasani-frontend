@@ -1,9 +1,9 @@
 import axios from "axios";
 import React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { useRecoilValue } from "recoil";
-import {GlobalContext} from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState} from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
 
 const PerformanceDistributionCompLazy = React.lazy(() => import("./PerformanceDistribution"))
@@ -37,7 +37,7 @@ const Static: React.FC<IStatic> = ({ name, numeric }) => {
 const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
     const {
         authToken
-    } = useContext(GlobalContext);
+    } = useGlobalZoeziTrackedState();
 
     const classId = useRecoilValue(classIdState);
     const gradeName = useRecoilValue(gradeNameState);
@@ -55,7 +55,7 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
         })
             .then(({ data }) => {
                 if (data && data.status) {
-                    let _analytic = data.analytics as IGeneralMeanAnalytic;
+                    const _analytic = data.analytics as IGeneralMeanAnalytic;
                     setGeneralAnalytic(_analytic);
                     setMeanString(_analytic.mean.toFixed(2));
                     return;

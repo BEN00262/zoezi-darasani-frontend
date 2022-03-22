@@ -67,9 +67,9 @@ const reducer: (state:IState, action:IAction)=>IState = (state, action) => {
         case UPDATE_ATTEMPT_TREE_AT_AND_MOVE:
             {
                 // check if we are going back or forward
-                let currentPage = action.payload.next_page > -Infinity ? action.payload.next_page : state.currentPage;
+                const currentPage = action.payload.next_page > -Infinity ? action.payload.next_page : state.currentPage;
                 // the current page is set ( meaning we assume that )
-                let compSubQuestionPage = action.payload.next_sub_page > -Infinity ? action.payload.next_sub_page : 0;
+                const compSubQuestionPage = action.payload.next_sub_page > -Infinity ? action.payload.next_sub_page : 0;
                 
                 // console.log(currentPage);
                 // console.log(compSubQuestionPage);
@@ -91,10 +91,10 @@ const reducer: (state:IState, action:IAction)=>IState = (state, action) => {
         case UPDATE_ATTEMPT_TREE_AT:
             {
                 // i know this is inefficient but i have no time to think :)
-                let local_state_copy = { ...state }
-                let page = local_state_copy.attemptTree.pages[action.payload.page]
+                const local_state_copy = { ...state }
+                const page = local_state_copy.attemptTree.pages[action.payload.page]
 
-                let foundIndex = page.findIndex(x => x.content.question === action.payload.parent_question_id)
+                const foundIndex = page.findIndex(x => x.content.question === action.payload.parent_question_id)
 
                 if (foundIndex < 0) {
                     return state // return the report only

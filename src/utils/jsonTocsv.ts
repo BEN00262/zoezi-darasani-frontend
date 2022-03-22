@@ -21,7 +21,7 @@ const convertJsonToCsv = async (data: RawData[], filename: string) => {
         return false;
     }
 
-    let _header = Object.keys(data[0]);
+    const _header = Object.keys(data[0]);
     let _csv = data.map(_data => _header.map(_header_ => `${_data[_header_]}`).join(", ") + "\n").join("");
 
     if (!_csv) {
@@ -32,12 +32,12 @@ const convertJsonToCsv = async (data: RawData[], filename: string) => {
 
 
     // save the cv to a file and make it downloadable
-    let blob = new Blob([_csv], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([_csv], { type: 'text/csv;charset=utf-8;' });
 
-    let link = document.createElement("a");
+    const link = document.createElement("a");
 
     if (link.download !== undefined) {
-        let url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
         link.setAttribute("download", filename);
         link.style.visibility = 'hidden';

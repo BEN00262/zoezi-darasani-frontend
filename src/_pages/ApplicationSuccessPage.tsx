@@ -1,10 +1,6 @@
-import { useLocation } from "react-router-dom"
 import ApprovedImage from "../img/approved.png"
 
 const ApplicationSuccessPage = () => {
-    // check from where we have come from 
-    // if it aint the sign up page we just return a 404 :)
-
     return (
         <main style={{display: "flex",justifyContent: "center",alignItems: "center"}}>
             <div className="container">

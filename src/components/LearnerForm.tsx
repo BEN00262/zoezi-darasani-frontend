@@ -1,11 +1,10 @@
 import axios from "axios"
-import { SyntheticEvent, useContext, useState } from "react"
-import { useMutation } from "react-query"
+import { SyntheticEvent, useState } from "react"
 import Select from 'react-select'
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 
 const LearnerFormComp = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [learnerDetails, setLearnerDetails] = useState<{
         firstname: string
         lastname: string

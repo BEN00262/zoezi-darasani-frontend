@@ -34,7 +34,7 @@ const TimerComp: React.FC<ITimerComp> = React.memo(({ onTimeUp }) => {
 
     useEffect(() => {
         if (!timeIsUp || !isMarked) {
-            let interval = setInterval(() => {
+            const interval = setInterval(() => {
                 setTimeRemaining(old => old - 1000);
             }, 1000)
 

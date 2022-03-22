@@ -1,17 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useEffect, useState } from 'react';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import axios from 'axios';
 import { Pie, PieChart, ResponsiveContainer, Tooltip as RechartsToolTip } from 'recharts';
 
-let renderLabel = function(entry: any) {
+const renderLabel = function(entry: any) {
     return <text x={entry.x} y={entry.y} stroke={entry.fill}>
         {entry.name} ( {entry.value}% )
     </text>
 }
 
 const Metrics = () => {
-    const { authToken } = useContext(GlobalContext);
-    const [analytics, setAnalytics] = useState<{ boys: Number, girls: number }>({
+    const { authToken } = useGlobalZoeziTrackedState();
+    const [analytics, setAnalytics] = useState<{ boys: number, girls: number }>({
         boys: 50,
         girls: 50
     });
@@ -25,8 +25,8 @@ const Metrics = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let metrics = data as { boys: number, girls: number };
-                    let total = metrics.boys + metrics.girls;
+                    const metrics = data as { boys: number, girls: number };
+                    const total = metrics.boys + metrics.girls;
 
                     setAnalytics({
                         boys: +((metrics.boys/total)*100).toFixed(0),

@@ -29,7 +29,7 @@ export default function QuestionHOC({ wasTimed }: {
 
   useEffect(() => {
     setAlreadyDone(get_already_done_pages_questions_total(questions,paperMap, currentPage));
-    let current_page = paperMap.pages[currentPage];
+    const current_page = paperMap.pages[currentPage];
     updateNoQuesPerPage(current_page.endIndex - current_page.startIndex); // compute the value every time
     setData(questions.slice(current_page.startIndex, current_page.endIndex));
 

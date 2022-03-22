@@ -1,8 +1,7 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom"
-import { GlobalContext } from "../../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../../contexts/GlobalContext";
 import LoaderPage from "../loader";
 
 export interface IZoeziGrade {
@@ -49,7 +48,7 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
 
 
 const MarketPage = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const {
         isLoading, data: fetchedGrades, isError, error, isSuccess
     } = useQuery('in_app_shop_grades', () => {

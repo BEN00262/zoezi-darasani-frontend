@@ -1,8 +1,8 @@
 import axios from "axios";
 import React from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
 import LoaderComp from "./LoaderComp";
 import GlobalErrorBoundaryComp from "./special_paper_display/components/GlobalErrorBoundaryComp";
@@ -49,7 +49,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
     // interested in fetching the top failed questions per subject :)
     const {
         authToken
-    } = useContext(GlobalContext);
+    } = useGlobalZoeziTrackedState();
 
     const classId = useRecoilValue(classIdState);
     const gradeName = useRecoilValue(gradeNameState);
@@ -69,7 +69,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
         })
             .then(({ data }) => {
                 if (data && data.status) {
-                    let _topFailedAnalytics = data.paper as ITopFailedPaperAnalytics;
+                    const _topFailedAnalytics = data.paper as ITopFailedPaperAnalytics;
                     setTopFailedData(_topFailedAnalytics);
                     setTotalStudentsInSubject(_topFailedAnalytics.students);
                     setStudentsWhoParticipated(_topFailedAnalytics.students_who_did);

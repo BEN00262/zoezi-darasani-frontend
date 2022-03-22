@@ -8,7 +8,7 @@ import { IPrevState, PagedPaper } from '../../special_paper_display/rendering_en
 import QuestionHOC from './QuestionHOC';
 import { initialize_pages_structures } from '../../special_paper_display/components/HeadlessComp';
 import GlobalErrorBoundaryComp from '../../special_paper_display/components/GlobalErrorBoundaryComp';
-import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
+import { RecoilRoot, useRecoilValue } from 'recoil';
 import { currentlySavedPageNumberState, currentlySavedSubPageNumberState } from '../../SubjectAnalysisComp';
 
 export interface IHeadlessComp {
@@ -53,8 +53,8 @@ const _DiffSpecialPaperDisplay: React.FC<IPreloadedData & {
         const _questions_number = get_number_of_questions_in_paper(prePaper?.questions || []);
 
         // save this on the top shelf :)
-        let _currentlySavedPageNumber = currentlySavedPageNumber > -1 ? currentlySavedPageNumber : (prePrevState.currentPage || 0)
-        let _currentlySavedSubPageNumber = currentlySavedSubPageNumber > -1 ? currentlySavedSubPageNumber : (prePrevState.compSubQuestionPage || 0)
+        const _currentlySavedPageNumber = currentlySavedPageNumber > -1 ? currentlySavedPageNumber : (prePrevState.currentPage || 0)
+        const _currentlySavedSubPageNumber = currentlySavedSubPageNumber > -1 ? currentlySavedSubPageNumber : (prePrevState.compSubQuestionPage || 0)
 
         // do we really need the paperID really :(
         updateQuestions({

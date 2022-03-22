@@ -9,11 +9,10 @@ import {
 } from 'chart.js';
 import Select from 'react-select';
 import { Bar } from "react-chartjs-2"
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IGradeData, IPaperType } from '../components/StudentReport/components/GradeSelect';
 import axios from 'axios';
-import { GlobalContext } from '../contexts/GlobalContext';
-import { IProgressData } from '../components/StudentReport/interfaces/interfaces';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 
 ChartJS.register(
     CategoryScale,
@@ -74,7 +73,7 @@ interface IAnalyticSubject {
 
 const GradePerfomace: React.FC<{ setClassMeanScore: (mean: number) => void }> = ({ setClassMeanScore }) => {
     const isMobilePhone = false;
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [gradeNames, setGradeNames] = useState<IGradeData[]>([]);
     const [paperType, setPaperType] = useState<IPaperType[]>([]);
     const [paperSubType, setPaperSubType] = useState<IPaperType[]>([]);

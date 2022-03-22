@@ -14,11 +14,11 @@ export type GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => IChildren
 
 // using the sliding window algorithm to compute the pages
 export const group_questions: GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => {
-    let page_size = 5;
-    let remainder = contigous_questions.length%page_size;
-    let page_count = Math.floor(contigous_questions.length / page_size) + (remainder > 0 ? 1 : 0)
+    const page_size = 5;
+    const remainder = contigous_questions.length%page_size;
+    const page_count = Math.floor(contigous_questions.length / page_size) + (remainder > 0 ? 1 : 0)
 
-    let book = new Array(page_count).fill([] as IChildren[]);
+    const book = new Array(page_count).fill([] as IChildren[]);
 
     for (let r = 0; r < page_count; r++){
         // push a page into the book
@@ -37,21 +37,21 @@ export type FOUND_ANSWERS = {
     option: string
 }
 
-export const merge_broken_passage_with_answers = (questionText: string, children: IChildren[], base_position: number = 0) => (answers_delta: INormalContent[], isMarked: boolean = false) => {
-    let found_answer_positions: FOUND_ANSWERS[] = [];
+export const merge_broken_passage_with_answers = (questionText: string, children: IChildren[], base_position = 0) => (answers_delta: INormalContent[], isMarked = false) => {
+    const found_answer_positions: FOUND_ANSWERS[] = [];
 
     answers_delta.forEach(delta => {
-        let selected_option = delta.attempted_options[0].optionID;
-        let selected_option_index = delta.attempted_options[0].optionIndex;
+        const selected_option = delta.attempted_options[0].optionID;
+        const selected_option_index = delta.attempted_options[0].optionIndex;
 
-        let worked_question = delta.question;
+        const worked_question = delta.question;
 
         for (let position = 0; position < children.length; position++) {
-            let _child = children[position];
+            const _child = children[position];
 
             if (_child._id === worked_question) {
 
-                let found = _child.options.find((_option, _optionIndex) => (_option._id === selected_option) || (_optionIndex === selected_option_index));
+                const found = _child.options.find((_option, _optionIndex) => (_option._id === selected_option) || (_optionIndex === selected_option_index));
 
                 if (found) {
                     found_answer_positions.push({
@@ -105,10 +105,10 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
 
-    let sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
-    let current_sub_page = sub_pages[compSubQuestionPage];
+    const sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
+    const current_sub_page = sub_pages[compSubQuestionPage];
     
-    let pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
+    const pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
             return acc + x.length;
         }, 0);
 
@@ -184,15 +184,15 @@ const ComprehensionComp = ({
     }, [internalPaperContent])
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
 
 
-        let historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
+        const historyFound = attemptTree.pages[currentPage].find(x => x.content.question === question._id);
 
         if (!historyFound) { return }
 
-        let content = historyFound.content as IComprehensionContent
+        const content = historyFound.content as IComprehensionContent
 
         setInternalPaperContent(content.children);
         setSavedContext(content.children);

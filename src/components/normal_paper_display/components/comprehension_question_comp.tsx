@@ -9,7 +9,7 @@ const ComprehensionComp = ({content}:{
     content: InternalContentType,
 }) => {
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
     },[]);
 
@@ -25,7 +25,7 @@ const ComprehensionComp = ({content}:{
             }}>
                 {
                     content.question.children?.map((child,index) => {
-                        let subQuestionData = content.children.find(x => x.question === child._id);
+                        const subQuestionData = content.children.find(x => x.question === child._id);
 
                         if (!subQuestionData){
                             return null

@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PieChart, Pie, Tooltip as RechartsToolTip, ResponsiveContainer } from "recharts";
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import axios from 'axios';
 import { useQuery } from 'react-query';
 
 
-let renderLabel = function(entry: any) {
+const renderLabel = function(entry: any) {
     return <text x={entry.x} y={entry.y} stroke={entry.fill}>
         {entry.name} ( {entry.value}% )
     </text>
@@ -13,8 +13,8 @@ let renderLabel = function(entry: any) {
 
 
 const SchoolMetrics = () => {
-    const { authToken } = useContext(GlobalContext);
-    const [analytics, setAnalytics] = useState<{ boys: Number, girls: number }>({
+    const { authToken } = useGlobalZoeziTrackedState();
+    const [analytics, setAnalytics] = useState<{ boys: number, girls: number }>({
         boys: 50,
         girls: 50
     });
@@ -27,8 +27,8 @@ const SchoolMetrics = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let metrics = data as { boys: number, girls: number };
-                    let total = metrics.boys + metrics.girls;
+                    const metrics = data as { boys: number, girls: number };
+                    const total = metrics.boys + metrics.girls;
 
                     return {
                         boys: +((metrics.boys/total)*100).toFixed(0),

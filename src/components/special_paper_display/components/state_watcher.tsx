@@ -12,16 +12,16 @@ const markTree = (tree: IPagePaperStudentTree) => {
             switch(element.questionType) {
                 case 'normal':
                     {
-                        let content = element.content as INormalContent
+                        const content = element.content as INormalContent
                         acc += content.status ? 1 : 0;
                         break;
                     }
                 case 'comprehension':
                     {
-                        let content = element.content as IComprehensionContent
+                        const content = element.content as IComprehensionContent
 
                         acc += content.children.reduce((acc, _child) => {
-                            let child = _child as INormalContent
+                            const child = _child as INormalContent
                             acc += child.status ? 1 : 0;
                             return acc;
                         }, 0);

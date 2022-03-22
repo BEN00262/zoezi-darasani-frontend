@@ -1,8 +1,11 @@
-import { createContext, useReducer } from "react";
-import axios from 'axios';
-import reducer from "./reducer";
+import React, { createContext, useReducer } from "react";
+import axios, { AxiosError } from 'axios';
+import reducer, { IAction } from "./reducer";
 import { UPDATE_AUTH_TOKEN, WIPE_GLOBAL_CONTEXT } from "./ActionTypes";
 import verifyToken from "../utils/verify";
+import { atom } from "recoil";
+import { setRecoil } from "recoil-nexus";
+import { createContainer } from "react-tracked";
 
 export interface IGlobalContext {
     authToken: string | null
@@ -17,47 +20,48 @@ export const initialContext: IGlobalContext = {
 
 export const GlobalContext = createContext(initialContext);
 
-axios.defaults.baseURL = "/"; // "http://localhost:3500/"; // set the base url here :)
-// axios.interceptors.response.use(response => response, error => {
-//     // we check for a 403 type of an error ( if there is a 403 ---> we can log the guy out )
+// export a monitor for global errors :)
+export const ForbiddenErrorState = atom<string | null>({
+    key: 'ForbiddenErrorStateId',
+    default: null
+})
 
-// })
-
-const GlobalContextComp = ({ children }: { children: any }) => {
-    const [state, dispatch] = useReducer(reducer, initialContext);
-
-    // this one hehehe
-    const setAuthorizationToken = (_authToken: string) => {
-        // open up the authTokena and we are done
-        const { authToken, isTeacher, communicationId } = verifyToken(_authToken)
-        localStorage.setItem("authToken", _authToken)
-
-        dispatch({
-            type: UPDATE_AUTH_TOKEN,
-            payload: { authToken, isTeacher, communicationId }
-        })
+axios.defaults.baseURL = "http://localhost:3500/"; // set the base url here :)
+axios.interceptors.response.use(response => response, (error: AxiosError | Error) => {
+    // we check for a 403 type of an error ( if there is a 403 ---> we can log the guy out )
+    if (axios.isAxiosError(error) && error.response && error.response.status === 403){
+        // we now have a forbidden error thing :) ( what should we do ---> ask if they want to relog in );
+        setRecoil(ForbiddenErrorState, "Forbidden access. Please re-login");
+        // we wont throw the error again :)
+        return;
     }
 
-    const wipeCurrentContext = () => {
-        localStorage.setItem("authToken", "")
+    throw error; // rethrow it :)
+});
 
-        // wipes the data off
-        dispatch({
-            type: WIPE_GLOBAL_CONTEXT,
-            payload: null
-        })
-    }
+const useValue = () => useReducer(reducer, initialContext);
 
-    return (
-        <GlobalContext.Provider value={{ 
-            ...state,
+export const {
+    Provider: GlobalContextComp,
+    useTrackedState: useGlobalZoeziTrackedState,
+    useUpdate: useGlobalZoeziDispatch,
+} = createContainer(useValue);
 
-            // @ts-ignore
-            setAuthorizationToken, wipeCurrentContext
-        }}>
-            {children}
-        </GlobalContext.Provider>
-    )
+export const setAuthorizationToken = (_authToken: string, dispatch: React.Dispatch<IAction>) => {
+    const { authToken, isTeacher, communicationId } = verifyToken(_authToken)
+    localStorage.setItem("authToken", _authToken);
+
+    dispatch({
+        type: UPDATE_AUTH_TOKEN,
+        payload: { authToken, isTeacher, communicationId }
+    });
 }
 
-export default GlobalContextComp
+export const wipeCurrentContext = (dispatch: React.Dispatch<IAction>) => {
+    localStorage.setItem("authToken", "");
+
+    dispatch({
+        type: WIPE_GLOBAL_CONTEXT,
+        payload: null
+    });
+}

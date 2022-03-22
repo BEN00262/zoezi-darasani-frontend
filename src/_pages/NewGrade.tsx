@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 import Select from 'react-select';
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import { ITeacherComp } from './TeacherDisplayPage';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ export interface ISelectableData {
 
 const NewGrade = () => {
     const navigate = useNavigate();
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [grades, setGrades] = useState<ISelectableData[]>([]);
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
     const [gradeDetails, setGradeDetails] = useState<{
@@ -64,7 +64,7 @@ const NewGrade = () => {
             }
 
             if (data) {
-                let _teachers = data.teachers as ITeacherComp[]
+                const _teachers = data.teachers as ITeacherComp[]
                 setTeachers(_teachers.map(({ _id, name, email }) => ({
                     label: `${name} | ${email}`,
                     _id, value: _id

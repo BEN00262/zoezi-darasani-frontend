@@ -1,15 +1,15 @@
 import axios from "axios";
-import { SyntheticEvent, useContext, useState } from "react"
-import { GlobalContext } from "../contexts/GlobalContext"
+import { SyntheticEvent, useState } from "react"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 // for toast displays
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import { ZoeziQueryClient } from "../utils/queryclient";
+import FileUploads from '../img/file_uploads.svg';
 
 const ImportTeachers = () => {
     const navigate = useNavigate();
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const [file, setFile] = useState<File | null>(null);
     const [isImporting, setIsImporting] = useState(false);
@@ -82,14 +82,37 @@ const ImportTeachers = () => {
                     }
 
                     <div className="row">
-                        <ToastContainer/>
+                        <div className="col s12 m6 push-m3">
+                            <div style={{
+                                borderLeft: "2px solid #87CEEB",
+                                backgroundColor: "rgba(135,206,235,0.2)",
+                                padding: "inherit 10px",
+                                fontWeight: "bold"
+                            }} className="sub-modal-texts">
+                                <ol>
+                                    <li>Download the excel template</li>
+                                    <li>Fill in the data correctly</li>
+                                    <li>Upload the excel file</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="row center">
+                        <img src={FileUploads} style={{
+                            height: "200px"
+                        }} className="img-responsive" alt="file upload image" />
+                    </div>
+
+
+                    <div className="row">
                         <form method='post' onSubmit={handleFormSubmission} className="col s12 m6 push-m3">
                             <div className="col s12 file-field input-field">
                                 <div className="btn">
                                     <span>File</span>
                                     <input type="file" onChange={e => {
                                         setFile(e.target.files? e.target.files[0] : null)
-                                    }}/>
+                                    }} accept=".xls,.xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
                                 </div>
                                 <div className="file-path-wrapper">
                                     <input className="file-path validate" type="text"/>
@@ -101,8 +124,14 @@ const ImportTeachers = () => {
                             }}>
                                 <button disabled={isImporting} className="waves-effect waves-light btn-flat" style={{
                                     border: "1px solid teal",
-                                    borderRadius: "20px"
+                                    borderRadius: "20px",
+                                    marginBottom: "10px"
                                 }}><i className="material-icons right">cloud_upload</i>{isImporting ? "Importing..." : "Import Teachers"}</button>
+                                <a type="button" href="https://docs.google.com/spreadsheets/d/1Fgs2F2WCskEwzQ9i6HzKzonNiKkgQmjg/edit?usp=sharing&ouid=104149984855413845670&rtpof=true&sd=true" className="waves-effect waves-light btn-flat" style={{
+                                    border: "1px solid teal",
+                                    borderRadius: "20px",
+                                    marginBottom: "10px"
+                                }}><i className="material-icons right">cloud_download</i>Download Excel Template</a>
                             </div>
                         </form>
                     </div>

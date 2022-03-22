@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { IPricingItem } from "../../../components/PricingItem";
-import { GlobalContext } from "../../../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../../../contexts/GlobalContext";
 import { IGrade } from "../../Grades";
 import LoaderPage from "../../loader";
 
@@ -11,7 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const CheckoutComp = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const navigate = useNavigate();
     const params = useParams();
     const [totalCost, setTotalCost] = useState(0);
@@ -27,7 +27,7 @@ const CheckoutComp = () => {
         })
             .then(({ data }) => {
                 if (data) {
-                    let subscription = data.subscription as IPricingItem
+                    const subscription = data.subscription as IPricingItem
 
                     setGrades(data.grades as IGrade[]);
                     setSubscriptionPrice(subscription.price);

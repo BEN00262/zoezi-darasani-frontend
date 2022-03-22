@@ -1,10 +1,10 @@
-import { SyntheticEvent, useContext, useEffect, useMemo, useState } from 'react'
+import { SyntheticEvent, useEffect, useMemo, useState } from 'react'
 import Select from 'react-select'
 import { toast } from 'react-toastify'
 
 import debounce from 'lodash.debounce'
 import axios from 'axios';
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import DefaultSchoolLogo from "../img/school.png"
 
 const success_toast = (message: string) => toast.success(message, {
@@ -32,7 +32,7 @@ interface ISchoolDisplay {
 }
 
 const AccountSettings = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState()
     const [themePicked, setThemePicked] = useState("#b2dfdb");
     const [isUpdating, setIsUpdating] = useState(false);
     const [isChangingLogo, setIsChangingLogo] = useState(false);
@@ -68,7 +68,7 @@ const AccountSettings = () => {
         if (logoPicked) {
             // update it in the server :)
             setIsChangingLogo(true);
-            let form = new FormData();
+            const form = new FormData();
             form.set('logoPic', logoPicked, logoPicked.name);
             axios.put("/api/school/logo", form, {
                 headers: {
@@ -104,7 +104,7 @@ const AccountSettings = () => {
         })
             .then(({ data }) => {
                 if (data && data.school) {
-                    let _school = data.school as ISchoolDisplay
+                    const _school = data.school as ISchoolDisplay
                     setSchoolDetails({
                         ..._school,
                         password: "",
@@ -216,7 +216,7 @@ const AccountSettings = () => {
                         <input type="file" id="profile-upload" style={{
                             display: "none"
                         }} onChange={e => {
-                            let file = e.target.files;
+                            const file = e.target.files;
                             setLogoPicked(file ? file[0] : null);
                         }} />
                     </div>

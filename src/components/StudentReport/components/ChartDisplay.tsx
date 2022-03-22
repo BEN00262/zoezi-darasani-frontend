@@ -9,7 +9,6 @@ import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from "react-chartjs-2"
-import { useMediaQuery } from 'react-responsive'
 import { IDataPoint } from '../interfaces/interfaces';
 
 ChartJS.register(

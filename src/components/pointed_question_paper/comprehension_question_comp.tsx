@@ -3,10 +3,10 @@ import { useEffect, useCallback, useState, useContext, FC, useMemo } from 'react
 import M from 'materialize-css';
 
 import SubQuestionComp from './sub_question_comp';
-import { IChildren, IQuestion } from '../special_paper_display/rendering_engine/DataLoaderInterface';
-import { IComprehensionContent, ILibraryPaperContent, INormalContent } from '../special_paper_display/interfaces/librarypaper';
+import { IQuestion } from '../special_paper_display/rendering_engine/DataLoaderInterface';
+import { ILibraryPaperContent, INormalContent } from '../special_paper_display/interfaces/librarypaper';
 import { GlobalContext } from '../special_paper_display/contexts/global';
-import { group_questions, ISubQuestionManagerComp, merge_broken_passage_with_answers } from '../special_paper_display/components/comprehension_question_comp';
+import { group_questions, ISubQuestionManagerComp } from '../special_paper_display/components/comprehension_question_comp';
 import { useRecoilValue } from 'recoil';
 import { selectedQuestionAtom } from '.';
 
@@ -28,10 +28,10 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = ({
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
 
-    let sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
-    let current_sub_page = sub_pages[compSubQuestionPage];
+    const sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
+    const current_sub_page = sub_pages[compSubQuestionPage];
     
-    let pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
+    const pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
             return acc + x.length;
         }, 0);
 

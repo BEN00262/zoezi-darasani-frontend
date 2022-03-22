@@ -84,7 +84,7 @@ const TeacherSubjectsComp: React.FC<ITeacherSubjectsComp> = ({ subjects }) => {
         // we have the data lets do the grouping at this point ( this is pretty slow TODO: solve this )
         setDisplay(
             subjects.reduce((acc: ISortedSubjectDisplay[], x: ITeacherSubject) => {
-                let foundGrade = acc.find(y => y.gradeName === x.grade.name);
+                const foundGrade = acc.find(y => y.gradeName === x.grade.name);
 
                 if (foundGrade) {
                     foundGrade.subjects.push(x);

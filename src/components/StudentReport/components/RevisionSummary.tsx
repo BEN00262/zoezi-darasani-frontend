@@ -2,7 +2,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { useEffect, useState } from 'react';
 import { Pie } from 'react-chartjs-2';
-import { useMediaQuery } from 'react-responsive'
 import { IProgressData } from '../interfaces/interfaces';
 
 
@@ -53,7 +52,7 @@ const RevisionSummaryComp: React.FC<IRevisionSummaryComp> = ({ analytics }) => {
 
     useEffect(() => {
         setLabels(analytics.map(x => x.subject));
-        let total_sum = analytics.reduce((acc, x) => acc + (x.hits || x.progress.length), 0) || 1; // just incase its a 0 to avoid runtime errors
+        const total_sum = analytics.reduce((acc, x) => acc + (x.hits || x.progress.length), 0) || 1; // just incase its a 0 to avoid runtime errors
         setData(analytics.map(x => ((x.hits || x.progress.length) / total_sum) * 100));
     }, [analytics]);
 

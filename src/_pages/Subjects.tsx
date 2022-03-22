@@ -1,10 +1,9 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom"
 import { useRecoilValue } from "recoil";
 import LoaderComp from "../components/LoaderComp";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "./GradeDisplayPage";
 import { ITeacherComp } from "./TeacherDisplayPage";
 
@@ -18,8 +17,8 @@ interface ISubject {
 // get the grade name and use it ( unless its kcpe ofcourse )
 const Subject: React.FC<ISubject> = ({ _id, name, teacher, gradeName }) => {
     const navigate = useNavigate();
-    let _gradeName = gradeName.toLowerCase();
-    let _name = name.toLowerCase();
+    const _gradeName = gradeName.toLowerCase();
+    const _name = name.toLowerCase();
 
     const imageUrl = _gradeName === "eight" ? "kcpe" : _gradeName;
     const subjectImageUrl = _name === "sst&cre" ? "social" : _name.split(" ")[0];
@@ -56,7 +55,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher, gradeName }) => {
 }
 
 const SubjectsComp: React.FC<{ gradeName: string }> = ({ gradeName }) => {
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
     const navigate = useNavigate();
     const _gradeName = useRecoilValue(gradeNameState);
     const _classId = useRecoilValue(classIdState);

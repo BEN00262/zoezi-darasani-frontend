@@ -28,8 +28,8 @@ export const options = {
       align: 'center',
       anchor: 'center',
       display: function(context: any) {
-        var index = context.dataIndex;
-        var value = context.dataset.data[index];
+        const index = context.dataIndex;
+        const value = context.dataset.data[index];
 
         return value > 0;
       },

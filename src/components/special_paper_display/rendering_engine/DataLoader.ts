@@ -37,12 +37,12 @@ class DataLoader implements DataLoaderInterface {
     }
 
     private async _fetchFromIndexedDB(num: number): Promise<IQuestion[]>{
-        let tableElementLength = await this.dixieInstance.questions.count();
+        const tableElementLength = await this.dixieInstance.questions.count();
 
         if ( tableElementLength <= num ) { await this._fetchFromInternet(num); }
 
         let fetchedQuestions: IQuestion[] = [];
-        let hasComprehension:boolean = false; // this is a small hack will resolve it later
+        let hasComprehension = false; // this is a small hack will resolve it later
 
         // not optimal at all
         // @ts-ignore
@@ -68,13 +68,13 @@ class DataLoader implements DataLoaderInterface {
     }
 
     private async _post_fetch_questions_from_internet(num: number){
-        let tableElementLength = await this.dixieInstance.questions.count();
+        const tableElementLength = await this.dixieInstance.questions.count();
         if ( tableElementLength <= num ) { await this._fetchFromInternet(num); }
     }
     
     private async _fetchFromInternet(num: number){
         try {
-            let dataFetched = await this.httpClient.get(`${this.baseURL}/${num}`).then(({data}) => data);
+            const dataFetched = await this.httpClient.get(`${this.baseURL}/${num}`).then(({data}) => data);
             this.dixieInstance.questions.bulkPut(dataFetched);
         }catch(error){
             console.error(error);

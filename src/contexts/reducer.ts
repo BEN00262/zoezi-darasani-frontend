@@ -1,5 +1,5 @@
 import { ActionType, UPDATE_AUTH_TOKEN, WIPE_GLOBAL_CONTEXT } from "./ActionTypes";
-import { IGlobalContext, initialContext } from "./GlobalContext";
+import { IGlobalContext } from "./GlobalContext";
 
 export interface IAction {
     type: ActionType

@@ -29,7 +29,7 @@ const OldVersionQuestion = ({ question, position, setAttempted,setCorrectAnswers
     [question]);
 
     useEffect(() => {
-        let markedAnswer: boolean = markQuestion();
+        const markedAnswer: boolean = markQuestion();
         setIsCorrect(markedAnswer);
         setCorrectAnswersCount(markedAnswer ? 1 : 0);
 

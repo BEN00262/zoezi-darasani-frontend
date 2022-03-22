@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { INormalContent } from '../../special_paper_display/interfaces/librarypaper';
 import { IChildren, IOption } from '../../special_paper_display/rendering_engine/DataLoaderInterface';
@@ -129,7 +129,7 @@ const SubQuestionComp = ({
     }, [subQuestionsContext, question]); // only redo if that changes
 
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index, option,quesIndex, optionAnalytics }:{
             position: number
@@ -176,7 +176,7 @@ const SubQuestionComp = ({
                 {
                     question.options.map((option,quesIndex) => {
                             // lets get the analytics for the option
-                            let optionAnalytics = Object.keys(fetchedSubQuestionContext).length ? ((fetchedSubQuestionContext.choices[option._id]) / (fetchedSubQuestionContext.students || 1)) * 100 : 0;
+                            const optionAnalytics = Object.keys(fetchedSubQuestionContext).length ? ((fetchedSubQuestionContext.choices[option._id]) / (fetchedSubQuestionContext.students || 1)) * 100 : 0;
 
                             return chooseRenderingOption({
                                 position:index,

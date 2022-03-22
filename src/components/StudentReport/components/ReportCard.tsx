@@ -26,9 +26,9 @@ const ReportCardComp: React.FC<IReportCardComp> = ({ subjectView, is_special }) 
     useEffect(() => {
         setSubjects(subjectView.map(x => x.subject).filter(x => x));
 
-        let rawGrades = subjectView.map(_subject => {
-            let passed = _subject.attemptTree?.score.passed || 0
-            let total = _subject.attemptTree?.score.total || 0
+        const rawGrades = subjectView.map(_subject => {
+            const passed = _subject.attemptTree?.score.passed || 0
+            const total = _subject.attemptTree?.score.total || 0
 
             if (passed === 0 && total === 0) { return {} as {passed: number, total: number} }
 
@@ -36,7 +36,7 @@ const ReportCardComp: React.FC<IReportCardComp> = ({ subjectView, is_special }) 
         }).filter(x => Object.keys(x).length);
 
         // NOTE: optimize this part later
-        let [passed, total] = is_special ? 
+        const [passed, total] = is_special ? 
             [
                 rawGrades.reduce((acc: number, {passed, total}: { passed: number, total: number}) =>
                     acc + (Math.ceil((passed/total) * 100)), 0), // compute the total achieved percentage

@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../../../contexts/GlobalContext';
-import LoaderPage from '../../../_pages/loader';
+import { useGlobalZoeziTrackedState } from '../../../contexts/GlobalContext';
 import LoaderComp from '../../LoaderComp';
 import { GlobalContext as LocalContext } from '../contexts/global';
 import { generate_paper_map, get_number_of_questions_in_paper, IPaperMap } from '../grouper/grouper';
@@ -62,7 +61,7 @@ export interface IHeadlessComp {
 const HeadlessComp: React.FC<IHeadlessComp> = ({ gradeName, paperID, savedStateID, studentId }) => {
     // @ts-ignore
     const { updateQuestions, setSubjectName } = useContext(LocalContext);
-    const { authToken } = useContext(GlobalContext); // now this is the global context
+    const { authToken } = useGlobalZoeziTrackedState(); // now this is the global context
 
     const [paper, setPaper] = useState<PagedPaper>();
     const [navigate, setNavigate] = useState(false);

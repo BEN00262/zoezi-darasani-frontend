@@ -1,9 +1,9 @@
 // @ts-ignore
 import M from "materialize-css"
-import { Link, useParams } from "react-router-dom"
-import React, { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom"
+import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import { ITeacherComp } from "./TeacherDisplayPage";
 import LoaderComp from "../components/LoaderComp";
 import EditGrade from "./EditGrade";
@@ -83,7 +83,7 @@ export const classRefIdState = atom<string>({
 
 
 const GradeDisplayPage = () => {
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
 
     const setGradeName = useSetRecoilState(gradeNameState);
     const setClassIdState = useSetRecoilState(classIdState);

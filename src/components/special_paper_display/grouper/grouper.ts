@@ -17,7 +17,7 @@ export interface IPaperMap {
 // generate the paper map and then use it
 // optimize it later :)
 function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
-    let paperMap: number[][] = [];
+    const paperMap: number[][] = [];
     let holders = []; // an array of numbers ( question indexes )
 
     for(let i = 0; i < raw_questions.length; i++) {
@@ -60,7 +60,7 @@ function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
     // reorganize the pages inorder to have almost balanced pages
     // loop through the mapper and do stuff
 
-    let _paperMap:number[][] = []
+    const _paperMap:number[][] = []
 
     // find a better way to do this 
     paperMap.forEach(paper_map => {
@@ -76,7 +76,7 @@ function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
         // find a way buana
         // max questions 6
         // loop through the questions and do something about them
-        let pages = []
+        const pages = []
         let holder = []
 
         // we know this has a length > 6
@@ -84,7 +84,7 @@ function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
         // kind of a multiplication
         // this should be self balancing buana --> have uniform questions across board
         let currently_consumed = 0
-        let total_consumables = paper_map.length
+        const total_consumables = paper_map.length
 
         for (let r = 0; r < total_consumables; r++) {
             // we have consumed 5 elements
@@ -107,7 +107,7 @@ function _generate_paper_map(raw_questions: IQuestion[], singleType: string) {
                 // we have atleast one complete page
                 // make the pages equal in there elements
                 // the last element 
-                let prev_page = pages[pages.length - 1]
+                const prev_page = pages[pages.length - 1]
 
                 // the previous page can have more than one element as compared to the next page
                 for (const _ in prev_page) {
@@ -150,7 +150,7 @@ export function generate_paper_map(questions: IQuestion[]): IPaperMap {
     const raw_maps: number[][] = _generate_paper_map(questions, "comprehension")
 
     // the generated paper map for the zoezi paper ( used while rendering the paper )
-    let paperMap: IPaperMap = { pages: {} }
+    const paperMap: IPaperMap = { pages: {} }
 
     raw_maps.forEach((raw_map, index) => {
         paperMap.pages[index] = {
@@ -173,7 +173,7 @@ export function get_already_done_pages_questions_total(questions: IQuestion[], p
 
     // go through the pages and collect this data
     for (let page_num = 0; page_num < currentPage;page_num++) {
-        let page = paperMap.pages[page_num];
+        const page = paperMap.pages[page_num];
         
         already_done += questions.slice(page.startIndex, page.endIndex).reduce((acc, question) => {
             switch (question.questionType) {

@@ -1,8 +1,8 @@
 // @ts-ignore
 import M from "materialize-css"
 import axios from "axios"
-import { useContext, useEffect, useState } from "react"
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useEffect, useState } from "react"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 
 
 interface ISubscription {
@@ -13,7 +13,7 @@ interface ISubscription {
 }
 
 const SubcriptionsDisplay = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [subscriptions, setSubscriptions] = useState<ISubscription[]>([]);
 
     useEffect(() => {

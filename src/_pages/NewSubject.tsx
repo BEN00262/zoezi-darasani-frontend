@@ -2,9 +2,9 @@
 import M from 'materialize-css'
 
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import Select from 'react-select'
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import { ISelectableData } from './NewGrade';
 import { ITeacherComp } from './TeacherDisplayPage';
 import { toast } from 'react-toastify';
@@ -105,7 +105,7 @@ interface ISubjectDetail {
 }
 
 const NewSubject = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -157,7 +157,7 @@ const NewSubject = () => {
 
 
                 if (data) {
-                    let _teachers = data.teachers as ITeacherComp[]
+                    const _teachers = data.teachers as ITeacherComp[]
                     setTeachers(_teachers.map(({ _id, name, email }) => ({
                         label: `${name} | ${email}`,
                         _id, value: _id
@@ -275,7 +275,7 @@ const NewSubject = () => {
                                         <td>
                                             <button className='btn-flat red-text' onClick={_ => {
                                                 // remove the item from the subject details
-                                                let localCopy = [...subjectDetails];
+                                                const localCopy = [...subjectDetails];
                                                 localCopy.splice(index, 1);
                                                 setSubjectDetails(localCopy);
                                             }}>

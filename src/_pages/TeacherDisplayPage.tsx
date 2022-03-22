@@ -5,13 +5,13 @@
 // @ts-ignore
 import M from "materialize-css"
 import {Link, useParams} from "react-router-dom";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TeacherSubjectsComp from "./TeacherSubjects";
 import axios from "axios";
 import copyText from "copy-to-clipboard";
 import { toast } from 'react-toastify'
 
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import LoaderComp from "../components/LoaderComp";
 import EmptyComp from "../components/Empty";
 import Skeleton from "react-loading-skeleton";
@@ -45,7 +45,7 @@ const error_toast = (message: string) => toast.error(message, {
 })
 
 const TeacherDisplayPage = () => {
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
     const params = useParams();
 
     const [teacherDisplay, setTeacherDisplay] = useState<ITeacherDisplay>({

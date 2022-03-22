@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { createRef, useContext, useEffect, useState } from 'react'
+import { createRef, useEffect, useState } from 'react'
 import Select from 'react-select'
-import { GlobalContext } from '../../../contexts/GlobalContext'
+import { useGlobalZoeziTrackedState } from '../../../contexts/GlobalContext'
 import { IProgressData, IDataPoint } from '../interfaces/interfaces'
 import { zip } from '../utils'
 import ChartDisplayComp from "./ChartDisplay"
@@ -24,7 +24,7 @@ export interface IPaperType {
 }
 
 function generate_attempts_time_series(analytics: IProgressData[]) {
-    let datapoints = zip(...analytics).map(
+    const datapoints = zip(...analytics).map(
         attempt => attempt.reduce(
             (acc, x) => ({
                 passed: (x?.attemptTree?.score.passed || 0) + acc.passed,
@@ -45,7 +45,7 @@ export interface IGradeSelectComp {
 }
 
 const GradeSelectComp: React.FC<IGradeSelectComp> = ({ studentId }) => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [gradeNames, setGradeNames] = useState<IGradeData[]>([]);
     const [paperType, setPaperType] = useState<IPaperType[]>([]);
     const [paperSubType, setPaperSubType] = useState<IPaperType[]>([]);
@@ -126,7 +126,7 @@ const GradeSelectComp: React.FC<IGradeSelectComp> = ({ studentId }) => {
         })
             .then(({ data }) => {
                 // @ts-ignore
-                let adapted_data = data.map(datapoint => ({
+                const adapted_data = data.map(datapoint => ({
                     subject: datapoint.subjectName,
                     hits: datapoint.hits,
                     progress: [
@@ -171,7 +171,7 @@ const GradeSelectComp: React.FC<IGradeSelectComp> = ({ studentId }) => {
     }, [selectedPaperSubType]);
 
     useEffect(() => {
-        let groupings = zip(...analytics);
+        const groupings = zip(...analytics);
         setAttemptGrouping(groupings);
         setAttemptLabels(generate_attempts_time_series(analytics).labels);
     }, [analytics]);

@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useContext, useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import EmptyComp from "../components/Empty";
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 import LoaderPage from "./loader";
 
 interface ISubscription {
@@ -133,7 +133,7 @@ const groupByUpdatedAt = (subscriptions: ISubscription[]) => subscriptions.reduc
 ).sort((a, b) => (new Date(b.updatedAt)).getTime() - (new Date(a.updatedAt)).getTime())
 
 const SubscriptionsPage = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [subscriptions, setSubscriptions] = useState<ISubscriptionsGrouping[]>([]);
     const [isFetching, setIsFetching] = useState(false);
     const [error, setError] = useState("");

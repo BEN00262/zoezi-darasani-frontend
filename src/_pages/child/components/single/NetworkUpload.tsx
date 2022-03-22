@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 export interface INetworkUploadComp {
     position: number
@@ -18,7 +18,7 @@ const getUrlExtension = (url: any) => {
   }
 
 const fetchImage = async (imgUrl: string) => {
-    var imgExt = getUrlExtension(imgUrl);
+    const imgExt = getUrlExtension(imgUrl);
 
     const response = await fetch(imgUrl);
     const blob = await response.blob();

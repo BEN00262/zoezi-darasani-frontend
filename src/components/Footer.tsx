@@ -1,9 +1,8 @@
-import { useContext } from "react"
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 import ContactUs from "./ContactUs"
 
 const Footer = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     return (
         <footer className="page-footer white">

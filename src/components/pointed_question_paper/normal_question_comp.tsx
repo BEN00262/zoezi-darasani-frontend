@@ -1,11 +1,10 @@
-import { useState, useEffect, useMemo, useContext, useCallback, createRef, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 // @ts-ignore
 import M from 'materialize-css';
 
 
 import { IOption, IQuestion } from '../special_paper_display/rendering_engine/DataLoaderInterface';
-import { ILibraryPaperContent, INormalContent } from '../special_paper_display/interfaces/librarypaper';
-import { GlobalContext } from '../special_paper_display/contexts/global';
+import { ILibraryPaperContent } from '../special_paper_display/interfaces/librarypaper';
 import { useRecoilValue } from 'recoil';
 import { selectedQuestionAtom } from '.';
 
@@ -99,7 +98,7 @@ const NormalQuestionComp = ({ question, position, isMarked }: {
     },[]);
     
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index, option}:{
             position: number,

@@ -1,7 +1,7 @@
 import axios from "axios"
-import { useContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { GlobalContext } from "../contexts/GlobalContext"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
 import LoaderPage from "./loader"
 
 // display the pauy
@@ -22,7 +22,7 @@ interface ISubscriptionDisplay {
 
 
 const SubscriptionViewPage = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const params = useParams();
 
     const [subscription, setSubscription] = useState<ISubscriptionDisplay>({

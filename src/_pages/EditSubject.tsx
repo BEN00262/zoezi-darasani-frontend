@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { SyntheticEvent, useContext, useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import Select from 'react-select'
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import { ITeacherComp } from './TeacherDisplayPage';
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,7 +16,8 @@ export interface ISelectableData {
 
 const EditSubject: React.FC<{ subjectId: string }> = ({ subjectId }) => {
     const navigate = useNavigate();
-    const { authToken } = useContext(GlobalContext);
+    // const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
 
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);
     const [gradeDetails, setGradeDetails] = useState<{
@@ -43,7 +44,7 @@ const EditSubject: React.FC<{ subjectId: string }> = ({ subjectId }) => {
       axios.get("/api/teacher/all", { headers: { 'Authorization': `Bearer ${authToken}`}})
         .then(({ data }) => {
             if (data) {
-                let _teachers = data.teachers as ITeacherComp[]
+                const _teachers = data.teachers as ITeacherComp[]
                 setTeachers(_teachers.map(({ _id, name, email }) => ({
                     label: `${name} | ${email}`,
                     _id, value: _id

@@ -1,8 +1,8 @@
 // @ts-ignore
 import M from "materialize-css";
-import {Link, useParams} from "react-router-dom"
-import React, { useContext, useEffect, useState } from "react"
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useParams } from "react-router-dom"
+import React, { useEffect, useState } from "react"
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import axios from "axios";
 import EditSubject from "./EditSubject";
 import Skeleton from "react-loading-skeleton";
@@ -25,7 +25,7 @@ interface ISubjectInformation {
 // show the metrics for the subject in a given grade
 const SubjectAnalysis = () => {
     const params = useParams();
-    const { authToken, isTeacher } = useContext(GlobalContext);
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
     const [subject, setSubject] = useState<ISubjectInformation>({
         name: "", teacher: { email: "", name: ""}, _id:""
     }); // resolve this here first :) then we can proceed

@@ -5,7 +5,7 @@ import { ITopFailedPaperAnalytics, ITopFailedPaperQuestion } from "../TopFailedQ
 import NormalQuestionComp from "./questions/NormalQuestionComp";
 import 'rc-pagination/assets/index.css';
 import ComprehensionQuestionComp from './questions/ComprehensionQuestionComp';
-import { atom, useRecoilState, useSetRecoilState } from 'recoil';
+import { atom, useRecoilState } from 'recoil';
 
 
 const RenderQuestionTypeComp: React.FC<ITopFailedPaperQuestion & { position: number }> = (analytic) => {
@@ -37,7 +37,7 @@ const FailedQuestionsPaperDisplayComp: React.FC<ITopFailedPaperAnalytics> = ({
     const [currentDisplayQuestion, setCurrentDisplayQuestion] = useState<ITopFailedPaperQuestion>({} as ITopFailedPaperQuestion);
 
     useEffect(() => {
-        if (!!stats.length) {
+        if (stats.length) {
             setcompSubQuestionPageState(0); // reset it
             setCurrentDisplayQuestion(stats[currentDisplayPage])
             setReRender(Math.random());

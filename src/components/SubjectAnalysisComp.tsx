@@ -12,15 +12,14 @@ import {
 } from 'chart.js';
 import Select from 'react-select';
 import { Bar } from "react-chartjs-2"
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { GlobalContext } from '../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import { ILearner } from '../_pages/Learners';
 import { useNavigate } from 'react-router-dom';
 import { get_learner_avatar } from '../utils/avatar_chooser';
 import { convertMillisecondsToTimeString } from './special_paper_display/grouper/millisecondsToTime';
-import { IContent, ILibPaperQuestions, IQuestion } from './normal_paper_display/interface/ILibPaper';
-import produce from "immer";
+import { ILibPaperQuestions } from './normal_paper_display/interface/ILibPaper';
 import DiffNormalPaperDisplay from './diff_paper_display/normal_paper_display';
 import { IPrevState, PagedPaper } from './special_paper_display/rendering_engine/DataLoaderInterface';
 import DiffSpecialPaperDisplay from './diff_paper_display/special_paper_display';
@@ -114,14 +113,14 @@ interface IAttemptTreePapers {
 }
 
 const perfomance_comment = (performance: { pass: number, fail: number}[]) => {
-    let perfomance_length = performance.length;
+    const perfomance_length = performance.length;
 
     if (perfomance_length <= 1) {
         return "First attempt";
     }
 
-    let _perfomance = performance.reduce((acc, x) => [...acc, x.pass - x.fail],[] as number[]);
-    let _progress = (_perfomance.length > 2 ? _perfomance.slice(Math.max(_perfomance.length - 2, 1)) : _perfomance).reduce((acc, y) => y - acc, 0)
+    const _perfomance = performance.reduce((acc, x) => [...acc, x.pass - x.fail],[] as number[]);
+    const _progress = (_perfomance.length > 2 ? _perfomance.slice(Math.max(_perfomance.length - 2, 1)) : _perfomance).reduce((acc, y) => y - acc, 0)
 
     if (_progress === 0) {
         return "No change"
@@ -143,7 +142,7 @@ export const currentlySavedSubPageNumberState = atom({
 })
 
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const navigate = useNavigate();
     const [learners, setLearners] = useState<{
         label: string // the fullnames of the learner
@@ -211,7 +210,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                 headers: { Authorization: `Bearer ${authToken}`}
             }).then(({ data }) => {
                 if (data) {
-                    let _plottable = [...((data.plottable || []) as IPaperDoneDataPoint[])].reverse();
+                    const _plottable = [...((data.plottable || []) as IPaperDoneDataPoint[])].reverse();
                     // check the length of data :)
                     // get the length of the data
 
@@ -227,7 +226,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                         fail: x.score.total - x.score.passed
                     }))))
 
-                    let _attempt_trees = data.attempt_trees as IAttemptTreePapers;
+                    const _attempt_trees = data.attempt_trees as IAttemptTreePapers;
 
                     setAttemptTree({
                         ..._attempt_trees,
@@ -347,7 +346,7 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                     <label>Paper</label>
                                     <Select
                                         hideSelectedOptions={true}
-                                        isDisabled={!!!selectedLearner || !!!papersDone.length}
+                                        isDisabled={!selectedLearner || !papersDone.length}
                                         options={papersDone} 
                                         value={selectedPaperDone}
                                         onChange={item => {
@@ -444,8 +443,8 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
                                 {/* render the buttons depending on the number of attempts ( create a sort of tabs ) */}
                                 {
                                     (attemptTree.isSpecial ? attemptTree.prevStates : attemptTree.trees).map((tree, position) => {
-                                        let passed = attemptTree.isSpecial ? (tree as IPrevState).attemptTree.score.passed : (tree as ILibPaperQuestions).score.passed;
-                                        let total = attemptTree.isSpecial ? (tree as IPrevState).attemptTree.score.total : (tree as ILibPaperQuestions).score.total;
+                                        const passed = attemptTree.isSpecial ? (tree as IPrevState).attemptTree.score.passed : (tree as ILibPaperQuestions).score.passed;
+                                        const total = attemptTree.isSpecial ? (tree as IPrevState).attemptTree.score.total : (tree as ILibPaperQuestions).score.total;
 
                                         return (
                                             <button 

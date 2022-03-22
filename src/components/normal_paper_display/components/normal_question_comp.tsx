@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 // @ts-ignore
 import M from 'materialize-css';
 
 
 // import { IQuestion } from '../rendering_engine/DataLoaderInterface';
-import { IContent, InternalContentType } from '../interface/ILibPaper';
+import { InternalContentType } from '../interface/ILibPaper';
 
 const CheckBoxComp = ({option,isCorrect, wasSelected, index, position}: {
     option: string,
@@ -69,12 +69,12 @@ const NormalQuestionComp = ({content, position }: {
     const isMultipleOption: boolean = (numberOfCorrectOptions > 1) || false;
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
     },[]);
 
     const ChooseRenderingOption = () => {
-        let Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
+        const Renderer = isMultipleOption ? CheckBoxComp : OptionComp;
 
         return ({position, index, option,isCorrect, wasSelected}:{
             position: number,

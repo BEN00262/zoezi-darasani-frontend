@@ -1,5 +1,4 @@
-import { Card, Button, Container  } from 'react-materialize';
-import { useMediaQuery } from 'react-responsive';
+import { Card  } from 'react-materialize';
 
 import NormalQuestionComp from './normal_question_comp';
 import ComprehensionComp from './comprehension_question_comp';

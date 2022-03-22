@@ -28,7 +28,7 @@ export interface INormalContent {
     status: boolean,
     question: IQuestion,
     attempted_options: {
-        optionID: String
+        optionID: string
     }[]
 }
 
@@ -36,7 +36,7 @@ export interface IComprehensionChild {
     status: boolean,
     question: string,
     attempted_options: {
-        optionID: String
+        optionID: string
     }[]
 }
 

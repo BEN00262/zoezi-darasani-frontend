@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useContext, FC, useMemo } from 'react';
+import React, { useEffect, useCallback, useState, FC, useMemo } from 'react';
 // @ts-ignore
 import M from 'materialize-css';
 
@@ -16,11 +16,11 @@ type GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => IChildren[][]
 
 // using the sliding window algorithm to compute the pages
 const group_questions: GROUP_QUESTIONS_FT = (contigous_questions: IChildren[]) => {
-    let page_size = 5;
-    let remainder = contigous_questions.length%page_size;
-    let page_count = Math.floor(contigous_questions.length / page_size) + (remainder > 0 ? 1 : 0)
+    const page_size = 5;
+    const remainder = contigous_questions.length%page_size;
+    const page_count = Math.floor(contigous_questions.length / page_size) + (remainder > 0 ? 1 : 0)
 
-    let book = new Array(page_count).fill([] as IChildren[]);
+    const book = new Array(page_count).fill([] as IChildren[]);
 
     for (let r = 0; r < page_count; r++){
         // push a page into the book
@@ -52,10 +52,10 @@ const SubQuestionManagerComp: FC<ISubQuestionManagerComp> = React.memo(({
         return savedChildren.find(x => x.question === questionID) || null
     }, [sub_questions]);
 
-    let sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
-    let current_sub_page = sub_pages[compSubQuestionPage];
+    const sub_pages = useMemo(() => group_questions(sub_questions || []), [sub_questions]);
+    const current_sub_page = sub_pages[compSubQuestionPage];
     
-    let pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
+    const pages_total_done = sub_pages.slice(0,compSubQuestionPage).reduce((acc, x) => {
             return acc + x.length;
         }, 0);
 
@@ -108,7 +108,7 @@ const ComprehensionQuestionComp: React.FC<ITopFailedPaperQuestion> = ({
     const totalStudentsInSubjectValue = useRecoilValue(totalStudentsInSubject);
 
     useEffect(() => {
-        let elems = document.querySelectorAll(".question-comp img");
+        const elems = document.querySelectorAll(".question-comp img");
         M.Materialbox.init(elems);
     },[]);
 

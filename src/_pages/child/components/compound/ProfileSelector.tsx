@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import NetworkUploadComp from "../single/NetworkUpload"
 import PersonalUploadComp from "../single/PersonalUpload";
-import { useMediaQuery } from 'react-responsive';
 import { IConfiguration } from "../../pages/RegistrationPage";
 
 const isInMobileApp = (document.getElementById("isInMobileApp")?.innerText || "").trim().toLowerCase() === "mobile";
@@ -24,7 +23,7 @@ const ProfileSelectorComp: React.FC<IProfileSelectorComp> = ({ passSelectedFileT
     }, [selectedFile]);
 
     const setIsSelected = (index: number) => {
-        let copy = new Array(configuration.preloaded_avatars.length + 1).fill(false);
+        const copy = new Array(configuration.preloaded_avatars.length + 1).fill(false);
         copy[index] = true;
         setItemState(copy);
     }

@@ -1,7 +1,7 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom"
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -70,7 +70,7 @@ const Teacher: React.FC<ITeacher> = ({ name, email, _id, profilePic }) => {
 
 const Teachers = () => {
     // fetch the teachers
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [teachers, setTeachers] = useState<ITeacher[]>([]);
     const [teachersTemp, setTeachersTemp] = useState<ITeacher[]>([]);
 
@@ -97,7 +97,7 @@ const Teachers = () => {
     }, [isSuccess])
 
     const handleSearch = (e: any) => {
-        let searchTerm = (e.target.value || "").toLowerCase();
+        const searchTerm = (e.target.value || "").toLowerCase();
 
         if (!searchTerm) {
             setTeachers(teachersTemp);
@@ -160,11 +160,11 @@ const Teachers = () => {
                                 <b><i className="material-icons right">add_circle_outline</i>Add Teacher</b>
                             </Link>
 
-                            <button className="waves-effect waves-light btn-flat sub-modal-texts" disabled={!!!teachersTemp.length} onClick={_ => {
+                            <button className="waves-effect waves-light btn-flat sub-modal-texts" disabled={!teachersTemp.length} onClick={_ => {
                                 axios.get("/api/teacher/export/credentials", {
                                     headers: { Authorization: `Bearer ${authToken}`}
                                 }).then(async ({ data }) => {
-                                    let status = await convertFromJsonToCsvFile(data,"teachers_credentials.xlsx")
+                                    const status = await convertFromJsonToCsvFile(data,"teachers_credentials.xlsx")
 
                                         if (status) {
                                             success_toastify("Exported teachers credentials successfully!")

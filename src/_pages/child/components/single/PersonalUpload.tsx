@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useMediaQuery } from 'react-responsive';
 
 export interface IPersonalUploadComp {
     position: number

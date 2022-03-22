@@ -1,9 +1,9 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom"
 import Skeleton from 'react-loading-skeleton'
 import EmptyComp from "../components/Empty";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
 import { useQuery } from "react-query";
@@ -22,7 +22,7 @@ export interface IGrade {
 const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, year }) => {
     const navigate = useNavigate();
 
-    let _name = name.toLowerCase() === "eight" ? "kcpe" : name.toLowerCase()
+    const _name = name.toLowerCase() === "eight" ? "kcpe" : name.toLowerCase()
 
     return (
         <div className="col s12 m4">
@@ -62,7 +62,7 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
 }
 
 const GradesPage = () => {
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [grades, setGrades] = useState<IGrade[]>([]);
     const [schoolName, setSchoolName] = useState("");
 

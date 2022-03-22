@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PricingItem, { IPricingItem } from '../../../components/PricingItem';
-import { GlobalContext } from '../../../contexts/GlobalContext';
+import { useGlobalZoeziTrackedState } from '../../../contexts/GlobalContext';
 
 export interface ISubscription {
     _id: string,
@@ -17,7 +17,7 @@ export interface IChooseSubscriptionComp {
 
 const ChooseSubscriptionComp: React.FC<IChooseSubscriptionComp> = ({ setSelectedSubscription }) => {
     // get the subscriptions for the schools and display them here :)
-    const { authToken } = useContext(GlobalContext);
+    const { authToken } = useGlobalZoeziTrackedState();
     const [selectBitmap, setSelectBitmap] = useState<boolean[]>([]);
     const [subscriptions, setSubscriptions] = useState<ISubscription[]>([]);
 
@@ -27,7 +27,7 @@ const ChooseSubscriptionComp: React.FC<IChooseSubscriptionComp> = ({ setSelected
         })
             .then(({ data }) => {
                 if (data){
-                    let _subscriptions = data as ISubscription[]
+                    const _subscriptions = data as ISubscription[]
                     setSubscriptions(_subscriptions);
                     setSelectBitmap(new Array(_subscriptions.length).fill(false));
                 }
@@ -35,7 +35,7 @@ const ChooseSubscriptionComp: React.FC<IChooseSubscriptionComp> = ({ setSelected
     }, []);
 
     const handleClick = (position: number) => {
-        let copy = new Array(subscriptions.length).fill(false);
+        const copy = new Array(subscriptions.length).fill(false);
         copy[position] = true;
         setSelectBitmap(copy);
     }
