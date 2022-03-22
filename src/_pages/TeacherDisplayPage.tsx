@@ -54,9 +54,7 @@ const TeacherDisplayPage = () => {
 
 
     useEffect(() => {
-        M.Tabs.init(document.querySelector(".tabs"), {
-            swipeable: true
-        })
+        M.Tabs.init(document.querySelector(".tabs"), {})
 
         axios.get(`/api/teacher/${params.id}`, {
             headers: { 'Authorization': `Bearer ${authToken}`}
