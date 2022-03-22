@@ -1,6 +1,7 @@
 import axios from "axios";
 import React from "react";
 import { useEffect, useState } from "react";
+import { useQuery } from "react-query";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
@@ -57,43 +58,49 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
     const [topFailedData, setTopFailedData] = useState<ITopFailedPaperAnalytics>({
         stats: [], students: 0, students_who_did: 0
     });
+
+    const [reRender, setReRender] = useState(0);
     const setTotalStudentsInSubject = useSetRecoilState(totalStudentsInSubject);
     const setStudentsWhoParticipated = useSetRecoilState(studentsWhoPartcipatedState);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
 
-    useEffect(() => {
-        setIsFetching(true);
-        axios.get(`/api/deep-analytics/${classId}/${gradeName}/${subject}`, {
+    const {
+        isLoading: isFetching, isError, error, data, isIdle, isSuccess
+    } = useQuery('in_app_top_failed_questions', () => {
+    return axios.get(`/api/deep-analytics/${classId}/${gradeName}/${subject}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data && data.status) {
-                    const _topFailedAnalytics = data.paper as ITopFailedPaperAnalytics;
-                    setTopFailedData(_topFailedAnalytics);
-                    setTotalStudentsInSubject(_topFailedAnalytics.students);
-                    setStudentsWhoParticipated(_topFailedAnalytics.students_who_did);
-                    return;
+                    return data.paper as ITopFailedPaperAnalytics;
                 }
 
                 throw new Error("Unexpected error!");
             })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
+    }, {
+        enabled: !!authToken && !!classId && !!gradeName,
+        staleTime: 1 * 60 * 1000 // expire after one minute
+    });
 
-    if (isFetching) {
+    useEffect(() => {
+        setReRender(Math.random());
+    }, [])
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            setTopFailedData(data);
+            setTotalStudentsInSubject(data.students);
+            setStudentsWhoParticipated(data.students_who_did);
+        }
+    }, [isSuccess]);
+
+    if (isFetching || isIdle) {
         return <LoaderComp/>
     }
 
     return (
         <div className="section">
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s12">
                         <div className="sub-modal-texts" style={{
@@ -108,7 +115,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error).message}</p>
                         </div>
                     </div>
                 </div>
@@ -116,7 +123,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
             }
             <GlobalErrorBoundaryComp>
                 <React.Suspense fallback={<LoaderComp/>}>
-                    <FailedQuestionsPaperDisplayCompSus {...topFailedData}/>
+                    <FailedQuestionsPaperDisplayCompSus {...topFailedData} key={reRender}/>
                 </React.Suspense>
             </GlobalErrorBoundaryComp>
         </div>

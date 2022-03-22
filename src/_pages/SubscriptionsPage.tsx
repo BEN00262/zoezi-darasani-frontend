@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react"
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import EmptyComp from "../components/Empty";
 import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext"
@@ -135,34 +136,30 @@ const groupByUpdatedAt = (subscriptions: ISubscription[]) => subscriptions.reduc
 const SubscriptionsPage = () => {
     const { authToken } = useGlobalZoeziTrackedState();
     const [subscriptions, setSubscriptions] = useState<ISubscriptionsGrouping[]>([]);
-    const [isFetching, setIsFetching] = useState(false);
-    const [error, setError] = useState("");
 
-    useEffect(() => {
-        setIsFetching(true);
-
-        axios.get("/api/subscriptions", {
+    const {
+        isLoading: isFetching, isIdle, isError, error, isSuccess, data
+    } = useQuery('in_app_subscriptions_view', () => {
+        return axios.get("/api/subscriptions", {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
-
             if (data && data.subscriptions) {
-                setSubscriptions(
-                    groupByUpdatedAt(data.subscriptions as ISubscription[])
-                );
-                return;
+                return  groupByUpdatedAt(data.subscriptions as ISubscription[])
             }
-
             throw new Error("Unexpected error!")
         })
-        .catch((error: Error) => {
-            setError(error.message);
-        })
-        .finally(() => {
-            setIsFetching(false);
-        })
-    }, []);
+    }, {
+        staleTime: 1 * 60 * 1000,
+        enabled: !!authToken
+    });
 
-    if (isFetching) {
+    useEffect(() => {
+        if (isSuccess && data) {
+            setSubscriptions(data);
+        }
+    }, [isSuccess])
+
+    if (isFetching || isIdle) {
         return <LoaderPage/>
     }
 
@@ -172,7 +169,7 @@ const SubscriptionsPage = () => {
             <div className="container">
                 <div className="section">
                     {
-                        error ?
+                        isError ?
                         <div className="row">
                             <div className="col s12">
                                 <div className="sub-modal-texts" style={{
@@ -187,7 +184,7 @@ const SubscriptionsPage = () => {
                                     alignItems: "center"
                                 }}>
                                     <i className="material-icons left">error_outline</i>
-                                    <p>{error}</p>
+                                    <p>{(error as Error).message}</p>
                                 </div>
                             </div>
                         </div>

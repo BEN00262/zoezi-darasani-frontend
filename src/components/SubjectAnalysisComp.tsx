@@ -23,7 +23,9 @@ import { ILibPaperQuestions } from './normal_paper_display/interface/ILibPaper';
 import DiffNormalPaperDisplay from './diff_paper_display/normal_paper_display';
 import { IPrevState, PagedPaper } from './special_paper_display/rendering_engine/DataLoaderInterface';
 import DiffSpecialPaperDisplay from './diff_paper_display/special_paper_display';
-import { atom } from 'recoil';
+import { atom, useRecoilValue } from 'recoil';
+import { classIdState, classRefIdState } from '../_pages/GradeDisplayPage';
+import { useQuery } from 'react-query';
 
 ChartJS.register(
     CategoryScale,
@@ -143,7 +145,6 @@ export const currentlySavedSubPageNumberState = atom({
 
 const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     const { authToken } = useGlobalZoeziTrackedState();
-    const navigate = useNavigate();
     const [learners, setLearners] = useState<{
         label: string // the fullnames of the learner
         value: string // the id of the learner
@@ -182,25 +183,34 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
     });
 
     const isMobilePhone = false;
-    // get the listing of the students in the entire class ( whether they did anything or not )
-    // show them in a dropdown and then enable filtering on the papers they did 
-    // the papers will be filtered from the last one to the current one ( also take timesteps of the papers )
-    
-
-    useEffect(() => {
-        const classRefId = localStorage.getItem("classRefId") || "";
-
-        axios.get(`/api/grade/learners/${classRefId}`, {
+    const classRefId = useRecoilValue(classRefIdState);
+    const classId = useRecoilValue(classIdState);
+   
+    const { isSuccess, data } = useQuery(['in_app_subject_analysis_students', classRefId], () => {
+        return axios.get(`/api/grade/learners/${classRefId}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
             if (data) {
-                setLearners((data.learners as ILearner[]).map(x => ({ label: `${x.firstname} ${x.lastname}`, value: x._id})));
-                return;
+                return (data.learners as ILearner[]).map(x => ({ label: `${x.firstname} ${x.lastname}`, value: x._id}));
             }
-        })
 
+            throw new Error("Unexpected error!")
+        })
+    }, {
+        enabled: !!authToken && !!classRefId,
+        staleTime: 1 * 60 * 1000 // refetch after a minute
+    })
+
+
+    useEffect(() => {
         M.Tabs.init(document.querySelector(".sub-tabs"), {})
     }, []);
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            setLearners(data);
+        }
+    }, [isSuccess])
 
     useEffect(() => {
         // wipe out the papersDone and the graph
@@ -248,10 +258,6 @@ const SubjectAnalysisComp: React.FC<ISubjectAnalysisComp> = ({ subject }) => {
             setSelectedPaperDone(null);
             setPlottableData({fail: [], pass: []});
             setLibraryPapers([]);
-            // end of resetting the core data structures
-
-            // fetch the data for the student now
-            const classId = localStorage.getItem("classId") || "";
 
             // if we fail we need to show the error(s)
             axios.get(`/api/analytics/subject/${classId}/${selectedLearner}/${subject}`, {

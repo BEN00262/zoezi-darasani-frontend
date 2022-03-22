@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useContext, useEffect } from "react";
 import { GlobalContext } from "../contexts/GlobalContext";
+import { ZoeziQueryClient } from '../utils/queryclient';
 
 const success_toastify = (message: string) => toast.success(message, {
     position: toast.POSITION.TOP_RIGHT,
@@ -18,7 +19,7 @@ const failure_toastify = (message: string) => toast.error(message, {
     autoClose: 2000
 })
 
-const socket = io(); // io("http://localhost:3500/");
+const socket = io(); //io("http://localhost:3500/");
 
 interface IMessage {
     type: "payments" // add other message types later :)
@@ -59,6 +60,8 @@ const MessagesComp = () => {
                                 (failure_toastify)(message.message.message);
                         }
 
+                        // refetch the subscriptions view thing :)
+                        ZoeziQueryClient.invalidateQueries('in_app_subscriptions_view');
                         return;
                     }
             }

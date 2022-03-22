@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useSetRecoilState } from "recoil";
+import { classIdState, gradeNameState, classRefIdState, getTheGradeImageFilePath } from "./GradeDisplayPage";
 
 export interface Grade {
     _id: string
@@ -14,19 +16,15 @@ export interface ITeacherGrades {
     grades: Grade[]
 }
 
+// we want a converter for the grades name :)
+
 const TeacherGrade: React.FC<Grade> = ({ _id, name, year, stream, classRef }) => {
     const navigate = useNavigate();
 
     return (
         <div className="col s12 m4">
             <div 
-                onClick={_ => {
-                    localStorage.setItem("classId", _id);
-                    // localStorage.setItem("classRefId", classRef || "");
-                    localStorage.setItem("gradeName", name);
-
-                    navigate(`/grades/${_id}`)
-                }}
+                onClick={_ => navigate(`/grades/${_id}`)}
                 className="hoverable z-depth-0" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",marginBottom: "10px",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
@@ -38,7 +36,7 @@ const TeacherGrade: React.FC<Grade> = ({ _id, name, year, stream, classRef }) =>
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${name.toLowerCase()}.png`}
+                        src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(name)}`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

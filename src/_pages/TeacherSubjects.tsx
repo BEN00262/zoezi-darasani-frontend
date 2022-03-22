@@ -2,26 +2,41 @@
 import M from "materialize-css"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react";
+import { useSetRecoilState } from "recoil";
+import { classIdState, classRefIdState, getTheGradeImageFilePath, gradeNameState } from "./GradeDisplayPage";
 
 interface ITeacherSubject {
     _id: string
     name: string
     grade: {
+        _id: string // we need this to enable clicking :)
         name: string
         isClosed: boolean
         stream: string
         year: number
+        classRef: string
     }
 }
 
 const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
+    const setClassId = useSetRecoilState(classIdState);
+    const setGradeName = useSetRecoilState(gradeNameState);
+    const setClassRefId = useSetRecoilState(classRefIdState);
+
     const navigate = useNavigate();
 
     return (
 
         <div className="col s6 m4">
+            {/* we need to set a bunch of stuff here */}
             <div 
-                onClick={_ => navigate(`/subject/${_id}`)}
+                onClick={_ => {
+                    setClassId(grade._id);
+                    setGradeName(grade.name);
+                    setClassRefId(grade.classRef)
+
+                    navigate(`/subject/${_id}`)
+                }}
                 className="hoverable z-depth-0 truncate" 
                 style={{cursor: "pointer", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px", marginBottom: "10px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
@@ -119,7 +134,7 @@ const TeacherSubjectsComp: React.FC<ITeacherSubjectsComp> = ({ subjects }) => {
                                         objectFit: "contain",
                                         borderRadius: "50%"
                                     }} 
-                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase() === "eight" ? "kcpe" : gradeName.toLowerCase()}.png`}
+                                    src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(gradeName)}`}
                                 />
                                 <span style={{
                                     paddingLeft: "5px"

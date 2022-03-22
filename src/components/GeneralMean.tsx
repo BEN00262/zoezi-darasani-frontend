@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
+import { useQuery } from "react-query";
 import { useRecoilValue } from "recoil";
 import { useGlobalZoeziTrackedState} from "../contexts/GlobalContext";
 import { classIdState, gradeNameState } from "../_pages/GradeDisplayPage";
@@ -35,46 +36,46 @@ const Static: React.FC<IStatic> = ({ name, numeric }) => {
 }
 
 const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
-    const {
-        authToken
-    } = useGlobalZoeziTrackedState();
+    const { authToken } = useGlobalZoeziTrackedState();
 
+    // we have to set this right :)
     const classId = useRecoilValue(classIdState);
     const gradeName = useRecoilValue(gradeNameState);
+
     const [generalAnalytic, setGeneralAnalytic] = useState<IGeneralMeanAnalytic>({
         active: 0, mean: 0, total: 0, performance_percentages: {}
     });
     const [meanString, setMeanString] = useState("0.00");
-    const [error, setError] = useState("");
-    const [isFetching, setIsFetching] = useState(false);
 
-    useEffect(() => {
-        setIsFetching(true);
-        axios.get(`/api/deep-analytics/subject-mean/${classId}/${gradeName}/${subject}`, {
+    const {
+        isLoading: isFetching, data, isError, error, isIdle, isSuccess
+    } = useQuery('in_app_grade_general_mean', () => {
+        return axios.get(`/api/deep-analytics/subject-mean/${classId}/${gradeName}/${subject}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data && data.status) {
-                    const _analytic = data.analytics as IGeneralMeanAnalytic;
-                    setGeneralAnalytic(_analytic);
-                    setMeanString(_analytic.mean.toFixed(2));
-                    return;
+                    return data.analytics as IGeneralMeanAnalytic;
                 }
 
                 throw new Error("Unexpected error!")
             })
-            .catch(error => {
-                setError(error.message);
-            })
-            .finally(() => {
-                setIsFetching(false);
-            })
-    }, []);
-    
+    }, { enabled: !!classId && !!gradeName })
+
+    useEffect(() => {
+        if (isSuccess && data) {
+            setGeneralAnalytic(data);
+
+            if (data.mean) {
+                setMeanString(data.mean.toFixed(2));
+            }
+        }
+    }, [isSuccess])
+
     return (
         <div className="section">
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s12">
                         <div className="sub-modal-texts" style={{
@@ -89,14 +90,14 @@ const GeneralMeanComp: React.FC<{ subject: string }> = ({ subject }) => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error).message}</p>
                         </div>
                     </div>
                 </div>
                 : null
             }
             {
-                isFetching ?
+                isFetching || isIdle ?
                 <div className="row">
                     <div className="col s12">
                         <div className="sub-modal-texts" style={{

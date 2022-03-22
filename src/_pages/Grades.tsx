@@ -7,6 +7,7 @@ import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import LoaderPage from "./loader";
 import { ITeacherComp } from "./TeacherDisplayPage";
 import { useQuery } from "react-query";
+import { getTheGradeImageFilePath } from "./GradeDisplayPage";
 
 export interface IGrade {
     _id: string
@@ -22,17 +23,10 @@ export interface IGrade {
 const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, year }) => {
     const navigate = useNavigate();
 
-    const _name = name.toLowerCase() === "eight" ? "kcpe" : name.toLowerCase()
-
     return (
         <div className="col s12 m4">
             <div
-                onClick={_ => {
-                    localStorage.setItem("classId", _id);
-                    // localStorage.setItem("classRefId", classRef || "");
-                    localStorage.setItem("gradeName", name);
-                    navigate(`/grades/${_id}`)
-                }}
+                onClick={_ => navigate(`/grades/${_id}`)}
                 className="hoverable z-depth-0" 
                 style={{cursor: "pointer", marginBottom: "10px", border: "1px solid #d3d3d3",borderRadius: "2px",padding:"5px"}}>
                 <div style={{display: "flex", flexDirection: "row",alignItems: "center"}}>
@@ -44,7 +38,7 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${_name}.png`}
+                        src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(name)}`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

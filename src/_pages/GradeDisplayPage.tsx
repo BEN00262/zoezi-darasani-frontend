@@ -27,12 +27,6 @@ interface IGrade {
     classRef?: string
 }
 
-/*
-    localStorage.setItem("classId", _grade._id);
-    localStorage.setItem("classRefId", _grade.classRef || "");
-    localStorage.setItem("gradeName", _grade.name);
-*/
-
 export const gradeNameState = atom<string>({
     key: "gradeNameId",
     default: "",
@@ -49,6 +43,7 @@ export const gradeNameState = atom<string>({
     ]
 });
 
+// we also need to set this :) from the subject view :)
 export const classIdState = atom<string>({
     key: "classIdStateId",
     default: "",
@@ -80,6 +75,10 @@ export const classRefIdState = atom<string>({
         }
     ]
 });
+
+export const getTheGradeImageFilePath = (gradeName: string): string => {
+    return `${gradeName.toLowerCase() === "eight" ? "kcpe" : gradeName.toLowerCase()}.png`
+}
 
 
 const GradeDisplayPage = () => {
@@ -165,7 +164,7 @@ const GradeDisplayPage = () => {
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "50%"
                             }} 
-                            src={`https://www.zoezi-education.com/img/${grade.name.toLowerCase() === "eight" ? "kcpe" : grade.name.toLowerCase()}.png`}
+                            src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(grade.name)}`}
                         />
                         {/* then the class teacher */}
                         <br />

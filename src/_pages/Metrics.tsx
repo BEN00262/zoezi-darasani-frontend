@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import axios from 'axios';
 import { Pie, PieChart, ResponsiveContainer, Tooltip as RechartsToolTip } from 'recharts';
+import { useRecoilValue } from 'recoil';
+import { classRefIdState } from './GradeDisplayPage';
+import { useQuery } from 'react-query';
+import LoaderComp from '../components/LoaderComp';
 
 const renderLabel = function(entry: any) {
     return <text x={entry.x} y={entry.y} stroke={entry.fill}>
@@ -15,38 +19,46 @@ const Metrics = () => {
         boys: 50,
         girls: 50
     });
-    const [error, setError] = useState("");
+    const classRefId = useRecoilValue(classRefIdState);
 
-    useEffect(() => {
-        const classRefId = localStorage.getItem("classRefId") || "";
-
-        axios.get(`/api/grade/gender-distribution/${classRefId}`, {
+    const {
+        isLoading, isError, error, data, isIdle, isSuccess
+    } = useQuery(['in_app_grade_gender_distribution', classRefId], () => {
+        return axios.get(`/api/grade/gender-distribution/${classRefId}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
             .then(({ data }) => {
                 if (data) {
                     const metrics = data as { boys: number, girls: number };
                     const total = metrics.boys + metrics.girls;
-
-                    setAnalytics({
-                        boys: +((metrics.boys/total)*100).toFixed(0),
-                        girls: +((metrics.girls/total)*100).toFixed(0)
-                    })
-                    return;
+                    return { metrics, total }
                 }
 
                 throw new Error("Unexpected error");
             })
-            .catch(error => {
-                setError(error.message);
-            })
-    }, [])
+    }, {
+        enabled: !!authToken && !!classRefId,
+        staleTime: 1 * 1000 * 60 // refetch after 1 minute
+    });
 
+    useEffect(() => {
+        if (isSuccess && data) {
+            setAnalytics({
+                boys: +((data.metrics.boys/data.total)*100).toFixed(0),
+                girls: +((data.metrics.girls/data.total)*100).toFixed(0)
+            })
+        }
+    }, [isSuccess])
+
+
+    if (isLoading || isIdle) {
+        return <LoaderComp/>
+    }
 
     return (
         <div className="row">
             {
-                error ?
+                isError ?
                 <div className="row">
                     <div className="col s10 push-s1">
                         <div className="sub-modal-texts" style={{
@@ -61,15 +73,15 @@ const Metrics = () => {
                             alignItems: "center"
                         }}>
                             <i className="material-icons left">error_outline</i>
-                            <p>{error}</p>
+                            <p>{(error as Error).message}</p>
                         </div>
                     </div>
                 </div>
                 : null
             }
             <div className="col s12" style={{
-                            height: "400px"
-                        }}>
+                    height: "400px"
+                }}>
 
                 <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
