@@ -16,7 +16,6 @@ export interface ISelectableData {
 
 const EditSubject: React.FC<{ subjectId: string }> = ({ subjectId }) => {
     const navigate = useNavigate();
-    // const { authToken } = useContext(GlobalContext);
     const { authToken } = useGlobalZoeziTrackedState();
 
     const [teachers, setTeachers] = useState<ISelectableData[]>([]);

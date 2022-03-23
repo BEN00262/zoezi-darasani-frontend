@@ -6,7 +6,6 @@
 import M from "materialize-css"
 import {Link, useParams} from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import TeacherSubjectsComp from "./TeacherSubjects";
 import axios from "axios";
 import copyText from "copy-to-clipboard";
 import { toast } from 'react-toastify'
@@ -16,8 +15,11 @@ import LoaderComp from "../components/LoaderComp";
 import EmptyComp from "../components/Empty";
 import Skeleton from "react-loading-skeleton";
 import DefaultMaleTeacher from "../img/male_teacher.png"
+import { useQuery } from "react-query";
+import { atom, useSetRecoilState } from "recoil";
 
-const TeacherGradesSuspense = React.lazy(() => import("./TeacherGrades"))
+const TeacherGradesSuspense = React.lazy(() => import("./TeacherGrades"));
+const TeacherSubjectsComp = React.lazy(() => import("./TeacherSubjects"));
 
 export interface ITeacherComp {
     _id: string
@@ -42,7 +44,18 @@ const error_toast = (message: string) => toast.error(message, {
     position: toast.POSITION.TOP_RIGHT,
     autoClose: 2000,
     className: "sub-modal-texts"
-})
+});
+
+// set only in teacher display mode
+export const baseTeacherLinkState = atom<string | null>({
+    key: 'baseTeacherLinkStateId',
+    default: null
+});
+
+export const isTeacherDisplayLinkExposedState = atom({
+    key: 'isTeacherDisplayLinkExposedStateId',
+    default: { myGrades: false, mySubjects: false }
+});
 
 const TeacherDisplayPage = () => {
     const { authToken, isTeacher } = useGlobalZoeziTrackedState();
@@ -50,26 +63,67 @@ const TeacherDisplayPage = () => {
 
     const [teacherDisplay, setTeacherDisplay] = useState<ITeacherDisplay>({
         grades: [], subjects: [], teacher: { _id: "", email: "", name: "", profilePic: ""}
-    })
+    });
 
+    const setBaseTeacherLinkState = useSetRecoilState(baseTeacherLinkState);
+    const setIsTeacherDisplayLinkExposedState = useSetRecoilState(isTeacherDisplayLinkExposedState);
 
-    useEffect(() => {
-        M.Tabs.init(document.querySelector(".tabs"), {})
-
-        axios.get(`/api/teacher/${params.id}`, {
+    const {
+        isLoading, isError, error, data, isSuccess, isIdle
+    } = useQuery(['in_app_school_teacher_display', params.id], () => {
+        return axios.get(`/api/teacher/${params.id}`, {
             headers: { 'Authorization': `Bearer ${authToken}`}
         }).then(({ data }) => {
-            if (data) {
-                setTeacherDisplay(data as ITeacherDisplay)
-            }
+            if (data) { return (data as ITeacherDisplay) }
+            throw new Error("Unexpected error!");
         })
+    }, {
+        enabled: !!authToken && !!params.id,
+        staleTime: 60 * 1000 // cache for 1 minute
+    })
 
-    }, []);
+    useEffect(() => {
+        if (isSuccess && data) {
+            setTeacherDisplay(data);
+
+            // for the links on a teacher display account :)
+            setBaseTeacherLinkState(isTeacher ? (params.id || null) : null);
+            setIsTeacherDisplayLinkExposedState({
+                myGrades: isTeacher ? !!data.grades.length : false,
+                mySubjects: isTeacher ? !!data.subjects.length : false
+            });
+
+
+            M.Tabs.init(document.querySelector(".tabs"), {})  
+        }
+    }, [isSuccess]);
 
     return (
         <main>
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
                 <div className="section">
+                {
+                        isError ?
+                        <div className="row">
+                            <div className="col s12">
+                                <div className="sub-modal-texts" style={{
+                                    borderLeft: "2px solid red",
+                                    paddingLeft: "5px",
+                                    paddingRight: "5px",
+                                    borderRadius: "3px",
+                                    lineHeight: "4em",
+                                    backgroundColor: "rgba(255,0,0, 0.1)",
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    alignItems: "center"
+                                }}>
+                                    <i className="material-icons left">error_outline</i>
+                                    <p>{(error as Error).message}</p>
+                                </div>
+                            </div>
+                        </div>
+                        : null
+                    }
                     <div className="row">
                         <div className="col s12 m2 center sticky-side" style={{
                             borderRight: "1px solid #d3d3d3",
@@ -137,38 +191,45 @@ const TeacherDisplayPage = () => {
                         </div>
 
                         <div className="col s12 m10">
-                            <div className="row">
-                                <div className="col s12">
-                                        <ul className="tabs tabs-fixed-width" style={{
-                                            overflowX: "hidden"
-                                        }}>
-                                            <li className={`tab col s3 ${isTeacher ? teacherDisplay.grades.length ? '': 'disabled' : ''}`}><a href="#mygrades" className={isTeacher ? teacherDisplay.grades.length ? 'active' : '' : 'active'}>My Grade(s)</a></li>
-                                            <li className="tab col s3"><a href="#mysubjects" className={isTeacher ? teacherDisplay.grades.length ? '' : 'active' : ''}>My Subject(s)</a></li>
-                                        </ul>
+                           {
+                               isLoading || isIdle ? <LoaderComp/>
+                                :
+                                <>
+                                     <div className="row">
+                                        <div className="col s12">
+                                                <ul className="tabs tabs-fixed-width" style={{
+                                                    overflowX: "hidden"
+                                                }}>
+                                                    <li className={`tab col s3 ${isTeacher ? teacherDisplay.grades.length ? '': 'disabled' : ''}`}><a href="#mygrades" className={isTeacher ? teacherDisplay.grades.length ? 'active' : '' : 'active'}>My Grade(s)</a></li>
+                                                    <li className="tab col s3"><a href="#mysubjects" className={isTeacher ? teacherDisplay.grades.length ? '' : 'active' : ''}>My Subject(s)</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <div className="row">
+                                        <div id="mygrades" className="col s12">
+                                            <React.Suspense fallback={<LoaderComp/>}>
+                                                {
+                                                    isSuccess && teacherDisplay.grades.length ?
+                                                    <TeacherGradesSuspense grades={teacherDisplay.grades}/>
+                                                    :
+                                                    <EmptyComp message={isTeacher ? "You have not been assigned any grades. Please contact the school admin" : "No assigned grades"}/>
+                                                }
+                                            </React.Suspense>
+                                        </div>
+                                        <div id="mysubjects" className="col s12">
+                                            <React.Suspense fallback={<LoaderComp/>}>
+                                                {
+                                                    isSuccess && teacherDisplay.subjects.length ?
+                                                    <TeacherSubjectsComp subjects={teacherDisplay.subjects}/>
+                                                    :
+                                                    <EmptyComp message={isTeacher ? "You have not been assigned any subjects. Please contact the admin" : "No assigned subjects"}/>
+                                                }
+                                            </React.Suspense>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="row">
-                                    <div id="mygrades" className="col s12">
-                                        <React.Suspense fallback={<LoaderComp/>}>
-                                            {
-                                                teacherDisplay.grades.length ?
-                                                <TeacherGradesSuspense grades={teacherDisplay.grades}/>
-                                                :
-                                                <EmptyComp message={isTeacher ? "You have not been assigned any grades. Please contact the school admin" : "No assigned grades"}/>
-                                            }
-                                        </React.Suspense>
-                                    </div>
-                                    <div id="mysubjects" className="col s12">
-                                        {
-                                            teacherDisplay.subjects.length ?
-                                            <TeacherSubjectsComp subjects={teacherDisplay.subjects}/>
-                                            :
-                                            <EmptyComp message={isTeacher ? "You have not been assigned any subjects. Please contact the admin" : "No assigned subjects"}/>
-                                        }
-                                    </div>
-                                </div>
-
-                            </div>
+                                </>
+                           }
+                        </div>
                     </div>
 
                 </div>

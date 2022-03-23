@@ -18,7 +18,7 @@ export interface ITeacher {
 
 // get the current id of the system first then do the stuff
 const TeacherFormComp = () => {
-    const { authToken } = useGlobalZoeziTrackedState();
+    const { authToken, isTeacher } = useGlobalZoeziTrackedState();
 
     const navigate = useNavigate();
     const params = useParams();
@@ -106,7 +106,17 @@ const TeacherFormComp = () => {
         }).then(({ data }) => {
             if (data) {
                 if (data.status) {
-                    ZoeziQueryClient.invalidateQueries('in_app_school_teachers');
+                    if (!isTeacher) {
+                        // only reset this is the account is a school one
+                        ZoeziQueryClient.invalidateQueries('in_app_school_teachers');
+                    }
+
+                    // we are updating so we reset the 
+                    if (isUpdating) {
+                        ZoeziQueryClient.invalidateQueries(
+                            ['in_app_school_teacher_display', currentTeacherId]
+                        )
+                    }
                     return success_toastify();
                 }
 

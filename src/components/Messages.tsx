@@ -3,8 +3,8 @@ import M from 'materialize-css'
 import { io } from "socket.io-client";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useContext, useEffect } from "react";
-import { GlobalContext } from "../contexts/GlobalContext";
+import { useEffect } from "react";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 import { ZoeziQueryClient } from '../utils/queryclient';
 
 const success_toastify = (message: string) => toast.success(message, {
@@ -30,7 +30,7 @@ interface IMessage {
 }
 
 const MessagesComp = () => {
-    const { communicationId } = useContext(GlobalContext);
+    const { communicationId } = useGlobalZoeziTrackedState();
     /*
         {
             type: "payments", 

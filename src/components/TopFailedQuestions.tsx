@@ -65,7 +65,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
 
     const {
         isLoading: isFetching, isError, error, data, isIdle, isSuccess
-    } = useQuery('in_app_top_failed_questions', () => {
+    } = useQuery(['in_app_top_failed_questions', subject], () => {
     return axios.get(`/api/deep-analytics/${classId}/${gradeName}/${subject}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         })
@@ -77,19 +77,16 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
                 throw new Error("Unexpected error!");
             })
     }, {
-        enabled: !!authToken && !!classId && !!gradeName,
+        enabled: !!authToken && !!classId && !!gradeName && !!subject,
         staleTime: 1 * 60 * 1000 // expire after one minute
     });
-
-    useEffect(() => {
-        setReRender(Math.random());
-    }, [])
 
     useEffect(() => {
         if (isSuccess && data) {
             setTopFailedData(data);
             setTotalStudentsInSubject(data.students);
             setStudentsWhoParticipated(data.students_who_did);
+            setReRender(Math.random());
         }
     }, [isSuccess]);
 
@@ -123,7 +120,7 @@ const TopFailedQuestionsComp: React.FC<{ subject: string }> = ({ subject }) => {
             }
             <GlobalErrorBoundaryComp>
                 <React.Suspense fallback={<LoaderComp/>}>
-                    <FailedQuestionsPaperDisplayCompSus {...topFailedData} key={reRender}/>
+                    <FailedQuestionsPaperDisplayCompSus key={reRender} {...topFailedData}/>
                 </React.Suspense>
             </GlobalErrorBoundaryComp>
         </div>

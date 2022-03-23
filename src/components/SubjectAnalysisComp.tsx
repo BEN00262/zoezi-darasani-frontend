@@ -16,7 +16,6 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useGlobalZoeziTrackedState } from '../contexts/GlobalContext';
 import { ILearner } from '../_pages/Learners';
-import { useNavigate } from 'react-router-dom';
 import { get_learner_avatar } from '../utils/avatar_chooser';
 import { convertMillisecondsToTimeString } from './special_paper_display/grouper/millisecondsToTime';
 import { ILibPaperQuestions } from './normal_paper_display/interface/ILibPaper';

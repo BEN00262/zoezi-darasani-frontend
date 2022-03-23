@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ITopFailedPaperAnalytics, ITopFailedPaperQuestion } from "../TopFailedQuestions";
 import NormalQuestionComp from "./questions/NormalQuestionComp";
 import 'rc-pagination/assets/index.css';
+
 import ComprehensionQuestionComp from './questions/ComprehensionQuestionComp';
 import { atom, useRecoilState } from 'recoil';
 
@@ -44,6 +45,10 @@ const FailedQuestionsPaperDisplayComp: React.FC<ITopFailedPaperAnalytics> = ({
         }
     }, [currentDisplayPage]);
 
+    useEffect(() => {
+        setReRender(Math.random());
+    }, [])
+
     const pagesPresent = useMemo(() => {
         if (currentDisplayQuestion.question && currentDisplayQuestion.question.questionType === "comprehension") {
             return (Math.floor(
@@ -55,7 +60,7 @@ const FailedQuestionsPaperDisplayComp: React.FC<ITopFailedPaperAnalytics> = ({
     }, [currentDisplayQuestion])
 
     return (
-        <div>
+        <div key={reRender}>
             <div className="row">
                 <div className="col s12 left-align">
                     {
@@ -114,7 +119,7 @@ const FailedQuestionsPaperDisplayComp: React.FC<ITopFailedPaperAnalytics> = ({
             }}>
                 {
                     stats.length > currentDisplayPage ? 
-                    <RenderQuestionTypeComp key={reRender} {...currentDisplayQuestion} position={currentDisplayPage + 1}/>
+                    <RenderQuestionTypeComp {...currentDisplayQuestion} position={currentDisplayPage + 1}/>
                     : <p className='center'>No questions found</p>
                 }
             </div>

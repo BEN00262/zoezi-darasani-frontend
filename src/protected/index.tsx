@@ -2,7 +2,7 @@ import { useContext } from "react";
 import {Navigate, Outlet, useLocation } from "react-router-dom";
 import ForbiddenErrorComp from "../components/ForbiddenErrorComp";
 import MessagesComp from "../components/Messages";
-import { GlobalContext, useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
+import { useGlobalZoeziTrackedState } from "../contexts/GlobalContext";
 
 const ProtectedRoute = () => {
     const location = useLocation();
@@ -25,7 +25,7 @@ const ProtectedRoute = () => {
 // this comes after the guy is logged in :)
 export const AdminScopedRoute = () => {
     // the communicationId is the users id ( use it to login into the page :) )
-    const { isTeacher, communicationId } = useContext(GlobalContext);
+    const { isTeacher, communicationId } = useGlobalZoeziTrackedState();
 
     if (isTeacher) {
         // redirect to the home of the teacher :)
@@ -38,7 +38,7 @@ export const AdminScopedRoute = () => {
 
 export const ForwardProtectedRoute = () => {
     const location = useLocation();
-    const { authToken, communicationId, isTeacher } = useContext(GlobalContext);
+    const { authToken, communicationId, isTeacher } = useGlobalZoeziTrackedState();
 
 
     if (authToken) {

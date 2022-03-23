@@ -5,6 +5,7 @@ import { SyntheticEvent, useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { setAuthorizationToken, useGlobalZoeziDispatch } from "../contexts/GlobalContext";
 import verifyToken from '../utils/verify';
+import { useMutation } from 'react-query';
 
 interface ILoginDetails {
     email: string
@@ -80,14 +81,31 @@ export default function LoginPage() {
     const [loginDetails, setLoginDetails] = useState<ILoginDetails>({
         asTeacher: false, email: "", password: ""
     });
-    const [isLoading, setIsLoading] = useState(false);
-    const [errors, setErrors] = useState<string>();
     const navigate = useNavigate();
 
-    useEffect(() => {
-      M.Tabs.init(document.querySelector(".tabs"), {
+    const loginMutation = useMutation(({ email, password }: { email: string, password: string }) => {
+      const instance = M.Tabs.getInstance(document.getElementById("login_options_tab"));
 
-      });
+      // check if a bunch of stuff are empty if not just send them
+      return axios.post(instance.index === 1 ? "/api/teacher/login" : "/api/school/login", { email, password })
+          .then(({ data }) => {
+              if (data) {
+                  if (data.status) { return data.token }
+                  throw new Error(data.message);
+              }
+
+              throw new Error("Unexpected error!");
+          })
+    }, {
+      onSuccess: (token, variables, context) => {
+        setAuthorizationToken(token, dispatch);
+        const {communicationId, isTeacher } = verifyToken(token); // this is redudant but who gives an f
+        navigate(isTeacher ? `/teacher/${communicationId}`: "/shop", { replace: true })
+      }
+    })
+
+    useEffect(() => {
+      M.Tabs.init(document.querySelector(".tabs"), {});
     }, []);
 
     const handleInputValueChange = (e: any) => {
@@ -99,31 +117,11 @@ export default function LoginPage() {
 
     const handleFormSubmission = (e: SyntheticEvent) => {
         e.preventDefault();
-
-        const { email, password } = loginDetails;
-        setIsLoading(true);
-
-        const instance = M.Tabs.getInstance(document.getElementById("login_options_tab"));
-
-        // check if a bunch of stuff are empty if not just send them
-        axios.post(instance.index === 1 ? "/api/teacher/login" : "/api/school/login", { email, password })
-            .then(({ data }) => {
-                // we set the data here 
-                if (data) {
-
-                    if (data.status) {
-                      setAuthorizationToken(data.token, dispatch);
-                      const {communicationId, isTeacher } = verifyToken(data.token); // this is redudant but who gives an f
-                      return navigate(isTeacher ? `/teacher/${communicationId}`: "/shop", { replace: true })
-                    }
-
-                    setErrors(data.message);
-                    return;
-                }
-
-                throw new Error("Unreachable");
-            })
-            .finally(() => setIsLoading(false))
+        
+        loginMutation.mutate({ 
+          email: loginDetails.email, 
+          password: loginDetails.password 
+        });
     }
 
     // login into the system and get all the details we want then use them to create other stuffs :)
@@ -142,7 +140,7 @@ export default function LoginPage() {
             </div>
           </div>
           {
-            errors ?
+            loginMutation.isError ?
             <div className="row">
                 <div className="col s12 m6 push-m3">
                     <div className="sub-modal-texts" style={{
@@ -157,7 +155,7 @@ export default function LoginPage() {
                         alignItems: "center"
                     }}>
                         <i className="material-icons left">error_outline</i>
-                        <p>{errors}</p>
+                        <p>{(loginMutation.error as Error).message}</p>
                     </div>
                 </div>
             </div>
@@ -178,7 +176,7 @@ export default function LoginPage() {
                 handleFormSubmission={handleFormSubmission}
                 handleInputValueChange={handleInputValueChange}
                 loginDetails={loginDetails}
-                isLoading={isLoading}
+                isLoading={loginMutation.isLoading}
               />
             </div>
             <div id="teacher">
@@ -186,7 +184,7 @@ export default function LoginPage() {
                 handleFormSubmission={handleFormSubmission}
                 handleInputValueChange={handleInputValueChange}
                 loginDetails={loginDetails}
-                isLoading={isLoading}
+                isLoading={loginMutation.isLoading}
               />
             </div>
           </div>

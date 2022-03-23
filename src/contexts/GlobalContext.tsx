@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from "react";
+import React, { useReducer } from "react";
 import axios, { AxiosError } from 'axios';
 import reducer, { IAction } from "./reducer";
 import { UPDATE_AUTH_TOKEN, WIPE_GLOBAL_CONTEXT } from "./ActionTypes";
@@ -18,8 +18,6 @@ export const initialContext: IGlobalContext = {
     ...verifyToken(localStorage.getItem("authToken") || "")
 }
 
-export const GlobalContext = createContext(initialContext);
-
 // export a monitor for global errors :)
 export const ForbiddenErrorState = atom<string | null>({
     key: 'ForbiddenErrorStateId',
@@ -30,6 +28,7 @@ axios.defaults.baseURL = "/"; // "http://localhost:3500/"; // set the base url h
 axios.interceptors.response.use(response => response, (error: AxiosError | Error) => {
     // we check for a 403 type of an error ( if there is a 403 ---> we can log the guy out )
     if (axios.isAxiosError(error) && error.response && error.response.status === 403){
+        console.log(error);
         // we now have a forbidden error thing :) ( what should we do ---> ask if they want to relog in );
         setRecoil(ForbiddenErrorState, "Forbidden access. Please re-login");
         // we wont throw the error again :)

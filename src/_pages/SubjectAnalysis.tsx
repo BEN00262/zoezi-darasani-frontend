@@ -9,6 +9,7 @@ import Skeleton from "react-loading-skeleton";
 import LoaderComp from "../components/LoaderComp";
 import { useRecoilValue } from "recoil";
 import { gradeNameState } from "./GradeDisplayPage";
+import { useQuery } from "react-query";
 
 const SubjectAnalysisCompSuspense = React.lazy(() => import("../components/SubjectAnalysisComp"));
 const GeneralSubjectAnalysisCompSuspense = React.lazy(() => import("../components/GeneralSubjectAnalysis"));
@@ -32,35 +33,60 @@ const SubjectAnalysis = () => {
     const [activeWindow, setActiveWindow] = useState<"general" | "students">("general");
     const gradeName = useRecoilValue(gradeNameState);
 
-    useEffect(() => {
-        // attach the materialize js stuff :)
-        M.Collapsible.init(
-            document.querySelectorAll('.collapsible')
-        )
-
-        // send the request
-        axios.get(`/api/subject/information/${params.id}`, {
+    const {
+        isLoading, data, isError, error, isIdle, isSuccess
+    } = useQuery(['in_app_grade_subject_analysis', params.id], () => {
+        return axios.get(`/api/subject/information/${params.id}`, {
             headers: { Authorization: `Bearer ${authToken}`}
         }).then(({ data }) => {
-            // lets see what gives :)
-            if (data) {
-                setSubject(data.subject as ISubjectInformation);
-                return;
-            }
+            if (data) { return (data.subject as ISubjectInformation) }
+            throw new Error("Unexpected error!");
         })
+    }, {
+        enabled: !!authToken && !!params.id,
+        staleTime: 60 * 1000 // one minute caching :)
+    });
 
-        M.Sidenav.init(document.querySelectorAll('.sidenav'), {
-            edge: "right"
-        });
+    useEffect(() => {
+        if (isSuccess && data) {
+            setSubject(data);
+        }
+    }, [isSuccess])
+
+    useEffect(() => {
+        M.Collapsible.init(document.querySelectorAll('.collapsible'))
+        M.Sidenav.init(document.querySelectorAll('.sidenav'), { edge: "right" });
     }, []);
 
     const _subjectName = subject.name.toLowerCase() === "sst&cre" ? "social" : subject.name.toLowerCase().split(" ")[0];
 
     return (
         <main>
-            <EditSubject subjectId={subject._id}/>
+            { isTeacher ? null : <EditSubject subjectId={subject._id}/> }
             <div style={{margin: "0 auto", maxWidth: "1280px", width: "90%"}}>
             <div className="section">
+                {
+                    isError ?
+                    <div className="row">
+                        <div className="col s12">
+                            <div className="sub-modal-texts" style={{
+                                borderLeft: "2px solid red",
+                                paddingLeft: "5px",
+                                paddingRight: "5px",
+                                borderRadius: "3px",
+                                lineHeight: "4em",
+                                backgroundColor: "rgba(255,0,0, 0.1)",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignItems: "center"
+                            }}>
+                                <i className="material-icons left">error_outline</i>
+                                <p>{(error as Error).message}</p>
+                            </div>
+                        </div>
+                    </div>
+                    : null
+                }
                 <div className="row">
                     {/* place the class icon at the top */}
                     <div className="col s12 m2 center sticky-side" style={{
@@ -137,10 +163,17 @@ const SubjectAnalysis = () => {
                         {/* display the charts and other stuffs */}
                         <React.Suspense fallback={<LoaderComp/>}>
                             {
-                                activeWindow === "general" ? 
-                                    <GeneralSubjectAnalysisCompSuspense subject={subject.name}/>
+                                isLoading || isIdle ?
+                                    <LoaderComp/>
                                     :
-                                    <SubjectAnalysisCompSuspense subject={subject.name}/>
+                                    <>
+                                        {
+                                            activeWindow === "general" ? 
+                                                <GeneralSubjectAnalysisCompSuspense subject={subject.name}/>
+                                                :
+                                                <SubjectAnalysisCompSuspense subject={subject.name}/>
+                                        }
+                                    </>
                             }
                         </React.Suspense>
                     </div>

@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useSetRecoilState } from "recoil";
-import { classIdState, gradeNameState, classRefIdState, getTheGradeImageFilePath } from "./GradeDisplayPage";
+import { getTheGradeImageFilePath } from "./GradeDisplayPage";
 
 export interface Grade {
     _id: string

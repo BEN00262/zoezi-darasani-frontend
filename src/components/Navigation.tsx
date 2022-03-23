@@ -1,6 +1,8 @@
 import {Link} from "react-router-dom"
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useGlobalZoeziDispatch, useGlobalZoeziTrackedState, wipeCurrentContext } from "../contexts/GlobalContext"
 import { ZoeziQueryClient } from "../utils/queryclient";
+import { baseTeacherLinkState, isTeacherDisplayLinkExposedState } from "../_pages/TeacherDisplayPage";
 
 const Navigation = () => {
     const { 
@@ -8,7 +10,10 @@ const Navigation = () => {
         isTeacher,
         communicationId
     } = useGlobalZoeziTrackedState();
-    const dispatch = useGlobalZoeziDispatch()
+    const dispatch = useGlobalZoeziDispatch();
+
+    const [baseTeacherLink,setbaseTeacherLink] = useRecoilState(baseTeacherLinkState);
+    const [isTeacherDisplayLinkExposed, setisTeacherDisplayLinkExposed] = useRecoilState(isTeacherDisplayLinkExposedState);
 
 
     return (
@@ -27,6 +32,8 @@ const Navigation = () => {
                     wipeCurrentContext(dispatch);
                     // reset all the queries in react query ( wipe them out :))
                     ZoeziQueryClient.removeQueries('in_app_');
+                    setbaseTeacherLink(null);
+                    setisTeacherDisplayLinkExposed({ myGrades: false, mySubjects: false });
                 }} className="black-text">Sign Out</a></li>
             </ul>
 
@@ -42,7 +49,10 @@ const Navigation = () => {
 
                     {authToken ?
                         <ul className="right hide-on-med-and-down">
-                            { isTeacher ? null :
+                            { isTeacher && baseTeacherLink ? <>
+                                <li hidden={!isTeacherDisplayLinkExposed.myGrades}><Link to={`/teacher/${baseTeacherLink}#mygrades`}>My Grades</Link></li>
+                                <li hidden={!isTeacherDisplayLinkExposed.mySubjects}><Link to={`/teacher/${baseTeacherLink}#mysubjects`}>My Subjects</Link></li>
+                            </> :
                                 <>
                                     <li><Link to="/shop">Shop</Link></li>
                                     <li><Link to="/teacher">Teachers</Link></li>
