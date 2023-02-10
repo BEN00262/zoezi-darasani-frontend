@@ -43,7 +43,7 @@ const Grade: React.FC<IGrade> = ({ _id, name, classTeacher, classRef, stream, ye
 
                     <ul style={{paddingLeft: "20px"}}>
                         {/* <li>Grade {name}</li> */}
-                        <li className="sub-modal-texts">Class Teacher: {classTeacher.name}</li>
+                        <li className="sub-modal-texts">Class Teacher: {classTeacher?.name}</li>
                         <li className="sub-modal-texts">Stream: {stream}</li>
                         <li className="sub-modal-texts">Year: {year}</li>
                         <li className="sub-modal-texts">{(classRef?.students || []).length} learners</li>

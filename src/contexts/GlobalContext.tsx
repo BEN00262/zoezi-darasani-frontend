@@ -24,7 +24,8 @@ export const ForbiddenErrorState = atom<string | null>({
     default: null
 })
 
-axios.defaults.baseURL = "/"; // "http://localhost:3500/"; // set the base url here :)
+// @ts-ignore
+axios.defaults.baseURL = import.meta.env.VITE_MAIN_SERVER_ENDPOINT; // "http://localhost:3500/"; // set the base url here :)
 axios.interceptors.response.use(response => response, (error: AxiosError | Error) => {
     // we check for a 403 type of an error ( if there is a 403 ---> we can log the guy out )
     if (axios.isAxiosError(error) && error.response && error.response.status === 403){

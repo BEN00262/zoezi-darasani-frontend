@@ -171,7 +171,7 @@ const GradeDisplayPage = () => {
                         {/* <span className="sub-modal-texts">Class Teacher: {grade.classTeacher.name}</span> */}
                         <div className="row sub-modal-texts">
                             <div className="col s12 truncate">
-                                Class Teacher: {grade.classTeacher.name ? grade.classTeacher.name : <Skeleton/>}
+                                Class Teacher: {grade?.classTeacher?.name ?? <Skeleton/>}
                             </div>
                             <div className="col s12 truncate">
                                 Stream: {grade.stream ? grade.stream : <Skeleton/>}
