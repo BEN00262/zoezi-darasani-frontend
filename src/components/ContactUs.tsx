@@ -19,19 +19,19 @@ const ContactUs = () => {
                         <h3><i className="mdi-content-send brown-text"></i></h3>
                         <h4 className="sub-names">Talk to Us</h4>
                     </div>
-                    <p className="light"><i className="im im-mail" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="mailto:ask@zoezi-education.com" style={{color: "black"}}><b>ask@zoezi-education.com</b></a><br/><i className="im im-mobile" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="tel:+254115815941" style={{color: "black"}}><b>+254115815941</b></a></p>
+                    <p className="light"><i className="im im-mail" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="mailto:hello@zoezieducation.com" style={{color: "black"}}><b>hello@zoezieducation.com</b></a><br/><i className="im im-mobile" style={{verticalAlign: "-6px",fontSize:"20px"}}></i> <a href="tel:+254115815941" style={{color: "black"}}><b>+254115815941</b></a></p>
 
                     <a href="https://wa.me/254115815941" target="_blank" style={{
                         marginRight: "4px"
-                    }} rel="noreferrer"><img className="img-responsive" src="https://www.zoezi-education.com/img/socials/wa.svg" height={31} width={31}/></a>
+                    }} rel="noreferrer"><img className="img-responsive" src="https://www.zoezieducation.com/img/socials/wa.svg" height={31} width={31}/></a>
                     <a href="https://web.facebook.com/zoezi.platform" style={{
                         marginRight: "4px"
-                    }} target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezi-education.com/img/socials/fb.svg" height={31} width={31}/></a>
+                    }} target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezieducation.com/img/socials/fb.svg" height={31} width={31}/></a>
                     
-                    <a href="https://www.linkedin.com/in/zoezi-education-86a1951a9" style={{
+                    <a href="https://www.linkedin.com/in/zoezieducation-86a1951a9" style={{
                         marginRight: "4px"
-                    }} target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezi-education.com/img/socials/ln.svg" height={31} width={31}/></a>
-                    <a href="https://twitter.com/Zoezi_Education?s=09" target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezi-education.com/img/socials/tw.svg" height={31} width={31}/></a>
+                    }} target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezieducation.com/img/socials/ln.svg" height={31} width={31}/></a>
+                    <a href="https://twitter.com/Zoezi_Education?s=09" target="_blank" rel="noreferrer"><img className="img-responsive" src="https://www.zoezieducation.com/img/socials/tw.svg" height={31} width={31}/></a>
                 </div>
             </div>
             </div>

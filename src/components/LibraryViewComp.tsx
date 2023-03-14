@@ -83,7 +83,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                     height:"40px",
                                                                     width:"40px"
                                                                 }}
-                                                                src={`http://www.zoezi-education.com/img/${grade.toLowerCase()}.png`}/>
+                                                                src={`http://www.zoezieducation.com/img/${grade.toLowerCase()}.png`}/>
                                                             <p className="sub-modal-texts" style={{
                                                                 marginLeft: "5px",
                                                                 fontWeight: "bolder",
@@ -164,7 +164,7 @@ const LibraryViewComp: React.FC<{ studentId: string }> = ({ studentId }) => {
                                                                     style={{ 
                                                                         objectFit: "contain", height: "40px", width: "40px"
                                                                     }}
-                                                                    src={`https://www.zoezi-education.com/img/${gradeName.toLowerCase()}.png`}
+                                                                    src={`https://www.zoezieducation.com/img/${gradeName.toLowerCase()}.png`}
                                                                 />
                                                                 {/* <!-- trying to style this things --> */}
                                                                 <p className="sub-modal-texts" style={{

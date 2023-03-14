@@ -74,7 +74,7 @@ const SubcriptionsDisplay = () => {
                                 justifyContent: "center",
                                 alignItems: "center"
                             }}>
-                                <img className="img-box-responsive" style={{height: "80px"}} src="https://www.zoezi-education.com/img/two.png"/>
+                                <img className="img-box-responsive" style={{height: "80px"}} src="https://www.zoezieducation.com/img/two.png"/>
                             </div>
                             <br/>
                             <span className="sub-modal-texts">

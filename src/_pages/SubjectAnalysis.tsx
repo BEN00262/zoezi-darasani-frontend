@@ -100,7 +100,7 @@ const SubjectAnalysis = () => {
                                 border: "1px solid #d3d3d3",
                                 borderRadius: "50%"
                             }} 
-                            src={`https://www.zoezi-education.com/img/${gradeName === "eight" ? "kcpe" : gradeName}/${_subjectName}.png`}
+                            src={`https://www.zoezieducation.com/img/${gradeName === "eight" ? "kcpe" : gradeName}/${_subjectName}.png`}
                         />
 
                         <div className="row sub-modal-texts">

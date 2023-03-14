@@ -38,7 +38,7 @@ const Subject: React.FC<ISubject> = ({ _id, name, teacher, gradeName }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${imageUrl}/${subjectImageUrl}.png`}
+                        src={`https://www.zoezieducation.com/img/${imageUrl}/${subjectImageUrl}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

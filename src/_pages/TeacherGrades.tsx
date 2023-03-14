@@ -35,7 +35,7 @@ const TeacherGrade: React.FC<Grade> = ({ _id, name, year, stream, classRef }) =>
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(name)}`}
+                        src={`https://www.zoezieducation.com/img/${getTheGradeImageFilePath(name)}`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>

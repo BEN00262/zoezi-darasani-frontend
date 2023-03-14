@@ -27,7 +27,7 @@ const MarketItem: React.FC<IZoeziGrade> = ({ _id, name, isSpecial }) => {
             >
 
                 <div className="card-image">
-                    <img className="img-box-responsive" src={`https://www.zoezi-education.com/img/${name.toLowerCase()}.png`}/>
+                    <img className="img-box-responsive" src={`https://www.zoezieducation.com/img/${name.toLowerCase()}.png`}/>
                 </div>
 
                 <div className="row center card-content">

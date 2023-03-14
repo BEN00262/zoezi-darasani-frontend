@@ -48,7 +48,7 @@ const TeacherSubject: React.FC<ITeacherSubject> = ({ _id, name, grade }) => {
                             border: "1px solid #d3d3d3",
                             borderRadius: "50%"
                         }} 
-                        src={`https://www.zoezi-education.com/img/${grade.name.toLowerCase() === "eight" ? "kcpe" : grade.name.toLowerCase()}/${name.toLowerCase() === "sst&cre" ? "social" : name.toLowerCase().split(" ")[0]}.png`}
+                        src={`https://www.zoezieducation.com/img/${grade.name.toLowerCase() === "eight" ? "kcpe" : grade.name.toLowerCase()}/${name.toLowerCase() === "sst&cre" ? "social" : name.toLowerCase().split(" ")[0]}.png`}
                     />
 
                     <ul style={{paddingLeft: "20px"}}>
@@ -134,7 +134,7 @@ const TeacherSubjectsComp: React.FC<ITeacherSubjectsComp> = ({ subjects }) => {
                                         objectFit: "contain",
                                         borderRadius: "50%"
                                     }} 
-                                    src={`https://www.zoezi-education.com/img/${getTheGradeImageFilePath(gradeName)}`}
+                                    src={`https://www.zoezieducation.com/img/${getTheGradeImageFilePath(gradeName)}`}
                                 />
                                 <span style={{
                                     paddingLeft: "5px"
