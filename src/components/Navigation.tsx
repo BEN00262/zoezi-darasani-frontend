@@ -65,6 +65,10 @@ const Navigation = () => {
                         :
                         <ul className="right hide-on-med-and-down">
                             <li><Link to="/pricing">Pricing</Link></li>
+                            <li><a href="https://www.zoezieducation.com/" target="_blank" className="btn-flat" style={{
+                                border: "1px solid #E51C23",
+                                textTransform: "capitalize",
+                            }}>Learners</a></li>
                             <li><Link to="/new-school" className="btn-flat" style={{
                                 border: "1px solid teal",
                                 textTransform: "capitalize",

@@ -1,8 +1,8 @@
 // @ts-ignore
 import M from "materialize-css"
 import { useEffect } from "react"
-import { Link } from "react-router-dom";
-import BannerImage from "../img/banner.png"
+import BannerImage from "../img/background.svg";
+import DarasaniBanner from "../img/darasani.png";
 
 const ParallaxComp = () => {
     useEffect(() => {
@@ -17,16 +17,20 @@ const ParallaxComp = () => {
                         <h2 className="header center white-text banner-names" style={{letterSpacing: "2px"}}> ZOEZI DARASANI</h2>
                         <div className="row center">
                         </div>
+                        
                         <div className="row center">
-                            <Link to={"/login"} id="download-button" className="btn-large waves-effect waves-light z-depth-0 main-button">Get Started</Link>
+                            <img src={DarasaniBanner} alt="student using computers" className="img-responsive" style={{
+                                // border: "1px solid #efefef",
+                                height: "400px",
+                                // boxShadow: "10px 10px 8px 10px #888888"
+                            }}/>
                         </div>
                         <br/><br/>
-
                     </div>
                 </div>
-                <div className="parallax">
+                 <div className="parallax">
                     <div className="postergrad">
-                    <img src={BannerImage} alt="student using computers"/>
+                        <img src={BannerImage} alt="student using computers" className="img-responsive"/>
                     </div>
                 </div>
             </div>
